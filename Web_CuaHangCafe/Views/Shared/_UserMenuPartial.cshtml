@@ -1,0 +1,35 @@
+﻿@{
+    var tenTaiKhoan = Context.Session.GetString("TenTaiKhoan");
+    var role = Context.Session.GetString("Role");
+}
+@if (string.IsNullOrEmpty(tenTaiKhoan))
+{
+    <ul class="nav">
+        <li class="nav-item">
+            <a class="nav-link" asp-controller="Access1" asp-action="Login1">
+                <i class="fas fa-sign-in-alt"></i> Đăng nhập
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" asp-controller="Access1" asp-action="Register">
+                <i class="fas fa-user-plus"></i> Đăng ký
+            </a>
+        </li>
+    </ul>
+}
+else
+{
+    <div class="user-menu">
+        <button id="userMenuToggle" class="btn btn-link">
+            @tenTaiKhoan <i class="fas fa-caret-down"></i>
+        </button>
+        <div id="userDropdown" class="user-dropdown" style="display:none;">
+            <a class="dropdown-item" asp-controller="Account" asp-action="ThongTin">Thông tin đăng nhập</a>
+            @if (role == "Admin")
+            {
+                <a class="dropdown-item" asp-controller="HomeAdmin" asp-action="Index">Admin</a>
+            }
+            <a class="dropdown-item" asp-controller="Access1" asp-action="Logout">Đăng xuất</a>
+        </div>
+    </div>
+}

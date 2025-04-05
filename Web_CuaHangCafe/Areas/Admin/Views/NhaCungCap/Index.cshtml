@@ -1,0 +1,42 @@
+﻿@model IEnumerable<Web_CuaHangCafe.Models.TbNhaCungCap>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Danh sách Nhà cung cấp";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container mt-3">
+    <h2>Danh sách Nhà cung cấp</h2>
+    <p>
+        <a asp-action="Create" class="btn btn-secondary">Thêm mới Nhà cung cấp</a>
+    </p>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Mã NCC</th>
+                <th>Tên NCC</th>
+                <th>Địa chỉ</th>
+                <th>SĐT NCC</th>
+                <th>Số TK</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.MaNhaCungCap</td>
+                    <td>@item.TenNhaCungCap</td>
+                    <td>@item.DiaChi</td>
+                    <td>@item.Sdtncc</td>
+                    <td>@item.Stk</td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@item.MaNhaCungCap" class="btn btn-success btn-sm">Chi tiết</a>
+                        <a asp-action="Edit" asp-route-id="@item.MaNhaCungCap" class="btn btn-info btn-sm">Sửa</a>
+                        <a asp-action="Delete" asp-route-id="@item.MaNhaCungCap" class="btn btn-danger btn-sm">Xoá</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

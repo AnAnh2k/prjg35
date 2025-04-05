@@ -1,0 +1,80 @@
+﻿@using Web_CuaHangCafe.Models
+@using X.PagedList.Mvc.Core;
+@model X.PagedList.IPagedList<TbHoaDonBan>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "Quản lí hoá đơn";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container my-3">
+    <div class="row align-items-center mb-3">
+        <div class="col-lg-8 col-md-12">
+            <h3 class="page-title">Quản lí hoá đơn</h3>
+        </div>
+        <div class="col-lg-4 col-md-12">
+            <div class="search-field">
+                @using (Html.BeginForm("Search", "Bill", FormMethod.Get))
+                {
+                    <div class="input-group">
+                        <input type="date" class="form-control" name="search" style="border:none" autocomplete="off" placeholder="Tìm kiếm" />
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fa fa-search" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Mã hoá đơn</th>
+                    <th>Ngày bán</th>
+                    <th>Tên khách hàng</th>
+                    <th>Tên nhân viên</th>
+                    <th>Tên quán</th>
+                    <th>SĐT khách hàng</th>
+                    <th>Hình thức TT</th>
+                    <th>Trạng thái</th>
+                    <th>Tổng tiền</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.MaHoaDon</td>
+                        <td>@item.NgayLap.ToString("dd/MM/yyyy")</td>
+                        <td>@(item.MaKhachHangNavigation?.TenKhachHang ?? "N/A")</td>
+                        <td>@(item.MaNhanVienNavigation?.HoTen ?? "N/A")</td>
+                        <td>@(item.MaQuanNavigation?.TenQuan ?? "N/A")</td>
+                        <td>@(item.MaKhachHangNavigation?.SdtkhachHang ?? "N/A")</td>
+                        <td>@item.HinhThucThanhToan</td>
+                        <td>@item.TrangThai</td>
+                        <td>@item.TongTien.ToString("n0") &#8363;</td>
+                        <td>
+                            <a class="btn btn-info btn-sm" asp-action="Details" asp-route-id="@item.MaHoaDon">Xem chi tiết</a>
+                            @if (item.TrangThai == "Chưa hoàn thành")
+                            {
+                                <!-- Nút "Xác nhận" hiện khi trạng thái là "Chưa hoàn thành" -->
+                                <a class="btn btn-success btn-sm ml-2" asp-action="Confirm" asp-route-id="@item.MaHoaDon">Xác nhận</a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), new PagedListRenderOptions()
+{
+    MaximumPageNumbersToDisplay = 5,
+    LiElementClasses = new List<string> { "page-item" },
+    PageClasses = new List<string> { "page-link" }
+})
+</div>

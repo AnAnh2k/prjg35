@@ -1,0 +1,34 @@
+﻿@model Web_CuaHangCafe.Models.TbPhieuNhapHang
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Xoá Phiếu nhập hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container mt-3">
+    <h2>Xoá Phiếu nhập hàng</h2>
+    <div class="alert alert-warning">
+        <p>Bạn có chắc muốn xoá Phiếu nhập hàng: <strong>@Model.MaPhieuNhap</strong>?</p>
+    </div>
+    <dl class="row">
+        <dt class="col-sm-3">Mã Phiếu nhập</dt>
+        <dd class="col-sm-9">@Model.MaPhieuNhap</dd>
+        <dt class="col-sm-3">Quán Café</dt>
+        <dd class="col-sm-9">@Model.MaQuanNavigation.TenQuan</dd>
+        <dt class="col-sm-3">Nhân viên</dt>
+        <dd class="col-sm-9">@Model.MaNhanVienNavigation.HoTen</dd>
+        <dt class="col-sm-3">Nhà cung cấp</dt>
+        <dd class="col-sm-9">@Model.MaNhaCungCapNavigation.TenNhaCungCap</dd>
+        <dt class="col-sm-3">Ngày lập</dt>
+        <dd class="col-sm-9">@Model.NgayLap.ToString("dd/MM/yyyy HH:mm")</dd>
+        <dt class="col-sm-3">Ghi chú</dt>
+        <dd class="col-sm-9">@Model.GhiChu</dd>
+    </dl>
+    <form asp-action="Delete" method="post">
+        <input type="hidden" asp-for="MaPhieuNhap" />
+        <div class="form-group">
+            <input type="submit" value="Xác nhận xoá" class="btn btn-danger" />
+            <a asp-action="Index" class="btn btn-secondary">Huỷ</a>
+        </div>
+    </form>
+</div>

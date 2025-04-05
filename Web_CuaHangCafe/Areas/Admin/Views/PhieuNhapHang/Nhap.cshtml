@@ -1,0 +1,121 @@
+﻿@model Web_CuaHangCafe.ViewModels.PhieuNhapViewModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+    ViewData["Title"] = "Phiếu nhập nguyên liệu";
+}
+
+<h2>Phiếu nhập nguyên liệu</h2>
+
+<form asp-action="Nhap" method="post">
+    @Html.AntiForgeryToken()
+
+    <div class="form-group">
+        <label asp-for="NgayNhap"></label>
+        <input asp-for="NgayNhap" class="form-control" type="date" />
+        <span asp-validation-for="NgayNhap" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="GhiChu"></label>
+        <textarea asp-for="GhiChu" class="form-control"></textarea>
+        <span asp-validation-for="GhiChu" class="text-danger"></span>
+    </div>
+
+    <!-- Nếu muốn hiển thị thông tin nhân viên đăng nhập (tùy chọn): -->
+    <!-- Hiển thị mã nhân viên -->
+    <div class="form-group">
+        <label>Mã nhân viên</label>
+        <input type="text" class="form-control" value="@ViewBag.MaNhanVien" readonly />
+    </div>
+    <!-- Hiển thị tên nhân viên -->
+    <div class="form-group">
+        <label>Nhân viên</label>
+        <input type="text" class="form-control" value="@ViewBag.TenNhanVien" readonly />
+    </div>
+
+
+    <div class="form-group">
+        <label asp-for="MaQuan"></label>
+        <select asp-for="MaQuan" asp-items="ViewBag.MaQuan" class="form-control"></select>
+        <span asp-validation-for="MaQuan" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="MaNhaCungCap"></label>
+        <select asp-for="MaNhaCungCap" asp-items="ViewBag.MaNhaCungCap" class="form-control"></select>
+        <span asp-validation-for="MaNhaCungCap" class="text-danger"></span>
+    </div>
+
+    <h4>Danh sách nguyên liệu nhập</h4>
+    <table class="table table-bordered" id="cart-table">
+        <thead>
+            <tr>
+                <th>Mã</th>
+                <th>Tên nguyên liệu</th>
+                <th>Số lượng nhập</th>
+                <th>Đơn giá nhập</th>
+                <th>Thành tiền</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Nội dung được load bằng JavaScript từ localStorage -->
+        </tbody>
+    </table>
+
+    <div class="text-right">
+        <strong>Tổng tiền: </strong> <span id="cart-total">0</span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Xác nhận</button>
+</form>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Đọc giỏ hàng từ localStorage
+        var cart = JSON.parse(localStorage.getItem("cartNhap")) || [];
+
+        function updateCartView() {
+            var html = "";
+            var total = 0;
+            for (var i = 0; i < cart.length; i++) {
+                var item = cart[i];
+                var thanhtien = item.SoLuongNhap * item.DonGiaNhap;
+                total += thanhtien;
+                html += "<tr>" +
+                    "<td>" + item.MaNguyenLieu + "<input type='hidden' name='ChiTietNhap[" + i + "].MaNguyenLieu' value='" + item.MaNguyenLieu + "' /></td>" +
+                    "<td>" + item.TenNguyenLieu + "<input type='hidden' name='ChiTietNhap[" + i + "].TenNguyenLieu' value='" + item.TenNguyenLieu + "' /></td>" +
+                    "<td><input type='number' name='ChiTietNhap[" + i + "].SoLuongNhap' class='form-control' value='" + item.SoLuongNhap + "' onchange='updateQuantity(" + i + ", this.value)' /></td>" +
+                    "<td><input type='number' readonly name='ChiTietNhap[" + i + "].DonGiaNhap' class='form-control' value='" + item.DonGiaNhap + "' step='0.01' /></td>" +
+                    "<td>" + thanhtien.toFixed(2) + "</td>" +
+                    "<td><button type='button' class='btn btn-danger btn-sm' onclick='deleteItem(" + i + ")'>Xóa</button></td>" +
+                    "</tr>";
+            }
+            $("#cart-table tbody").html(html);
+            $("#cart-total").text(total.toFixed(2));
+        }
+
+        function updateQuantity(index, value) {
+            cart[index].SoLuongNhap = parseFloat(value);
+            localStorage.setItem("cartNhap", JSON.stringify(cart));
+            updateCartView();
+        }
+
+        function deleteItem(index) {
+            // Xóa phần tử tại vị trí index
+            cart.splice(index, 1);
+            // Cập nhật lại giỏ hàng trong localStorage
+            localStorage.setItem("cartNhap", JSON.stringify(cart));
+            // Cập nhật lại hiển thị giỏ hàng
+            updateCartView();
+        }
+
+        $(document).ready(function(){
+            updateCartView();
+        });
+    </script>
+    <partial name="_ValidationScriptsPartial" />
+}

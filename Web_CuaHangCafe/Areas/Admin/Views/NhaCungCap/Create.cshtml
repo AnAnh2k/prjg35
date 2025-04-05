@@ -1,0 +1,46 @@
+﻿@model Web_CuaHangCafe.Models.TbNhaCungCap
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Thêm Nhà cung cấp";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+<div class="container mt-3">
+    <h2>Thêm Nhà cung cấp</h2>
+    <form asp-action="Create" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="form-group">
+            <label asp-for="TenNhaCungCap"></label>
+            <input asp-for="TenNhaCungCap" class="form-control" />
+            <span asp-validation-for="TenNhaCungCap" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="DiaChi"></label>
+            <input asp-for="DiaChi" class="form-control" />
+            <span asp-validation-for="DiaChi" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Sdtncc"></label>
+            <input asp-for="Sdtncc" class="form-control" />
+            <span asp-validation-for="Sdtncc" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Stk"></label>
+            <input asp-for="Stk" class="form-control" />
+            <span asp-validation-for="Stk" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <input type="submit" value="Thêm" class="btn btn-primary" />
+            <a asp-action="Index" class="btn btn-secondary">Huỷ</a>
+        </div>
+    </form>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

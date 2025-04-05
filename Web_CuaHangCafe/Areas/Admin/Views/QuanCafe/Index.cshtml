@@ -1,0 +1,78 @@
+﻿@using Web_CuaHangCafe.Models
+@using X.PagedList.Mvc.Core;
+@model X.PagedList.IPagedList<TbQuanCafe>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Quản lí Quán Café";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container" style="margin-bottom:20px;">
+    <div class="row">
+        <div class="col-lg-8 col-md-12 col-sm-12">
+            <div class="page-header">
+                <h3 class="page-title">Quản lí Quán Café</h3>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-12 col-sm-12">
+            <div class="search-field">
+                @using (Html.BeginForm("Search", "QuanCafe", FormMethod.Get))
+                {
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="search" placeholder="Tìm kiếm" autocomplete="off" style="border:none" />
+                        <button class="btn" type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <p>
+            <a asp-action="Create" class="btn btn-secondary">Thêm mới</a>
+        </p>
+        <p id="status-message">@TempData["Message"]</p>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Mã Quán</th>
+                        <th>Tên Quán</th>
+                        <th>Địa Chỉ</th>
+                        <th>SDT</th>
+                        <th>Email</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.MaQuan</td>
+                            <td>@item.TenQuan</td>
+                            <td>@item.DiaChi</td>
+                            <td>@item.Sdt</td>
+                            <td>@item.Email</td>
+                            <td>
+                                <a class="btn btn-primary btn-sm" asp-action="Details" asp-route-id="@item.MaQuan">Chi tiết</a>
+                                <a class="btn btn-success btn-sm" asp-action="Edit" asp-route-id="@item.MaQuan">Sửa</a>
+                                <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.MaQuan">Xoá</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Nếu dùng PagedList, bạn có thể hiển thị phân trang (chỉnh sửa tùy thuộc vào cách bạn setup phân trang) -->
+    @Html.PagedListPager(Model, page => Url.Action("index", new { page = page }), new PagedListRenderOptions()
+{
+    MaximumPageNumbersToDisplay = 5,
+    LiElementClasses = new List<String> { "page-item" },
+    PageClasses = new List<String> { "page-link" }
+})
+    
+</div>

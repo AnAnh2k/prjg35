@@ -1,0 +1,106 @@
+﻿@model Web_CuaHangCafe.Areas.Admin.ViewModels.EmployeeAccountViewModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "Tạo nhân viên và tài khoản";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container my-3">
+    <h2>Tạo nhân viên</h2>
+    <form asp-action="Create" method="post">
+        <div asp-validation-summary="All" class="text-danger"></div>
+
+        <h3>Thông tin nhân viên</h3>
+        <!-- Dropdown chọn Quán Café -->
+        <div class="form-group">
+            <label asp-for="Employee.MaQuan"></label>
+            <select asp-for="Employee.MaQuan" class="form-control" asp-items="ViewBag.MaQuan"></select>
+            <span asp-validation-for="Employee.MaQuan" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Employee.HoTen"></label>
+            <input asp-for="Employee.HoTen" class="form-control" />
+            <span asp-validation-for="Employee.HoTen" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Employee.DiaChi"></label>
+            <input asp-for="Employee.DiaChi" class="form-control" />
+            <span asp-validation-for="Employee.DiaChi" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Employee.NgaySinh"></label>
+            <input asp-for="Employee.NgaySinh" class="form-control" type="date" />
+            <span asp-validation-for="Employee.NgaySinh" class="text-danger"></span>
+        </div>
+        <!-- Dropdown cho giới tính -->
+        <div class="form-group">
+            <label asp-for="Employee.GioiTinh"></label>
+            <select asp-for="Employee.GioiTinh" class="form-control">
+                <option value="">-- Chọn giới tính --</option>
+                <option value="Nam">Nam</option>
+                <option value="Nữ">Nữ</option>
+            </select>
+            <span asp-validation-for="Employee.GioiTinh" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Employee.ChucVu"></label>
+            <input asp-for="Employee.ChucVu" class="form-control" />
+            <span asp-validation-for="Employee.ChucVu" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Employee.Sdt"></label>
+            <input asp-for="Employee.Sdt" class="form-control" />
+            <span asp-validation-for="Employee.Sdt" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Employee.SoCccd"></label>
+            <input asp-for="Employee.SoCccd" class="form-control" />
+            <span asp-validation-for="Employee.SoCccd" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Employee.Email"></label>
+            <input asp-for="Employee.Email" class="form-control" />
+            <span asp-validation-for="Employee.Email" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Employee.LuongCoBan"></label>
+            <input asp-for="Employee.LuongCoBan" class="form-control" />
+            <span asp-validation-for="Employee.LuongCoBan" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Employee.HeSoLuong"></label>
+            <input asp-for="Employee.HeSoLuong" class="form-control" />
+            <span asp-validation-for="Employee.HeSoLuong" class="text-danger"></span>
+        </div>
+
+        <h3>Thông tin tài khoản</h3>
+        <div class="form-group">
+            <label asp-for="Account.TenTaiKhoan"></label>
+            <input asp-for="Account.TenTaiKhoan" class="form-control" />
+            <span asp-validation-for="Account.TenTaiKhoan" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Account.MatKhau"></label>
+            <input asp-for="Account.MatKhau" class="form-control" type="password" />
+            <span asp-validation-for="Account.MatKhau" class="text-danger"></span>
+        </div>
+        <!-- Dropdown chọn quyền -->
+        <div class="form-group">
+            <label asp-for="Account.MaQuyen"></label>
+            <select asp-for="Account.MaQuyen" class="form-control" asp-items="ViewBag.MaQuyen"></select>
+            <span asp-validation-for="Account.MaQuyen" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <input type="submit" value="Tạo nhân viên" class="btn btn-primary" />
+            <a asp-action="Index" class="btn btn-secondary">Quay về</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

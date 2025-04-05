@@ -1,0 +1,35 @@
+﻿@model Web_CuaHangCafe.Models.TbNguyenLieu
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+    ViewData["Title"] = "Xóa nguyên liệu";
+}
+
+<h1>Xóa nguyên liệu</h1>
+
+<h3>Bạn có chắc chắn muốn xóa nguyên liệu này không?</h3>
+
+<div>
+    <h4>Nguyên liệu</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">Mã nguyên liệu</dt>
+        <dd class="col-sm-10">@Model.MaNguyenLieu</dd>
+
+        <dt class="col-sm-2">Tên nguyên liệu</dt>
+        <dd class="col-sm-10">@Model.TenNguyenLieu</dd>
+
+        <dt class="col-sm-2">Số lượng</dt>
+        <dd class="col-sm-10">@Model.SoLuong</dd>
+
+        <dt class="col-sm-2">Đơn vị tính</dt>
+        <dd class="col-sm-10">@Model.DonViTinh</dd>
+    </dl>
+</div>
+
+<form asp-action="Delete" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="MaNguyenLieu" />
+    <button type="submit" class="btn btn-danger">Xóa</button>
+    <a asp-action="Index" class="btn btn-secondary">Hủy</a>
+</form>

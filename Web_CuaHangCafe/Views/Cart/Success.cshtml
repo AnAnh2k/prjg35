@@ -1,0 +1,58 @@
+﻿@{
+    ViewData["Title"] = "Thanh toán thành công";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Breadcrumb Begin -->
+<div class="breadcrumb-option">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb__links">
+                    <a asp-controller="home" asp-action="index">
+                        <i class="fas fa-home"></i>
+                        Trang chủ
+                    </a>
+                    <a asp-controller="cart" asp-action="index">Giỏ hàng</a>
+                    <span>Thanh toán thành công</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb End -->
+<!-- Success Section Begin -->
+<section class="cart-success spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="cart-success__detail">
+                    <h3>Thanh toán thành công</h3>
+                    <p>Đơn hàng của bạn đã được xử lý thành công!</p>
+                    <p>Trở về trang chủ trong <span id="countdownDisplay">10</span> giây...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Success Section End -->
+
+<script>
+    // Đảm bảo script chạy sau khi DOM đã load đầy đủ.
+    document.addEventListener("DOMContentLoaded", function () {
+        var countdownDisplay = document.getElementById("countdownDisplay");
+        // Khởi tạo số giây, ở đây đếm ngược 10 giây. Bạn có thể thay đổi số này.
+        var seconds = parseInt(countdownDisplay.textContent) || 10;
+
+        // Thiết lập interval để giảm số giây mỗi 1 giây
+        var interval = setInterval(function () {
+            seconds--;
+            countdownDisplay.textContent = seconds;
+            if (seconds <= 0) {
+                clearInterval(interval);
+                // Chuyển hướng về trang chủ sau khi đếm ngược kết thúc
+                window.location.href = '@Url.Action("Index", "Home")';
+            }
+        }, 1000);
+    });
+</script>

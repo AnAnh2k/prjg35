@@ -1,0 +1,40 @@
+﻿@model IEnumerable<Web_CuaHangCafe.Models.TbHoaDonBan>
+
+@{
+    ViewData["Title"] = "Hóa đơn của tôi";
+}
+
+<h2>Danh sách hóa đơn của tôi</h2>
+
+@if (!Model.Any())
+{
+    <p>Không có hóa đơn nào.</p>
+}
+else
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Ngày lập</th>
+                <th>Tổng tiền</th>
+                <th>Hình thức thanh toán</th>
+                <th>Trạng thái</th>
+                <th>Chi tiết</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var hd in Model)
+            {
+                <tr>
+                    <td>@hd.NgayLap.ToString("dd/MM/yyyy")</td>
+                    <td>@hd.TongTien.ToString("n0")</td>
+                    <td>@hd.HinhThucThanhToan</td>
+                    <td>@hd.TrangThai</td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@hd.MaHoaDon" class="btn btn-info btn-sm">Xem chi tiết</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

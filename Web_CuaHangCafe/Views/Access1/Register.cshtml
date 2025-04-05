@@ -1,0 +1,62 @@
+﻿@model Web_CuaHangCafe.ViewModels.RegisterViewModel
+@{
+    ViewBag.Title = "Đăng ký";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6 col-lg-4">
+        <div class="card shadow">
+            <div class="card-header text-center">
+                <h4 class="mb-0">Đăng ký</h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="Register" method="post">
+                    <div class="mb-3">
+                        <label asp-for="TenTaiKhoan" class="form-label"></label>
+                        <input asp-for="TenTaiKhoan" class="form-control" />
+                        <span asp-validation-for="TenTaiKhoan" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="MatKhau" class="form-label"></label>
+                        <input asp-for="MatKhau" class="form-control" />
+                        <span asp-validation-for="MatKhau" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="XacNhanMatKhau" class="form-label"></label>
+                        <input asp-for="XacNhanMatKhau" class="form-control" />
+                        <span asp-validation-for="XacNhanMatKhau" class="text-danger"></span>
+                    </div>
+
+                    <hr />
+                    <h5 class="text-center">Thông tin khách hàng</h5>
+                    <div class="mb-3">
+                        <label asp-for="TenKhachHang" class="form-label"></label>
+                        <input asp-for="TenKhachHang" class="form-control" />
+                        <span asp-validation-for="TenKhachHang" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="SDTKhachHang" class="form-label"></label>
+                        <input asp-for="SDTKhachHang" class="form-control" />
+                        <span asp-validation-for="SDTKhachHang" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="DiaChi" class="form-label"></label>
+                        <input asp-for="DiaChi" class="form-control" />
+                        <span asp-validation-for="DiaChi" class="text-danger"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-success w-100">Đăng ký</button>
+                </form>
+                <div class="mt-3 text-center">
+                    <span>Bạn đã có tài khoản?</span>
+                    <a asp-action="Login" asp-controller="Access1">Đăng nhập ngay!</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

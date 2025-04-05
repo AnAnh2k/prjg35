@@ -1,0 +1,32 @@
+﻿@model Web_CuaHangCafe.Models.TbNhaCungCap
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Chi tiết Nhà cung cấp";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container mt-3">
+    <h2>Chi tiết Nhà cung cấp</h2>
+    <div>
+        <dl class="row">
+            <dt class="col-sm-3">Mã Nhà cung cấp</dt>
+            <dd class="col-sm-9">@Model.MaNhaCungCap</dd>
+
+            <dt class="col-sm-3">Tên Nhà cung cấp</dt>
+            <dd class="col-sm-9">@Model.TenNhaCungCap</dd>
+
+            <dt class="col-sm-3">Địa chỉ</dt>
+            <dd class="col-sm-9">@Model.DiaChi</dd>
+
+            <dt class="col-sm-3">SĐT NCC</dt>
+            <dd class="col-sm-9">@Model.Sdtncc</dd>
+
+            <dt class="col-sm-3">Số TK</dt>
+            <dd class="col-sm-9">@Model.Stk</dd>
+        </dl>
+    </div>
+    <p>
+        <a asp-action="Edit" asp-route-id="@Model.MaNhaCungCap" class="btn btn-warning">Sửa</a>
+        <a asp-action="Index" class="btn btn-secondary">Quay về danh sách</a>
+    </p>
+</div>

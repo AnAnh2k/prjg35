@@ -1,0 +1,31 @@
+﻿@model Web_CuaHangCafe.Models.TbNhaCungCap
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Xoá Nhà cung cấp";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+<div class="container mt-3">
+    <h2>Xoá Nhà cung cấp</h2>
+    <div class="alert alert-warning">
+        <p>Bạn có chắc muốn xoá Nhà cung cấp: <strong>@Model.TenNhaCungCap</strong>?</p>
+    </div>
+    <dl class="row">
+        <dt class="col-sm-3">Mã Nhà cung cấp</dt>
+        <dd class="col-sm-9">@Model.MaNhaCungCap</dd>
+        <dt class="col-sm-3">Tên Nhà cung cấp</dt>
+        <dd class="col-sm-9">@Model.TenNhaCungCap</dd>
+        <dt class="col-sm-3">Địa chỉ</dt>
+        <dd class="col-sm-9">@Model.DiaChi</dd>
+        <dt class="col-sm-3">SĐT NCC</dt>
+        <dd class="col-sm-9">@Model.Sdtncc</dd>
+        <dt class="col-sm-3">Số TK</dt>
+        <dd class="col-sm-9">@Model.Stk</dd>
+    </dl>
+    <form asp-action="Delete" method="post">
+        <input type="hidden" asp-for="MaNhaCungCap" />
+        <div class="form-group">
+            <input type="submit" value="Xác nhận xoá" class="btn btn-danger" />
+            <a asp-action="Index" class="btn btn-secondary">Huỷ</a>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,47 @@
+﻿@model Web_CuaHangCafe.Models.TbPhieuNhapHang
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Sửa Phiếu nhập hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container mt-3">
+    <h2>Sửa Phiếu nhập hàng</h2>
+    <form asp-action="Edit" method="post">
+        <input type="hidden" asp-for="MaPhieuNhap" />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="form-group">
+            <label asp-for="MaQuan"></label>
+            <select asp-for="MaQuan" class="form-control" asp-items="ViewBag.MaQuan"></select>
+        </div>
+        <div class="form-group">
+            <label asp-for="MaNhanVien"></label>
+            <select asp-for="MaNhanVien" class="form-control" asp-items="ViewBag.MaNhanVien"></select>
+        </div>
+        <div class="form-group">
+            <label asp-for="MaNhaCungCap"></label>
+            <select asp-for="MaNhaCungCap" class="form-control" asp-items="ViewBag.MaNhaCungCap"></select>
+        </div>
+        <div class="form-group">
+            <label asp-for="NgayLap"></label>
+            <input asp-for="NgayLap" class="form-control" type="datetime-local" />
+            <span asp-validation-for="NgayLap" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="GhiChu"></label>
+            <input asp-for="GhiChu" class="form-control" />
+            <span asp-validation-for="GhiChu" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <input type="submit" value="Lưu lại" class="btn btn-primary" />
+            <a asp-action="Index" class="btn btn-secondary">Quay về</a>
+        </div>
+    </form>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

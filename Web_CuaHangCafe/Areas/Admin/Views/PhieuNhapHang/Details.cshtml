@@ -1,0 +1,79 @@
+﻿@model Web_CuaHangCafe.Models.TbPhieuNhapHang
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Chi tiết Phiếu nhập hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+
+
+    var total = Model.TbPhieuNhapChiTiets != null
+                ? Model.TbPhieuNhapChiTiets.Sum(detail => detail.ThanhTien ?? (detail.SoLuong * detail.DonGia))
+                : 0;
+}
+
+<div class="container mt-3">
+    <h2>Chi tiết Phiếu nhập hàng</h2>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">Mã Phiếu nhập</dt>
+        <dd class="col-sm-9">@Model.MaPhieuNhap</dd>
+
+        <dt class="col-sm-3">Quán Café</dt>
+        <dd class="col-sm-9">@Model.MaQuanNavigation.TenQuan</dd>
+
+        <dt class="col-sm-3">Nhân viên</dt>
+        <dd class="col-sm-9">@Model.MaNhanVienNavigation.HoTen</dd>
+
+        <dt class="col-sm-3">Nhà cung cấp</dt>
+        <dd class="col-sm-9">@Model.MaNhaCungCapNavigation.TenNhaCungCap</dd>
+
+        <dt class="col-sm-3">Ngày lập</dt>
+        <dd class="col-sm-9">@Model.NgayLap.ToString("MM/dd/yyyy HH:mm")</dd>
+
+        <dt class="col-sm-3">Ghi chú</dt>
+        <dd class="col-sm-9">@Model.GhiChu</dd>
+    </dl>
+
+    <h4>Chi tiết phiếu nhập</h4>
+    @if (Model.TbPhieuNhapChiTiets != null && Model.TbPhieuNhapChiTiets.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Mã Nguyên liệu</th>
+                        <th>Tên Nguyên liệu</th>
+                        <th>Số lượng</th>
+                        <th>Đơn giá</th>
+                        <th>Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var detail in Model.TbPhieuNhapChiTiets)
+                    {
+                        <tr>
+                            <td>@detail.MaNguyenLieu</td>
+                            <td>@detail.MaNguyenLieuNavigation.TenNguyenLieu</td>
+                            <td>@detail.SoLuong</td>
+                            <td>@detail.DonGia.ToString("N2")</td>
+                            <td>@(detail.ThanhTien?.ToString("N2") ?? (detail.SoLuong * detail.DonGia).ToString("N2"))</td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="4" class="text-right"><strong>Tổng tiền:</strong></td>
+                        <td>@total.ToString("N2")</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    }
+    else
+    {
+        <p>Không có chi tiết phiếu nhập nào.</p>
+    }
+
+    <p>
+        <a asp-action="Index" class="btn btn-secondary">Quay về danh sách</a>
+    </p>
+</div>

@@ -1,0 +1,74 @@
+﻿@model Web_CuaHangCafe.ViewModels.AllThuChiViewModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "Quản lý Thu – Chi Tất Cả Các Quán";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2>Quản lý Thu – Chi của Tất Cả Các Quán</h2>
+
+<!-- Thanh lọc -->
+<div class="row mb-3">
+    <div class="col-md-10">
+        <form asp-area="Admin" asp-controller="ThuChi" asp-action="All" method="post" class="form-inline">
+            <div class="form-group mr-2">
+                <label class="mr-2">Từ ngày:</label>
+                <input type="date" asp-for="StartDate" class="form-control"
+                       value="@Model.StartDate.ToString("yyyy-MM-dd")" required />
+            </div>
+            <div class="form-group mr-2">
+                <label class="mr-2">Đến ngày:</label>
+                <input type="date" asp-for="EndDate" class="form-control"
+                       value="@Model.EndDate.ToString("yyyy-MM-dd")" required />
+            </div>
+            <button type="submit" class="btn btn-primary mr-2">Lọc</button>
+        </form>
+    </div>
+    <div class="col-md-2">
+       
+        <!-- Link "Xem tất cả" điều hướng theo GET, không cần thuộc tính method -->
+        <a asp-area="Admin" asp-controller="ThuChi" asp-action="All" class="btn btn-secondary" style="width:100%;">Xem tất cả</a>
+    </div>
+</div>
+
+@if (Model.Items == null || !Model.Items.Any())
+{
+    <p>Không có dữ liệu để hiển thị. Vui lòng kiểm tra thông tin lọc.</p>
+}
+else
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Mã Quán</th>
+                <th>Tên Quán</th>
+                <th>Thu</th>
+                <th>Chi</th>
+                <th>Lãi</th>
+                <th>Chi tiết</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td>@item.MaQuan</td>
+                    <td>@item.TenQuan</td>
+                    <td>@item.TotalRevenue.ToString("N2")</td>
+                    <td>@item.TotalImport.ToString("N2")</td>
+                    <td>@item.Profit.ToString("N2")</td>
+                    <td>
+                        <a asp-action="AllDetail"
+                           asp-route-maQuan="@item.MaQuan"
+                           asp-route-startDate="@Model.StartDate.ToString("yyyy-MM-dd")"
+                           asp-route-endDate="@Model.EndDate.ToString("yyyy-MM-dd")"
+                           class="btn btn-info btn-sm">
+                            Chi tiết
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

@@ -1,0 +1,50 @@
+﻿@model Web_CuaHangCafe.Models.TbHoaDonBan
+
+@{
+    ViewData["Title"] = "Chi tiết hóa đơn";
+}
+
+<h2>Chi tiết hóa đơn</h2>
+
+<div class="mb-3">
+    <p><strong>Mã hóa đơn:</strong> @Model.MaHoaDon</p>
+    <p><strong>Ngày lập:</strong> @Model.NgayLap.ToString("dd/MM/yyyy")</p>
+    <p><strong>Tổng tiền:</strong> @Model.TongTien.ToString("n0")</p>
+    <p><strong>Hình thức thanh toán:</strong> @Model.HinhThucThanhToan</p>
+    <p><strong>Trạng thái:</strong> @Model.TrangThai</p>
+</div>
+
+<h3>Sản phẩm trong hóa đơn</h3>
+
+@if (Model.TbChiTietHoaDonBans == null || !Model.TbChiTietHoaDonBans.Any())
+{
+    <p>Không có sản phẩm nào.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Tên sản phẩm</th>
+                <th>Số lượng</th>
+                <th>Đơn giá</th>
+                <th>Thành tiền</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var ct in Model.TbChiTietHoaDonBans)
+            {
+                <tr>
+                    <td>@ct.MaSanPhamNavigation.TenSanPham</td>
+                    <td>@ct.SoLuong</td>
+                    <td>@ct.DonGia.ToString("n0")</td>
+                    <td>@((ct.SoLuong * ct.DonGia).ToString("n0"))</td>
+
+
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<a asp-action="Index" class="btn btn-secondary">Trở về danh sách hóa đơn</a>

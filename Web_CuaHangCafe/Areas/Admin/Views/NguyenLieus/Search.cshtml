@@ -1,0 +1,78 @@
+﻿@using Web_CuaHangCafe.Models
+@using X.PagedList.Mvc.Core
+@model X.PagedList.IPagedList<TbNguyenLieu>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "Kết quả tìm kiếm nguyên liệu";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container mb-3">
+    <div class="row align-items-center">
+        <div class="col-lg-8 col-md-12">
+            <h3 class="page-title">
+                Kết quả tìm kiếm cho:
+                <span class="text-muted text-capitalize">@ViewBag.search</span>
+            </h3>
+        </div>
+        <div class="col-lg-4 col-md-12">
+            <div class="search-field">
+                @using (Html.BeginForm("Search", "NguyenLieus", FormMethod.Get))
+                {
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="search" style="border:none" placeholder="Tìm kiếm" autocomplete="off" />
+                        <button class="btn btn-outline-secondary" type="submit">
+                            <i class="fa fa-search" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+            <thead class="thead-light">
+                <tr>
+                    <th>Mã nguyên liệu</th>
+                    <th>Tên nguyên liệu</th>
+                    <th>Số lượng</th>
+                    <th>Đơn vị tính</th>
+                    <th>Hạn sử dụng</th>
+                    <th>Đơn giá</th>
+                    <th>Số lượng tối thiểu</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.MaNguyenLieu</td>
+                        <td>@item.TenNguyenLieu</td>
+                        <td>@item.SoLuong</td>
+                        <td>@item.DonViTinh</td>
+                        <td>@(item.HanSuDung?.ToString("dd/MM/yyyy") ?? "N/A")</td>
+                        <td>@item.DonGia.ToString("n2")</td>
+                        <td>@item.SoLuongToiThieu.ToString("n2")</td>
+                        <td>
+                            <a class="btn btn-success btn-sm" asp-action="Details" asp-route-id="@item.MaNguyenLieu">Chi tiết</a>
+                            <a class="btn btn-info btn-sm" asp-action="Edit" asp-route-id="@item.MaNguyenLieu">Sửa</a>
+                            <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.MaNguyenLieu">Xoá</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @Html.PagedListPager(Model, page => Url.Action("Search", new { page, search = ViewBag.search }), new PagedListRenderOptions
+{
+    MaximumPageNumbersToDisplay = 5,
+    LiElementClasses = new List<string> { "page-item" },
+    PageClasses = new List<string> { "page-link" }
+})
+</div>

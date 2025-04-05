@@ -1,0 +1,73 @@
+﻿@model Web_CuaHangCafe.ViewModels.AccountInfoViewModel
+@{
+    ViewData["Title"] = "Thông tin đăng nhập";
+    Layout = "~/Views/Shared/_Layout.cshtml"; // Hoặc layout phù hợp với dự án của bạn
+}
+
+<div class="container mt-4">
+    <h2>Thông tin đăng nhập</h2>
+    <hr />
+
+    <div>
+        <h4>Thông tin tài khoản</h4>
+        <dl class="row">
+            <dt class="col-sm-3">Tên tài khoản</dt>
+            <dd class="col-sm-9">@Model.TenTaiKhoan</dd>
+            @* <dt class="col-sm-3">Role</dt> *@
+            @* <dd class="col-sm-9">@Model.Role</dd> *@
+        </dl>
+    </div>
+
+    @if (Model.Role == "Admin")
+    {
+        <div>
+            <h4>Thông tin nhân viên</h4>
+            <dl class="row">
+                <dt class="col-sm-3">Mã nhân viên</dt>
+                <dd class="col-sm-9">@Model.NhanVienInfo?.MaNhanVien</dd>
+                <dt class="col-sm-3">Họ tên</dt>
+                <dd class="col-sm-9">@Model.NhanVienInfo?.HoTen</dd>
+                <dt class="col-sm-3">Địa chỉ</dt>
+                <dd class="col-sm-9">@Model.NhanVienInfo?.DiaChi</dd>
+                <dt class="col-sm-3">Ngày sinh</dt>
+                <dd class="col-sm-9">@Model.NhanVienInfo?.NgaySinh?.ToString("dd/MM/yyyy")</dd>
+                <dt class="col-sm-3">Giới tính</dt>
+                <dd class="col-sm-9">@Model.NhanVienInfo?.GioiTinh</dd>
+                <dt class="col-sm-3">Chức vụ</dt>
+                <dd class="col-sm-9">@Model.NhanVienInfo?.ChucVu</dd>
+                <dt class="col-sm-3">SĐT</dt>
+                <dd class="col-sm-9">@Model.NhanVienInfo?.Sdt</dd>
+                <dt class="col-sm-3">Số CCCD</dt>
+                <dd class="col-sm-9">@Model.NhanVienInfo?.SoCccd</dd>
+                <dt class="col-sm-3">Email</dt>
+                <dd class="col-sm-9">@Model.NhanVienInfo?.Email</dd>
+                <dt class="col-sm-3">Lương cơ bản</dt>
+                <dd class="col-sm-9">@Model.NhanVienInfo?.LuongCoBan.ToString("C")</dd>
+                <dt class="col-sm-3">Hệ số lương</dt>
+                <dd class="col-sm-9">@Model.NhanVienInfo?.HeSoLuong</dd>
+                <dt class="col-sm-3">Quán quản lý</dt>
+                <dd class="col-sm-9">@Model.NhanVienInfo?.MaQuanNavigation.TenQuan</dd>
+            </dl>
+        </div>
+    }
+    else if (Model.Role == "User")
+    {
+        <div>
+            <h4>Thông tin khách hàng</h4>
+            <dl class="row">
+                <dt class="col-sm-3">Mã khách hàng</dt>
+                <dd class="col-sm-9">@Model.KhachHangInfo?.MaKhachHang</dd>
+                <dt class="col-sm-3">Tên khách hàng</dt>
+                <dd class="col-sm-9">@Model.KhachHangInfo?.TenKhachHang</dd>
+                <dt class="col-sm-3">Số điện thoại</dt>
+                <dd class="col-sm-9">@Model.KhachHangInfo?.SdtkhachHang</dd>
+                <dt class="col-sm-3">Địa chỉ</dt>
+                <dd class="col-sm-9">@Model.KhachHangInfo?.DiaChi</dd>
+                @* Thêm các trường khác nếu cần *@
+            </dl>
+        </div>
+    }
+
+    <a asp-controller="Account" asp-action="EditThongTin" class="btn btn-primary">Chỉnh sửa thông tin</a>
+    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Quay về</a>
+</div>

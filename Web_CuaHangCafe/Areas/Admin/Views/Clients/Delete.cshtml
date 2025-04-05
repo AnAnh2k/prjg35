@@ -1,0 +1,39 @@
+﻿@model Web_CuaHangCafe.Models.TbKhachHang
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "Xác nhận xoá khách hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container">
+    <h3 class="page-title">Xác nhận xoá khách hàng</h3>
+    <hr />
+
+    <div class="alert alert-warning">
+        <p>Bạn có chắc muốn xoá khách hàng: <strong>@Model.TenKhachHang</strong>?</p>
+        <p>Lưu ý: Việc xoá sẽ được thực hiện <strong>toàn bộ</strong> và xoá luôn các thông tin liên quan như tài khoản, hoá đơn và chi tiết hoá đơn của khách hàng.</p>
+    </div>
+
+    <dl class="row">
+        <dt class="col-sm-3">Mã khách hàng</dt>
+        <dd class="col-sm-9">@Model.MaKhachHang</dd>
+
+        <dt class="col-sm-3">Họ và tên</dt>
+        <dd class="col-sm-9">@Model.TenKhachHang</dd>
+
+        <dt class="col-sm-3">Số điện thoại</dt>
+        <dd class="col-sm-9">@Model.SdtkhachHang</dd>
+
+        <dt class="col-sm-3">Địa chỉ</dt>
+        <dd class="col-sm-9">@Model.DiaChi</dd>
+    </dl>
+
+    <form asp-action="Delete" method="post">
+        <input type="hidden" name="id" value="@Model.MaKhachHang" />
+        <div class="form-group">
+            <input type="submit" value="Xác nhận xoá" class="btn btn-danger" />
+            <a asp-action="Index" class="btn btn-secondary">Hủy</a>
+        </div>
+    </form>
+</div>

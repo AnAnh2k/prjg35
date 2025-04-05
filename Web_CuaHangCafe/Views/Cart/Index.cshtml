@@ -1,0 +1,278 @@
+﻿@model IEnumerable<Web_CuaHangCafe.Models.TbGioHang>
+
+@{
+    ViewData["Title"] = "Giỏ hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Breadcrumb -->
+<div class="breadcrumb-option">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb__links">
+                    <a asp-controller="home" asp-action="index">
+                        <i class="fas fa-home"></i>
+                        Trang chủ
+                    </a>
+                    <span>Giỏ hàng</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="shop-cart spad">
+    <div class="container">
+        <h2 class="text-center mb-4">Giỏ hàng của bạn</h2>
+        <div class="table-responsive">
+            <table class="table table-bordered text-center">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Sản phẩm</th>
+                        <th>Giá</th>
+                        <th>Số lượng</th>
+                        <th>Tổng</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody id="cart-items">
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center text-danger font-weight-bold">
+                                Giỏ hàng trống!
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr class="product-item" data-product-id="@item.MaSanPham">
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="@Url.Content("~/img/products/" + item.MaSanPhamNavigation.HinhAnh)"
+                                             alt="" class="img-thumbnail" style="width:70px; margin-right:10px;">
+                                        <strong>@item.MaSanPhamNavigation.TenSanPham</strong>
+                                    </div>
+                                </td>
+                                <td class="align-middle">
+                                    <span class="price">@item.MaSanPhamNavigation.GiaBan.ToString("n0")</span> &#8363;
+                                </td>
+                                <td class="align-middle">
+                                    <div class="input-group" style="max-width:150px; margin:0 auto;">
+                                        <div class="input-group-prepend">
+                                            <button class="btn btn-outline-secondary dec-btn" type="button">-</button>
+                                        </div>
+                                        <input type="number" class="form-control quantity-input"
+                                               data-product-id="@item.MaSanPham" value="@item.SoLuong" min="1"
+                                               style="text-align:center;">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-outline-secondary inc-btn" type="button">+</button>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="align-middle">
+                                    <span class="row-total">@((item.SoLuong * item.MaSanPhamNavigation.GiaBan).ToString("n0"))</span> &#8363;
+                                </td>
+                                <td class="align-middle">
+                                    <button class="btn btn-danger removeItem" data-product-id="@item.MaSanPham">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row align-items-center mt-4">
+            <div class="col-md-6">
+                <a asp-controller="Products" asp-action="Index" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Tiếp tục mua hàng
+                </a>
+            </div>
+            <div class="col-md-6 text-right">
+                <h5>
+                    Tổng tiền:
+                    <span id="totalAmount" class="text-danger">@ViewData["total"]</span> &#8363;
+                </h5>
+                <a asp-action="Checkout" id="checkoutLink" class="btn btn-success">Thanh toán</a>
+            </div>
+        </div>
+    </div>
+</section>
+@Html.AntiForgeryToken()
+
+@section Scripts {
+    <script>
+        // Lấy URL từ Razor
+        const updateQuantityUrl = '@Url.Action("Update", "Cart")';
+        const removeUrl = '@Url.Action("Remove", "Cart")';
+        // Lấy token CSRF từ input ẩn được tạo bởi @Html.AntiForgeryToken()
+        const csrfTokenElement = document.querySelector('input[name="__RequestVerificationToken"]');
+        const csrfToken = csrfTokenElement ? csrfTokenElement.value : '';
+
+        // Hàm tính lại tổng của từng dòng dựa trên giá và số lượng
+        function calcRowTotal(row) {
+            const priceEl = row.querySelector('.price');
+            const quantityEl = row.querySelector('.quantity-input');
+            const rowTotalEl = row.querySelector('.row-total');
+
+            let price = parseInt(priceEl.textContent.replace(/,/g, '')) || 0;
+            let quantity = parseInt(quantityEl.value) || 0;
+            let rowTotal = price * quantity;
+
+            rowTotalEl.textContent = rowTotal.toLocaleString('en-US');
+        }
+
+        // Hàm tính lại tổng tiền của giỏ hàng
+        function calcTotalAll() {
+            let total = 0;
+            const rows = document.querySelectorAll('#cart-items tr.product-item');
+            rows.forEach(row => {
+                const rowTotalEl = row.querySelector('.row-total');
+                let rowTotal = parseInt(rowTotalEl.textContent.replace(/,/g, '')) || 0;
+                total += rowTotal;
+            });
+            document.getElementById('totalAmount').textContent = total.toLocaleString('en-US');
+        }
+
+        // Hàm dùng Fetch API để cập nhật số lượng cho 1 sản phẩm
+        async function updateQuantity(productId, quantity) {
+            const payload = [{ ProductId: productId, Quantity: quantity }];
+            try {
+                const response = await fetch(updateQuantityUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': csrfToken
+                    },
+                    body: JSON.stringify(payload)
+                });
+                if (!response.ok) {
+                    console.error('Response status:', response.status);
+                    throw new Error(`Server error: ${response.status}`);
+                }
+                const data = await response.json();
+                console.log("Update response:", data);
+                return data;
+            } catch (error) {
+                console.error("Error updating quantity:", error);
+                alert("Có lỗi xảy ra khi cập nhật giỏ hàng.");
+                return null;
+            }
+        }
+
+        // Hàm dùng Fetch API để xóa sản phẩm
+        async function removeProduct(productId) {
+            try {
+                const response = await fetch(removeUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': csrfToken
+                    },
+                    body: JSON.stringify({ ProductId: productId })
+                });
+                if (!response.ok) {
+                    console.error('Response status:', response.status);
+                    throw new Error(`Server error: ${response.status}`);
+                }
+                const data = await response.json();
+                console.log("Remove response:", data);
+                return data;
+            } catch (error) {
+                console.error("Error removing product:", error);
+                alert("Có lỗi xảy ra khi xóa sản phẩm.");
+                return null;
+            }
+        }
+
+        // Hàm cập nhật badge giỏ hàng nếu có (badge có id là "cartTip")
+        async function updateCartBadge() {
+            try {
+                const response = await fetch('@Url.Action("GetCartCount", "Cart")');
+                if (!response.ok) {
+                    console.error("Lỗi lấy số lượng giỏ hàng:", response.status);
+                    return;
+                }
+                const count = await response.json();
+                const badge = document.getElementById('cartTip');
+                if (badge) {
+                    badge.textContent = count;
+                }
+            } catch (error) {
+                console.error("Error updating cart badge:", error);
+            }
+        }
+
+        // Xử lý các sự kiện tăng/giảm số lượng và xóa sản phẩm
+        document.addEventListener('click', async (e) => {
+            // Xử lý nút tăng (inc-btn) và giảm (dec-btn)
+            const incBtn = e.target.closest('.inc-btn');
+            const decBtn = e.target.closest('.dec-btn');
+            if (incBtn || decBtn) {
+                const button = incBtn || decBtn;
+                const row = button.closest('tr.product-item');
+                const input = row.querySelector('.quantity-input');
+                let currentQty = parseInt(input.value) || 1;
+                if (incBtn) {
+                    currentQty++;
+                } else if (decBtn && currentQty > 1) {
+                    currentQty--;
+                }
+                input.value = currentQty;
+                calcRowTotal(row);
+                calcTotalAll();
+
+                // Gửi cập nhật số lượng đến server
+                const productId = input.dataset.productId;
+                const result = await updateQuantity(productId, currentQty);
+                if (result && result.success) {
+                    // Cập nhật badge giỏ hàng
+                    updateCartBadge();
+                } else if (result && !result.success) {
+                    alert(result.message);
+                }
+            }
+
+            // Xử lý nút xóa sản phẩm
+            const removeBtn = e.target.closest('.removeItem');
+            if (removeBtn) {
+                e.preventDefault();
+                const productId = removeBtn.dataset.productId;
+                const row = removeBtn.closest('tr.product-item');
+                if (!confirm("Bạn có chắc muốn xóa sản phẩm này?")) return;
+                const result = await removeProduct(productId);
+                if (result && result.success) {
+                    row.remove();
+                    calcTotalAll();
+                    updateCartBadge();
+                } else if (result && !result.success) {
+                    alert(result.message);
+                }
+            }
+        });
+
+        // Xử lý sự kiện thay đổi của input số lượng (nếu người dùng chỉnh trực tiếp)
+        document.querySelectorAll('.quantity-input').forEach(input => {
+            input.addEventListener('change', async function () {
+                const row = this.closest('tr.product-item');
+                calcRowTotal(row);
+                calcTotalAll();
+
+                const productId = this.dataset.productId;
+                const currentQty = parseInt(this.value) || 1;
+                const result = await updateQuantity(productId, currentQty);
+                if (result && result.success) {
+                    updateCartBadge();
+                } else if (result && !result.success) {
+                    alert(result.message);
+                }
+            });
+        });
+    </script>
+}

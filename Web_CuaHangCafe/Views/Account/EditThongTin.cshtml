@@ -1,0 +1,138 @@
+﻿@model Web_CuaHangCafe.ViewModels.AccountInfoViewModel
+@{
+    ViewData["Title"] = "Chỉnh sửa thông tin đăng nhập";
+    Layout = "~/Views/Shared/_Layout.cshtml"; // layout dự án của bạn
+}
+
+<div class="container mt-4">
+    <h2>Chỉnh sửa thông tin đăng nhập</h2>
+    <hr />
+
+    <form asp-action="EditThongTin" method="post">
+        @* Hiển thị thông báo lỗi nếu có *@
+        <div asp-validation-summary="All" class="text-danger"></div>
+
+        <div class="form-group">
+            <label asp-for="TenTaiKhoan" class="control-label"></label>
+            @* Giả sử tên tài khoản không cho phép thay đổi, vì vậy render readonly *@
+            <input asp-for="TenTaiKhoan" class="form-control" readonly />
+            <span asp-validation-for="TenTaiKhoan" class="text-danger"></span>
+            <label asp-for="MatKhau" class="control-label"></label>
+            <input asp-for="MatKhau" class="form-control" type="password" placeholder="Nhập mật khẩu mới nếu muốn đổi" />
+        </div>
+        @if (Model.Role == "Admin")
+        {
+            <fieldset>
+                <legend>Thông tin nhân viên</legend>
+
+                <div class="form-group">
+                    <label asp-for="NhanVienInfo.HoTen" class="control-label"></label>
+                    <input asp-for="NhanVienInfo.HoTen" class="form-control" />
+                    <span asp-validation-for="NhanVienInfo.HoTen" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="NhanVienInfo.DiaChi" class="control-label"></label>
+                    <input asp-for="NhanVienInfo.DiaChi" class="form-control" />
+                    <span asp-validation-for="NhanVienInfo.DiaChi" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="NhanVienInfo.Email" class="control-label"></label>
+                    <input asp-for="NhanVienInfo.Email" class="form-control" />
+                    <span asp-validation-for="NhanVienInfo.Email" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="NhanVienInfo.NgaySinh" class="control-label"></label>
+                    <input asp-for="NhanVienInfo.NgaySinh" class="form-control" type="date" />
+                    <span asp-validation-for="NhanVienInfo.NgaySinh" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="NhanVienInfo.GioiTinh" class="control-label"></label>
+                    <select asp-for="NhanVienInfo.GioiTinh" class="form-control">
+                        <option value="">-- Chọn giới tính --</option>
+                        <option value="Nam">Nam</option>
+                        <option value="Nữ">Nữ</option>
+                    </select>
+                    <span asp-validation-for="NhanVienInfo.GioiTinh" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="NhanVienInfo.ChucVu" class="control-label"></label>
+                    <select asp-for="NhanVienInfo.ChucVu" class="form-control">
+                        <option value="">-- Chọn chức vụ --</option>
+                        <option value="Quản lý">Quản lý</option>
+                        <option value="Nhân viên">Nhân viên</option>
+                    </select>
+                    <span asp-validation-for="NhanVienInfo.ChucVu" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="NhanVienInfo.Sdt" class="control-label"></label>
+                    <input asp-for="NhanVienInfo.Sdt" class="form-control" />
+                    <span asp-validation-for="NhanVienInfo.Sdt" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="NhanVienInfo.SoCccd" class="control-label"></label>
+                    <input asp-for="NhanVienInfo.SoCccd" class="form-control" />
+                    <span asp-validation-for="NhanVienInfo.SoCccd" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="NhanVienInfo.LuongCoBan" class="control-label"></label>
+                    <input asp-for="NhanVienInfo.LuongCoBan" class="form-control" />
+                    <span asp-validation-for="NhanVienInfo.LuongCoBan" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="NhanVienInfo.HeSoLuong" class="control-label"></label>
+                    <input asp-for="NhanVienInfo.HeSoLuong" class="form-control" />
+                    <span asp-validation-for="NhanVienInfo.HeSoLuong" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="NhanVienInfo.MaQuan" class="control-label"></label>
+                    <select asp-for="NhanVienInfo.MaQuan" class="form-control" asp-items="ViewBag.MaQuan"></select>
+                    <span asp-validation-for="NhanVienInfo.MaQuan" class="text-danger"></span>
+                </div>
+            </fieldset>
+        }
+
+        else if (Model.Role == "User")
+        {
+            <fieldset>
+                <legend>Thông tin khách hàng</legend>
+                <div class="form-group">
+                    <label asp-for="KhachHangInfo.TenKhachHang" class="control-label"></label>
+                    <input asp-for="KhachHangInfo.TenKhachHang" class="form-control" />
+                    <span asp-validation-for="KhachHangInfo.TenKhachHang" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="KhachHangInfo.DiaChi" class="control-label"></label>
+                    <input asp-for="KhachHangInfo.DiaChi" class="form-control" />
+                    <span asp-validation-for="KhachHangInfo.DiaChi" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="KhachHangInfo.SdtkhachHang" class="control-label"></label>
+                    <input asp-for="KhachHangInfo.SdtkhachHang" class="form-control" />
+                    <span asp-validation-for="KhachHangInfo.SdtkhachHang" class="text-danger"></span>
+                </div>
+                @* Thêm các trường khác nếu cần *@
+            </fieldset>
+        }
+
+        <div class="form-group mt-3">
+            <button type="submit" class="btn btn-success">Lưu</button>
+            <a asp-action="ThongTin" class="btn btn-secondary">Hủy</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
