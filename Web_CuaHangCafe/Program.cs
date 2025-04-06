@@ -10,6 +10,12 @@ builder.Services.AddControllersWithViews();
 // Đăng ký IHttpContextAccessor
 builder.Services.AddHttpContextAccessor();
 
+// Thêm cấu hình chống giả mạo (Antiforgery) sử dụng header "X-CSRF-TOKEN"
+builder.Services.AddAntiforgery(options =>
+{
+    options.HeaderName = "X-CSRF-TOKEN";
+});
+
 // Lấy connection string từ cấu hình
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");

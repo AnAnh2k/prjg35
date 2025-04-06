@@ -94,7 +94,7 @@ namespace Web_CuaHangCafe.Areas.Admin.Controllers
             if (!string.IsNullOrEmpty(search) && DateTime.TryParse(search, out DateTime searchDate))
             {
                 // So sánh ngày bán (chỉ lấy phần Date) với ngày tìm kiếm
-                listItem = _context.TbHoaDonBans
+                listItem = _context.TbHoaDonBans.Include(a => a.MaNhanVienNavigation).Include(a => a.MaKhachHangNavigation).Include(a => a.MaQuanNavigation)
                     .AsNoTracking()
                     .Where(x => x.NgayLap.Date == searchDate.Date)
                     .OrderBy(x => x.MaHoaDon)

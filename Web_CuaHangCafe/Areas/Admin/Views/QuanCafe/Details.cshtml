@@ -291,7 +291,8 @@
                     totalImports = Model.TbPhieuNhapHangs.Sum(pn => 
                         pn.TbPhieuNhapChiTiets != null ? pn.TbPhieuNhapChiTiets.Sum(ct => ct.ThanhTien ?? 0) : 0);
                 }
-                decimal profit = totalSales - totalImports;
+                decimal totalluong = Model.TbNhanViens != null ? Model.TbNhanViens.Sum(x => (x.LuongCoBan * x.HeSoLuong)) : 0;
+                decimal profit = totalSales - totalImports - totalluong;
             }
             <table class="table table-bordered">
                 <thead>
@@ -308,6 +309,10 @@
                     <tr>
                         <td>Tổng phiếu nhập (Chi phí)</td>
                         <td>@totalImports.ToString("N2")</td>
+                    </tr>
+                      <tr>
+                        <td>Tổng lương nhân viên (Chi phí)</td>
+                        <td>@totalluong.ToString("N2")</td>
                     </tr>
                     <tr>
                         <td>Lãi (Doanh thu - Chi phí)</td>

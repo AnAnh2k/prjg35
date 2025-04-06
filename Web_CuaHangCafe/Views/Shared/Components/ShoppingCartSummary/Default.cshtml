@@ -1,6 +1,8 @@
-﻿<a asp-controller="cart" asp-action="index" title="Giỏ hàng">
+﻿@model int
+
+<a asp-controller="Cart" asp-action="Index" title="Giỏ hàng">
     <span>
         <i class="fas fa-shopping-cart"></i>
     </span>
-    <div id="cartTip" class="tip">@Model</div>
+    <span id="cartTip" class="tip">@Model</span>
 </a>

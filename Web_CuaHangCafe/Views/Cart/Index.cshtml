@@ -111,6 +111,8 @@
         // Lấy URL từ Razor
         const updateQuantityUrl = '@Url.Action("Update", "Cart")';
         const removeUrl = '@Url.Action("Remove", "Cart")';
+        const getCartCountUrl = '@Url.Action("GetCartCount", "Cart")';
+
         // Lấy token CSRF từ input ẩn được tạo bởi @Html.AntiForgeryToken()
         const csrfTokenElement = document.querySelector('input[name="__RequestVerificationToken"]');
         const csrfToken = csrfTokenElement ? csrfTokenElement.value : '';
@@ -146,9 +148,10 @@
             try {
                 const response = await fetch(updateQuantityUrl, {
                     method: 'POST',
+                    credentials: 'same-origin',  // Đảm bảo gửi cookie phiên
                     headers: {
                         'Content-Type': 'application/json',
-                        'RequestVerificationToken': csrfToken
+                        'X-CSRF-TOKEN': csrfToken // Sử dụng header đã cấu hình trong Program.cs
                     },
                     body: JSON.stringify(payload)
                 });
@@ -171,11 +174,12 @@
             try {
                 const response = await fetch(removeUrl, {
                     method: 'POST',
+                    credentials: 'same-origin',  // Đảm bảo gửi cookie phiên
                     headers: {
                         'Content-Type': 'application/json',
-                        'RequestVerificationToken': csrfToken
+                        'X-CSRF-TOKEN': csrfToken
                     },
-                    body: JSON.stringify({ ProductId: productId })
+                    body: JSON.stringify({ maSp: productId }) // Sửa key từ ProductId => maSp
                 });
                 if (!response.ok) {
                     console.error('Response status:', response.status);
@@ -194,7 +198,9 @@
         // Hàm cập nhật badge giỏ hàng nếu có (badge có id là "cartTip")
         async function updateCartBadge() {
             try {
-                const response = await fetch('@Url.Action("GetCartCount", "Cart")');
+                const response = await fetch(getCartCountUrl, {
+                    credentials: 'same-origin'  // Gửi cookie phiên
+                });
                 if (!response.ok) {
                     console.error("Lỗi lấy số lượng giỏ hàng:", response.status);
                     return;

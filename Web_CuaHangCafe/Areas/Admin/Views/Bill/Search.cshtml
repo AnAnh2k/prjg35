@@ -44,9 +44,13 @@
                     <tr>
                         <th>Mã hoá đơn</th>
                         <th>Ngày bán</th>
-                        <th>Số điện thoại khách hàng</th>
-                        <th>Tổng tiền</th>
+                        <th>Tên khách hàng</th>
+                        <th>Tên nhân viên</th>
+                        <th>Tên quán</th>
+                        <th>SĐT khách hàng</th>
+                        <th>Hình thức TT</th>
                         <th>Trạng thái</th>
+                        <th>Tổng tiền</th>
                         <th>Thao tác</th>
                     </tr>
                 </thead>
@@ -61,14 +65,27 @@
                                 @(item.NgayLap.ToString("dd/MM/yyyy"))
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.MaKhachHang)
+                                @Html.DisplayFor(modelItem => item.MaKhachHangNavigation.TenKhachHang)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.MaNhanVienNavigation.HoTen)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.MaQuanNavigation.TenQuan)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.MaKhachHangNavigation.SdtkhachHang)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.HinhThucThanhToan)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.TrangThai)
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.TongTien) &#8363;
                             </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.TrangThai);
-                            </td>
+                           
                             <td>
                                 <a class="btn btn-primary btn-sm" asp-action="Details" asp-route-id="@item.MaHoaDon" asp-route-name="@item.MaHoaDon">Xem</a>
                             </td>

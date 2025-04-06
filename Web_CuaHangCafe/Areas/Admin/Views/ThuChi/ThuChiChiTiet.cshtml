@@ -8,9 +8,31 @@
 
 <h2>Chi tiết Thu – Chi của Quán @Model.CafeId</h2>
 <p>Từ @Model.StartDate.ToString("dd/MM/yyyy") đến @Model.EndDate.ToString("dd/MM/yyyy")</p>
-
 <hr />
-<h3>Danh sách nhân viên và lương</h3>
+<h3>Danh sách hóa đơn bán (Doanh thu)</h3>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Mã hóa đơn</th>
+            <th>Ngày lập</th>
+            <th>Tổng tiền</th>
+            <th>Trạng thái</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var hd in Model.Invoices)
+        {
+            <tr>
+                <td>@hd.MaHoaDon</td>
+                <td>@hd.NgayLap.ToString("dd/MM/yyyy")</td>
+                <td>@hd.TongTien.ToString("N2")</td>
+                <td>@hd.TrangThai</td>
+            </tr>
+        }
+    </tbody>
+</table>
+<hr />
+<h3>Danh sách nhân viên và lương (Chi phí)</h3>
 <table class="table table-bordered">
     <thead>
         <tr>
@@ -35,33 +57,8 @@
         }
     </tbody>
 </table>
-
 <hr />
-<h3>Danh sách hóa đơn bán</h3>
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Mã hóa đơn</th>
-            <th>Ngày lập</th>
-            <th>Tổng tiền</th>
-            <th>Trạng thái</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var hd in Model.Invoices)
-        {
-            <tr>
-                <td>@hd.MaHoaDon</td>
-                <td>@hd.NgayLap.ToString("dd/MM/yyyy")</td>
-                <td>@hd.TongTien.ToString("N2")</td>
-                <td>@hd.TrangThai</td>
-            </tr>
-        }
-    </tbody>
-</table>
-
-<hr />
-<h3>Danh sách phiếu nhập</h3>
+<h3>Danh sách phiếu nhập (Chi phí)</h3>
 <table class="table table-bordered">
     <thead>
         <tr>

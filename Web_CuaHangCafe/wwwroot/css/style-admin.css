@@ -16953,11 +16953,11 @@ code {
         transition-property: "color";
     }
 
-        .sales-mini-tabs .nav-item .nav-link.active {
+/*        .sales-mini-tabs .nav-item .nav-link.active {
             font-weight: 600;
             background: white;
             color: #b66dff;
-        }
+        }*/
 
 .purchase-popup {
     background: #fff;
@@ -20459,11 +20459,11 @@ dl {
     background: #ffffff;
 }
 
-    .sidebar .nav .nav-item.active > .nav-link .menu-title {
+/*    .sidebar .nav .nav-item.active > .nav-link .menu-title {
         color: #b66dff;
         font-family: "Montserrat", sans-serif;
         font-weight: 400;
-    }
+    }*/
 
 
 
