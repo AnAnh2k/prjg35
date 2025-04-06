@@ -143,15 +143,15 @@
         }
 
         // Hàm dùng Fetch API để cập nhật số lượng cho 1 sản phẩm
-        async function updateQuantity(productId, quantity) {
+               async function updateQuantity(productId, quantity) {
             const payload = [{ ProductId: productId, Quantity: quantity }];
             try {
                 const response = await fetch(updateQuantityUrl, {
                     method: 'POST',
-                    credentials: 'same-origin',  // Đảm bảo gửi cookie phiên
+                    credentials: 'same-origin', // đảm bảo gửi cookie phiên
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken // Sử dụng header đã cấu hình trong Program.cs
+                        'X-CSRF-TOKEN': csrfToken // sử dụng header đã cấu hình trong Program.cs
                     },
                     body: JSON.stringify(payload)
                 });
@@ -159,7 +159,7 @@
                     console.error('Response status:', response.status);
                     throw new Error(`Server error: ${response.status}`);
                 }
-                const data = await response.json();
+                const data = await response.json();  // bây giờ JSON không bị lỗi
                 console.log("Update response:", data);
                 return data;
             } catch (error) {
@@ -169,17 +169,19 @@
             }
         }
 
+
         // Hàm dùng Fetch API để xóa sản phẩm
-        async function removeProduct(productId) {
+               async function removeProduct(productId) {
             try {
                 const response = await fetch(removeUrl, {
                     method: 'POST',
-                    credentials: 'same-origin',  // Đảm bảo gửi cookie phiên
+                    credentials: 'same-origin', // gửi cookie phiên
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': csrfToken
                     },
-                    body: JSON.stringify({ maSp: productId }) // Sửa key từ ProductId => maSp
+                    // Gửi object với key maSp để model binding khớp với lớp RemoveItemRequest
+                    body: JSON.stringify({ maSp: productId })
                 });
                 if (!response.ok) {
                     console.error('Response status:', response.status);
@@ -196,10 +198,10 @@
         }
 
         // Hàm cập nhật badge giỏ hàng nếu có (badge có id là "cartTip")
-        async function updateCartBadge() {
+                async function updateCartBadge() {
             try {
                 const response = await fetch(getCartCountUrl, {
-                    credentials: 'same-origin'  // Gửi cookie phiên
+                    credentials: 'same-origin'
                 });
                 if (!response.ok) {
                     console.error("Lỗi lấy số lượng giỏ hàng:", response.status);
@@ -214,6 +216,7 @@
                 console.error("Error updating cart badge:", error);
             }
         }
+
 
         // Xử lý các sự kiện tăng/giảm số lượng và xóa sản phẩm
         document.addEventListener('click', async (e) => {

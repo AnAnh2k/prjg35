@@ -107,14 +107,13 @@ namespace Web_CuaHangCafe.Controllers
 
 
         [HttpPost]
-       [ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update([FromBody] List<UpdateQuantityRequest> updates)
         {
             if (updates == null || !ModelState.IsValid)
             {
                 return BadRequest("Invalid request.");
             }
-
             string maKhachHangStr = HttpContext.Session.GetString("MaKhachHang");
             if (string.IsNullOrEmpty(maKhachHangStr))
             {
@@ -142,8 +141,8 @@ namespace Web_CuaHangCafe.Controllers
                 }
 
                 await _context.SaveChangesAsync();
-                Console.WriteLine("Cập nhật thành công!");
 
+                // Lấy lại các mục giỏ hàng để tính tổng (không gửi toàn bộ đối tượng phức tạp về client)
                 var updatedCartItems = await _context.TbGioHangs
                     .Include(g => g.MaSanPhamNavigation)
                     .Where(g => g.MaKhachHang == maKhachHang)
@@ -152,18 +151,18 @@ namespace Web_CuaHangCafe.Controllers
                 decimal totalAmount = updatedCartItems.Sum(item => item.SoLuong * item.MaSanPhamNavigation.GiaBan);
                 int totalItems = updatedCartItems.Sum(item => (int)item.SoLuong);
 
+                // Trả về các dữ liệu đơn giản thay vì cả đối tượng cartItems
                 return Json(new
                 {
                     success = true,
                     message = "Số lượng đã được cập nhật.",
                     totalAmount = totalAmount,
-                    totalItems = totalItems,
-                    cartItems = updatedCartItems
+                    totalItems = totalItems
                 });
             }
             catch (Exception ex)
             {
-                // Log lỗi để debug nếu cần: ex.Message, ex.StackTrace
+                // Ghi log lỗi nếu cần: ex.Message, ex.StackTrace
                 return StatusCode(500, $"Lỗi hệ thống: {ex.Message}");
             }
         }
@@ -175,61 +174,59 @@ namespace Web_CuaHangCafe.Controllers
         }
 
 
+        public class RemoveItemRequest
+        {
+            public int maSp { get; set; }
+        }
 
         [HttpPost]
-        public async Task<IActionResult> Remove(int maSp)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Remove([FromBody] RemoveItemRequest request)
         {
-            try
+            // Kiểm tra mã khách hàng từ session
+            string maKhachHangStr = HttpContext.Session.GetString("MaKhachHang");
+            if (string.IsNullOrEmpty(maKhachHangStr))
             {
-                // Kiểm tra mã khách hàng từ session
-                string maKhachHangStr = HttpContext.Session.GetString("MaKhachHang");
-                if (string.IsNullOrEmpty(maKhachHangStr))
-                {
-                    return Json(new { success = false, message = "Không đăng nhập." });
-                }
-                int maKhachHang = int.Parse(maKhachHangStr);
-
-                // Kiểm tra mã sản phẩm hợp lệ
-                if (maSp <= 0)
-                {
-                    return Json(new { success = false, message = "Mã sản phẩm không hợp lệ." });
-                }
-
-                // Tìm sản phẩm trong giỏ hàng
-                var cartItem = await _context.TbGioHangs
-                    .FirstOrDefaultAsync(c => c.MaKhachHang == maKhachHang && c.MaSanPham == maSp);
-
-                if (cartItem != null)
-                {
-                    // Xóa sản phẩm
-                    _context.TbGioHangs.Remove(cartItem);
-                    await _context.SaveChangesAsync();
-
-                    // Tính tổng tiền và tổng sản phẩm
-                    var totalAmount = await _context.TbGioHangs
-                        .Where(c => c.MaKhachHang == maKhachHang)
-                        .SumAsync(item => item.SoLuong * item.MaSanPhamNavigation.GiaBan);
-
-                    var totalItems = await _context.TbGioHangs
-                        .Where(c => c.MaKhachHang == maKhachHang)
-                        .SumAsync(item => (int)item.SoLuong);
-
-                    return Json(new
-                    {
-                        success = true,
-                        message = "Đã xoá sản phẩm.",
-                        totalAmount = totalAmount,
-                        totalItems = totalItems
-                    });
-                }
-                else
-                {
-                    return Json(new { success = false, message = "Không có sản phẩm." });
-                }
+                return Json(new { success = false, message = "Không đăng nhập." });
             }
-            catch (Exception ex)
+            int maKhachHang = int.Parse(maKhachHangStr);
+
+            int maSp = request.maSp;
+            if (maSp <= 0)
             {
-                return Json(new { success = false, message = "Có lỗi xảy ra khi xóa sản phẩm.", error = ex.Message });
+                return Json(new { success = false, message = "Mã sản phẩm không hợp lệ." });
+            }
+
+            // Tìm sản phẩm trong giỏ hàng
+            var cartItem = await _context.TbGioHangs
+                .FirstOrDefaultAsync(c => c.MaKhachHang == maKhachHang && c.MaSanPham == maSp);
+
+            if (cartItem != null)
+            {
+                // Xóa sản phẩm
+                _context.TbGioHangs.Remove(cartItem);
+                await _context.SaveChangesAsync();
+
+                // Tính tổng tiền và tổng sản phẩm
+                var totalAmount = await _context.TbGioHangs
+                    .Where(c => c.MaKhachHang == maKhachHang)
+                    .SumAsync(item => item.SoLuong * item.MaSanPhamNavigation.GiaBan);
+
+                var totalItems = await _context.TbGioHangs
+                    .Where(c => c.MaKhachHang == maKhachHang)
+                    .SumAsync(item => (int)item.SoLuong);
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Đã xoá sản phẩm.",
+                    totalAmount = totalAmount,
+                    totalItems = totalItems
+                });
+            }
+            else
+            {
+                return Json(new { success = false, message = "Không có sản phẩm." });
             }
         }
 
