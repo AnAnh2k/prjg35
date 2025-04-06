@@ -44,47 +44,114 @@ namespace Web_CuaHangCafe.Controllers
         }
 
         // Thêm sản phẩm vào giỏ hàng
-        public async Task<IActionResult> Add(int id, int quantity)
+        //public async Task<IActionResult> Add(int id, int quantity)
+        //{
+        //    string maKhachHangStr = HttpContext.Session.GetString("MaKhachHang");
+        //    if (string.IsNullOrEmpty(maKhachHangStr))
+        //    {
+        //        return RedirectToAction("Login1", "Access1");
+        //    }
+        //    int maKhachHang = int.Parse(maKhachHangStr);
+
+        //    // Kiểm tra xem sản phẩm có tồn tại không
+        //    var product = await _context.TbSanPhams.FirstOrDefaultAsync(p => p.MaSanPham == id);
+        //    if (product == null)
+        //    {
+        //        return NotFound("Sản phẩm không tồn tại.");
+        //    }
+
+        //    // Tìm xem đã có mục giỏ hàng cho sản phẩm của khách hàng chưa
+        //    var cartItem = await _context.TbGioHangs
+        //        .FirstOrDefaultAsync(g => g.MaKhachHang == maKhachHang && g.MaSanPham == id);
+
+        //    if (cartItem == null)
+        //    {
+        //        // Thêm mới một mục giỏ hàng
+        //        cartItem = new TbGioHang
+        //        {
+        //            MaKhachHang = maKhachHang,
+        //            MaSanPham = id,
+        //            SoLuong = quantity
+        //        };
+        //        _context.TbGioHangs.Add(cartItem);
+        //    }
+        //    else
+        //    {
+        //        // Nếu đã có, cập nhật số lượng
+        //        cartItem.SoLuong += quantity;
+        //        _context.TbGioHangs.Update(cartItem);
+        //    }
+
+        //    await _context.SaveChangesAsync();
+        //    return RedirectToAction("Index");
+        //}
+
+        // Tạo file DTO (AddItemRequest.cs) nếu chưa có
+        public class AddItemRequest
         {
+            public int id { get; set; }
+            public int quantity { get; set; }
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Add([FromBody] AddItemRequest request)
+        {
+            // Kiểm tra dữ liệu đầu vào
+            if (request == null || request.id <= 0 || request.quantity <= 0)
+            {
+                return Json(new { success = false, message = "Thông tin không hợp lệ." });
+            }
+            // Debug log - bạn có thể ghi ra Console hoặc dùng logger của ASP.NET Core
+            Console.WriteLine("Received AddItemRequest: id={0}, quantity={1}", request.id, request.quantity);
+            // Kiểm tra đăng nhập qua session
             string maKhachHangStr = HttpContext.Session.GetString("MaKhachHang");
             if (string.IsNullOrEmpty(maKhachHangStr))
             {
-                return RedirectToAction("Login1", "Access1");
+                return Json(new { success = false, message = "Bạn chưa đăng nhập." });
             }
             int maKhachHang = int.Parse(maKhachHangStr);
 
             // Kiểm tra xem sản phẩm có tồn tại không
-            var product = await _context.TbSanPhams.FirstOrDefaultAsync(p => p.MaSanPham == id);
+            var product = await _context.TbSanPhams.FirstOrDefaultAsync(p => p.MaSanPham == request.id);
             if (product == null)
             {
-                return NotFound("Sản phẩm không tồn tại.");
+                return Json(new { success = false, message = "Sản phẩm không tồn tại." });
             }
 
-            // Tìm xem đã có mục giỏ hàng cho sản phẩm của khách hàng chưa
+            // Tìm xem đã có mục giỏ hàng của sản phẩm cho khách hàng chưa
             var cartItem = await _context.TbGioHangs
-                .FirstOrDefaultAsync(g => g.MaKhachHang == maKhachHang && g.MaSanPham == id);
+                .FirstOrDefaultAsync(g => g.MaKhachHang == maKhachHang && g.MaSanPham == request.id);
 
             if (cartItem == null)
             {
-                // Thêm mới một mục giỏ hàng
+                // Nếu chưa có, thêm mới mục giỏ hàng
                 cartItem = new TbGioHang
                 {
                     MaKhachHang = maKhachHang,
-                    MaSanPham = id,
-                    SoLuong = quantity
+                    MaSanPham = request.id,
+                    SoLuong = request.quantity
                 };
                 _context.TbGioHangs.Add(cartItem);
             }
             else
             {
                 // Nếu đã có, cập nhật số lượng
-                cartItem.SoLuong += quantity;
+                cartItem.SoLuong += request.quantity;
                 _context.TbGioHangs.Update(cartItem);
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction("Index");
+
+            // Tính tổng số lượng sản phẩm trong giỏ hàng
+            int cartCount = await _context.TbGioHangs
+                .Where(g => g.MaKhachHang == maKhachHang)
+                .SumAsync(g => g.SoLuong);
+
+            return Json(new { success = true, message = "Đã thêm sản phẩm vào giỏ hàng.", cartCount = cartCount });
         }
+
 
 
         [HttpGet]

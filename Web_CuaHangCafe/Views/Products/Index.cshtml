@@ -57,15 +57,21 @@
                                                 </span>
                                             </a>
                                         </li>
+                                        @* <li> *@
+                                        @*     <a *@
+                                        @*         asp-controller="cart" *@
+                                        @*         asp-action="add" *@
+                                        @*         asp-route-id="@item.MaSanPham" *@
+                                        @*         asp-route-quantity=1> *@
+                                        @*             <span> *@
+                                        @*                 <i class="fas fa-shopping-cart"></i> *@
+                                        @*             </span> *@
+                                        @*     </a> *@
+                                        @* </li> *@
+
                                         <li>
-                                            <a
-                                                asp-controller="cart"
-                                                asp-action="add"
-                                                asp-route-id="@item.MaSanPham"
-                                                asp-route-quantity=1>
-                                                    <span>
-                                                        <i class="fas fa-shopping-cart"></i>
-                                                    </span>
+                                            <a href="javascript:void(0)" data-product-id="@item.MaSanPham" data-quantity="1" class="add-to-cart">
+                                                <span><i class="fas fa-shopping-cart"></i></span>
                                             </a>
                                         </li>
                                     </ul>
@@ -102,3 +108,61 @@
     </div>
 </section>
 <!-- Shop Section End -->
+@Html.AntiForgeryToken()
+
+@section Scripts {
+    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.add-to-cart').forEach(el => {
+                el.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const productId = this.getAttribute('data-product-id');
+                    const quantity = parseInt(this.getAttribute('data-quantity')) || 1;
+                    addToCart(productId, quantity);
+                });
+            });
+        });
+
+                async function addToCart(productId, quantity) {
+            const url = '@Url.Action("Add", "Cart")';
+            const tokenElement = document.querySelector('input[name="__RequestVerificationToken"]');
+            const csrfToken = tokenElement ? tokenElement.value : '';
+
+            console.log("Gửi yêu cầu addToCart với:", { productId, quantity, csrfToken });
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: JSON.stringify({ id: productId, quantity: quantity })
+                });
+
+                console.log("HTTP status:", response.status);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log("Phản hồi addToCart:", data);
+                if (data.success) {
+                    const cartTip = document.getElementById('cartTip');
+                    if (cartTip) { cartTip.textContent = data.cartCount; }
+                    alert(data.message);
+                }
+                else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                console.error("Error adding to cart:", error);
+                alert("Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.");
+            }
+        }
+
+
+    </script>
+}
