@@ -99,18 +99,18 @@
     .custom-dropdown .dropdown-toggle {
 /*        display: inline-flex;*/
 /*        align-items: center;*/
-        
+        justify-content: flex-start; /* Các phần tử bắt đầu từ bên trái */
         text-decoration: none;
         color: #333;
         font-size: 16px;
-        padding: 8px;
+        padding: 8px 12px;
         border: 1px solid transparent;
         border-radius: 4px;
         cursor: pointer;
         transition: background-color 0.2s ease, color 0.2s ease;
     }
 .dropdown-toggle .username {
-    margin: 0 8px; /* Tạo khoảng cách bên trái và bên phải */
+    margin: 0 0px; /* Tạo khoảng cách bên trái và bên phải */
 }
 .dropdown-toggle fa-user-circle {
     font-size: 20px;
@@ -124,7 +124,7 @@
 
         /* Dropdown caret icon mặc định */
         .custom-dropdown .dropdown-toggle .dropdown-caret {
-            margin-left: 8px;
+            margin-left: 5px;
             transition: transform 0.3s ease, font-size 0.3s ease;
             font-size: 20px;
         }
@@ -143,7 +143,7 @@
         background-color: #fff;
         border: 1px solid #ddd;
         border-radius: 5px;
-        max-width: 100%; /* chiều rộng bằng phần toggle */
+        min-width: 100%; /* chiều rộng bằng phần toggle */
         z-index: 1000;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         padding: 0;
