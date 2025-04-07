@@ -54,38 +54,54 @@
                         else
                         {
                             <!-- Nếu đã đăng nhập: Hiển thị menu dropdown -->
-                            <li class="nav-item dropdown user-menu">
-                                <a class="nav-link dropdown-toggle small" href="#" id="dropdownMenuLink" role="button"
-                                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    @tenTaiKhoan
-                                </a>
-                                <div class="dropdown-menu " aria-labelledby="dropdownMenuLink" style="z-index: 1050;">
-                                    <a class="dropdown-item" asp-controller="Account" asp-action="ThongTin">Thông tin đăng nhập</a>
-
-                                    @if (role == "Admin")
-                                    {
-                                        <a class="dropdown-item" asp-controller="HomeAdmin" asp-action="Index">
-                                            Quản lý (Admin)
-                                        </a>
-                                    }
-                                    @if (role == "Employee")
-                                    {
-                                        <a class="dropdown-item" asp-controller="HomeAdmin" asp-action="Index">
-                                            Quản lý (Employee)
-                                            </a>
-                                    }
-                                    @if (role == "User")
-                                    {
-                                        <a class="dropdown-item" asp-controller="HoaDon" asp-action="Index">
-                                            Hóa đơn đơn hàng
-                                        </a>
-                                    }
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" asp-controller="Access1" asp-action="Logout">
-                                        Đăng xuất
+                            <li class="nav-item">
+                                <div class="custom-dropdown" id="userDropdown">
+                                    <a href="#" class="dropdown-toggle ">
+                                        <i class="fas fa-user-circle"></i>
+                                        <span class="username">@tenTaiKhoan</span>
+                                        <i class="dropdown-caret fas fa-chevron-down"></i>
                                     </a>
+
+                                    <ul class="custom-dropdown-menu">
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="Account" asp-action="ThongTin">
+                                                Thông tin đăng nhập
+                                            </a>
+                                        </li>
+                                        @if (role == "Admin")
+                                        {
+                                            <li>
+                                                <a class="dropdown-item" asp-controller="HomeAdmin" asp-action="Index">
+                                                    Admin
+                                                </a>
+                                            </li>
+                                        }
+                                        @if (role == "Employee")
+                                        {
+                                            <li>
+                                                <a class="dropdown-item" asp-controller="HomeAdmin" asp-action="Index">
+                                                    Employee
+                                                </a>
+                                            </li>
+                                        }
+                                        @if (role == "User")
+                                        {
+                                            <li>
+                                                <a class="dropdown-item" asp-controller="HoaDon" asp-action="Index">
+                                                    Hóa đơn đơn hàng
+                                                </a>
+                                            </li>
+                                        }
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="Access1" asp-action="Logout">
+                                                Đăng xuất
+                                            </a>
+                                        </li>
+                                    </ul>
                                 </div>
                             </li>
+
+
                         }
                         <li>
                             @await Component.InvokeAsync("ShoppingCartSummary")

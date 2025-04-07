@@ -24,7 +24,7 @@ namespace Web_CuaHangCafe.Areas.Admin.Controllers
         [Authentication]
         public IActionResult Index(int? page)
         {
-            int pageSize = 5;
+            int pageSize = 10;
             int pageNumber = page == null || page < 0 ? 1 : page.Value;
             var listItem = _context.TbNguyenLieus.AsNoTracking()
                                 .OrderBy(x => x.MaNguyenLieu)

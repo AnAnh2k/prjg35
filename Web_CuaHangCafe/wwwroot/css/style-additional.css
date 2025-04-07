@@ -83,34 +83,107 @@
     margin-right: 6px;
 }
 
-.user-menu {
+
+
+/* Custom Dropdown cải tiến */
+.custom-dropdown {
     position: relative;
+    display: inline-block;
+    font-family: 'Segoe UI', sans-serif;
+}
+.dropdown-toggle::after {
+    display: none;
 }
 
-     Ẩn dropdown mặc định 
-    .user-menu .dropdown-menu {
-        display: none;
-        position: absolute;
-        right: 0;
-        top: 100%;
-        z-index: 9999;
+    /* Dropdown Toggle Button */
+    .custom-dropdown .dropdown-toggle {
+/*        display: inline-flex;*/
+/*        align-items: center;*/
+        
+        text-decoration: none;
+        color: #333;
+        font-size: 16px;
+        padding: 8px;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.2s ease, color 0.2s ease;
     }
-
-     Khi dropdown được mở, hiển thị dưới dạng block 
-    .user-menu.show .dropdown-menu,
-    .user-menu:focus-within .dropdown-menu {
-        display: block !important;
-    }
-/*
-.user-menu {
-    position: relative;
+.dropdown-toggle .username {
+    margin: 0 8px; /* Tạo khoảng cách bên trái và bên phải */
+}
+.dropdown-toggle fa-user-circle {
+    font-size: 20px;
 }
 
-    .user-menu .dropdown-menu {
-        position: absolute;
-        right: 0;
-        top: 100%;
-        z-index: 9999;
-    }
-*/
 
+        .custom-dropdown .dropdown-toggle:hover {
+            background-color: #f8f9fa;
+            color: #000;
+        }
+
+        /* Dropdown caret icon mặc định */
+        .custom-dropdown .dropdown-toggle .dropdown-caret {
+            margin-left: 8px;
+            transition: transform 0.3s ease, font-size 0.3s ease;
+            font-size: 20px;
+        }
+
+    /* Khi dropdown mở: quay 180 độ và icon tăng kích thước */
+    .custom-dropdown.active .dropdown-toggle .dropdown-caret {
+        transform: rotate(180deg);
+        font-size: 20px;
+    }
+
+    /* Dropdown Menu với hiệu ứng slide xuống mượt */
+    .custom-dropdown .custom-dropdown-menu {
+        position: absolute;
+        left: 0;
+        top: calc(100% + 5px);
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        max-width: 100%; /* chiều rộng bằng phần toggle */
+        z-index: 1000;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        padding: 0;
+        margin: 0;
+        list-style: none;
+        /* Sử dụng hiệu ứng slide: ẩn ban đầu */
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+        transform: translateY(-10px);
+        transition: max-height 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    /* Khi dropdown mở: hiển thị đầy đủ nội dung */
+    .custom-dropdown.active .custom-dropdown-menu {
+        max-height: 500px;
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Dropdown Menu Items */
+    .custom-dropdown .custom-dropdown-menu li {
+        border-bottom: 1px solid #eee;
+        width: 100%;
+    }
+
+        .custom-dropdown .custom-dropdown-menu li:last-child {
+            border-bottom: none;
+        }
+
+        .custom-dropdown .custom-dropdown-menu li a {
+            display: block;
+            padding: 10px 20px;
+            text-decoration: none;
+            color: #333;
+            font-size: 14px;
+            transition: background-color 0.2s ease;
+            text-align:left;
+        }
+
+            .custom-dropdown .custom-dropdown-menu li a:hover {
+                background-color: #f2f2f2;
+            }

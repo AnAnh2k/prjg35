@@ -73,6 +73,27 @@
     <script src="~/js/main-additional.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var dropdown = document.getElementById("userDropdown");
+            if (dropdown) {
+                var toggle = dropdown.querySelector(".dropdown-toggle");
+                       toggle.addEventListener("click", function(e) {
+            e.preventDefault();
+            console.log("Toggle clicked"); // Debug: kiểm tra sự kiện click
+            dropdown.classList.toggle("active");
+        });
+
+                document.addEventListener("click", function(e) {
+                    if (!dropdown.contains(e.target)) {
+                        dropdown.classList.remove("active");
+                    }
+                });
+            }
+        });
+    </script>
+
+
 </body>
 </html>
 
