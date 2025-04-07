@@ -111,10 +111,9 @@
     }
 .dropdown-toggle .username {
     margin: 0 0px; /* Tạo khoảng cách bên trái và bên phải */
-}
-.dropdown-toggle fa-user-circle {
     font-size: 20px;
 }
+
 
 
         .custom-dropdown .dropdown-toggle:hover {
