@@ -2,126 +2,164 @@
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 @{
-    ViewData["Title"] = "Chỉnh sửa thông tin nhân viên & tài khoản";
+    ViewData["Title"] = "Chỉnh sửa thông tin nhân viên";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
 
-<h3>Chỉnh sửa thông tin nhân viên & tài khoản</h3>
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mt-4 fs-4 text-primary">
+            <i class="fas fa-user-edit me-2"></i>Chỉnh sửa nhân viên
+        </h1>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Quay lại
+        </a>
+    </div>
 
-<form asp-action="Edit" method="post">
-    @Html.AntiForgeryToken()
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form asp-action="Edit" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="Employee.MaNhanVien" />
 
-    <!-- Fieldset cho thông tin nhân viên -->
-    <fieldset>
-        <legend>Thông tin nhân viên</legend>
+                <div class="row g-4">
+                    <!-- Cột trái - Thông tin nhân viên -->
+                    <div class="col-md-6">
+                        <h5 class="text-primary mb-3">
+                            <i class="fas fa-id-card me-2"></i>Thông tin nhân viên
+                        </h5>
 
-        <div class="form-group">
-            <label asp-for="Employee.HoTen" class="control-label"></label>
-            <input asp-for="Employee.HoTen" class="form-control" />
-            <span asp-validation-for="Employee.HoTen" class="text-danger"></span>
+                        <div class="form-group mb-3">
+                            <label asp-for="Employee.MaQuan" class="form-label"></label>
+                            <select asp-for="Employee.MaQuan" class="form-select" asp-items="ViewBag.MaQuan">
+                                <option value="">-- Chọn quán --</option>
+                            </select>
+                            <span asp-validation-for="Employee.MaQuan" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Employee.HoTen" class="form-label"></label>
+                            <input asp-for="Employee.HoTen" class="form-control" />
+                            <span asp-validation-for="Employee.HoTen" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Employee.DiaChi" class="form-label"></label>
+                            <input asp-for="Employee.DiaChi" class="form-control" />
+                            <span asp-validation-for="Employee.DiaChi" class="text-danger small"></span>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Employee.NgaySinh" class="form-label"></label>
+                                    <input asp-for="Employee.NgaySinh" type="date" class="form-control" />
+                                    <span asp-validation-for="Employee.NgaySinh" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Employee.GioiTinh" class="form-label"></label>
+                                    <select asp-for="Employee.GioiTinh" class="form-select">
+                                        <option value="">-- Giới tính --</option>
+                                        <option value="Nam">Nam</option>
+                                        <option value="Nữ">Nữ</option>
+                                    </select>
+                                    <span asp-validation-for="Employee.GioiTinh" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Employee.ChucVu" class="form-label"></label>
+                            <select asp-for="Employee.ChucVu" class="form-select">
+                                <option value="">-- Chọn chức vụ --</option>
+                                <option value="Quản lý">Quản lý</option>
+                                <option value="Nhân viên">Nhân viên</option>
+                            </select>
+                            <span asp-validation-for="Employee.ChucVu" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- Cột phải - Thông tin khác -->
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="Employee.Sdt" class="form-label"></label>
+                            <input asp-for="Employee.Sdt" class="form-control" />
+                            <span asp-validation-for="Employee.Sdt" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Employee.SoCccd" class="form-label"></label>
+                            <input asp-for="Employee.SoCccd" class="form-control" />
+                            <span asp-validation-for="Employee.SoCccd" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Employee.Email" class="form-label"></label>
+                            <input asp-for="Employee.Email" class="form-control" />
+                            <span asp-validation-for="Employee.Email" class="text-danger small"></span>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Employee.LuongCoBan" class="form-label"></label>
+                                    <input asp-for="Employee.LuongCoBan" class="form-control" />
+                                    <span asp-validation-for="Employee.LuongCoBan" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Employee.HeSoLuong" class="form-label"></label>
+                                    <input asp-for="Employee.HeSoLuong" class="form-control" />
+                                    <span asp-validation-for="Employee.HeSoLuong" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Thông tin tài khoản -->
+                        <h5 class="text-primary mb-3 mt-4">
+                            <i class="fas fa-user-lock me-2"></i>Thông tin tài khoản
+                        </h5>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Account.TenTaiKhoan" class="form-label"></label>
+                            <input asp-for="Account.TenTaiKhoan" class="form-control" />
+                            <span asp-validation-for="Account.TenTaiKhoan" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Account.MatKhau" class="form-label"></label>
+                            <input asp-for="Account.MatKhau" 
+                                   type="password" 
+                                   class="form-control" 
+                                   placeholder="Để trống nếu không đổi mật khẩu" />
+                            <span asp-validation-for="Account.MatKhau" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Account.MaQuyen" class="form-label"></label>
+                            <select asp-for="Account.MaQuyen" class="form-select" asp-items="ViewBag.MaQuyen">
+                                <option value="">-- Chọn quyền --</option>
+                            </select>
+                            <span asp-validation-for="Account.MaQuyen" class="text-danger small"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Cập nhật
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-danger">Huỷ bỏ</a>
+                </div>
+            </form>
         </div>
-
-        <div class="form-group">
-            <label asp-for="Employee.DiaChi" class="control-label"></label>
-            <input asp-for="Employee.DiaChi" class="form-control" />
-            <span asp-validation-for="Employee.DiaChi" class="text-danger"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="Employee.Email" class="control-label"></label>
-            <input asp-for="Employee.Email" class="form-control" />
-            <span asp-validation-for="Employee.Email" class="text-danger"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="Employee.NgaySinh" class="control-label"></label>
-            <input asp-for="Employee.NgaySinh" class="form-control" type="date" />
-            <span asp-validation-for="Employee.NgaySinh" class="text-danger"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="Employee.GioiTinh" class="control-label"></label>
-            <select asp-for="Employee.GioiTinh" class="form-control">
-                <option value="">-- Chọn giới tính --</option>
-                <option value="Nam">Nam</option>
-                <option value="Nữ">Nữ</option>
-            </select>
-            <span asp-validation-for="Employee.GioiTinh" class="text-danger"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="Employee.ChucVu" class="control-label"></label>
-            <select asp-for="Employee.ChucVu" class="form-control">
-                <option value="">-- Chọn chức vụ --</option>
-                <option value="Quản lý">Quản lý</option>
-                <option value="Nhân viên">Nhân viên</option>
-            </select>
-            <span asp-validation-for="Employee.ChucVu" class="text-danger"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="Employee.Sdt" class="control-label"></label>
-            <input asp-for="Employee.Sdt" class="form-control" />
-            <span asp-validation-for="Employee.Sdt" class="text-danger"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="Employee.SoCccd" class="control-label"></label>
-            <input asp-for="Employee.SoCccd" class="form-control" />
-            <span asp-validation-for="Employee.SoCccd" class="text-danger"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="Employee.LuongCoBan" class="control-label"></label>
-            <input asp-for="Employee.LuongCoBan" class="form-control" />
-            <span asp-validation-for="Employee.LuongCoBan" class="text-danger"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="Employee.HeSoLuong" class="control-label"></label>
-            <input asp-for="Employee.HeSoLuong" class="form-control" />
-            <span asp-validation-for="Employee.HeSoLuong" class="text-danger"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="Employee.MaQuan" class="control-label"></label>
-            <select asp-for="Employee.MaQuan" class="form-control" asp-items="ViewBag.MaQuan">
-                <option value="">-- Chọn quán --</option>
-            </select>
-            <span asp-validation-for="Employee.MaQuan" class="text-danger"></span>
-        </div>
-    </fieldset>
-
-    <!-- Fieldset cho thông tin tài khoản -->
-    <fieldset>
-        <legend>Thông tin tài khoản</legend>
-
-        <div class="form-group">
-            <label asp-for="Account.TenTaiKhoan" class="control-label"></label>
-            <input asp-for="Account.TenTaiKhoan" class="form-control" />
-            <span asp-validation-for="Account.TenTaiKhoan" class="text-danger"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="Account.MatKhau" class="control-label"></label>
-            <input asp-for="Account.MatKhau" class="form-control" type="password" placeholder="Nhập mật khẩu mới nếu muốn đổi" />
-            <span asp-validation-for="Account.MatKhau" class="text-danger"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="Account.MaQuyen" class="control-label"></label>
-            <select asp-for="Account.MaQuyen" class="form-control" asp-items="ViewBag.MaQuyen">
-                <option value="">-- Chọn quyền --</option>
-            </select>
-            <span asp-validation-for="Account.MaQuyen" class="text-danger"></span>
-        </div>
-    </fieldset>
-
-    <!-- Truyền mã nhân viên (ID) ẩn để dùng khi submit -->
-    <input type="hidden" asp-for="Employee.MaNhanVien" />
-
-    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
-</form>
+    </div>
+</div>
 
 @section Scripts {
     @{

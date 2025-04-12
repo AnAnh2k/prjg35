@@ -4,76 +4,113 @@
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 @{
-    ViewData["Title"] = "Quản lí tin tức";
+    ViewData["Title"] = "Quản lý tin tức";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
 
-<div class="container" style="margin-bottom:20px;">
-    <div class="row">
-        <div class="col-lg-8 col-md-12 col-sm-12">
-            <div class="page-header">
-                <h3 class="page-title">Quản lí tin tức</h3>
-            </div>
-        </div>
-        <div class="col-lg-4 col-md-12 col-sm-12">
-            <div class="search-field">
-                @using (Html.BeginForm("Search", "NewsManage", FormMethod.Get))
-                {
-                    <div class="input-group">
-                        <input type="text" class="form-control" name="search" style="border:none" placeholder="Tìm kiếm" autocomplete="off">
-                        <button class="btn" type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
-                    </div>
-                }
-            </div>
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mt-4 fs-4 text-primary">
+            <i class="fas fa-newspaper me-2"></i>Quản lý tin tức
+        </h1>
+        <div class="d-flex gap-3">
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="fas fa-plus-circle me-2"></i>Thêm mới
+            </a>
         </div>
     </div>
-</div>
 
-<div class="container">
-    <div class="row">
-        <p>
-            <a asp-action="Create" class="btn btn-secondary">Thêm mới</a>
-        </p>
-        <p id="status-message">@TempData["Message"]</p>
-        <div class="table-responsive">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Mã tin tức</th>
-                        <th>Tiêu đề</th>
-                        <th>Ngày đăng</th>
-                        <th>Thao tác</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model)
-                    {
+    <div class="card shadow-sm mb-4">
+        <div class="card-header py-3">
+            <form asp-action="Search" method="get" class="search-form">
+                <div class="input-group">
+                    <span class="input-group-text bg-transparent border-end-0">
+                        <i class="fas fa-search text-secondary"></i>
+                    </span>
+                    <input type="text" 
+                           name="search" 
+                           class="form-control border-start-0 ps-0" 
+                           placeholder="Tìm kiếm tin tức..."
+                           style="box-shadow: none!important;">
+                </div>
+            </form>
+        </div>
+
+        <div class="card-body p-0">
+            @if (TempData["Message"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show m-3" role="alert">
+                    @TempData["Message"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
                         <tr>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.MaTinTuc)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.TieuDe)
-                            </td>
-                            <td>
-                                @(item.NgayDang.ToString("dd/MM/yyyy"))
-                            </td>
-                            <td>
-                                <a class="btn btn-primary btn-sm" asp-action="Details" asp-route-id="@item.MaTinTuc" asp-route-name="@item.TieuDe">Xem</a>
-                                <a class="btn btn-success btn-sm" asp-action="Edit" asp-route-id="@item.MaTinTuc" asp-route-name="@item.TieuDe">Sửa</a>
-                                <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.MaTinTuc">Xoá</a>
-                            </td>
+                            <th class="ps-4">Mã tin</th>
+                            <th>Tiêu đề</th>
+                            <th>Ngày đăng</th>
+                            <th class="text-end pe-4">Thao tác</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="ps-4 fw-medium">@item.MaTinTuc</td>
+                                <td class="text-truncate" style="max-width: 400px;">@item.TieuDe</td>
+                                <td>@item.NgayDang.ToString("dd/MM/yyyy")</td>
+                                <td class="text-end pe-4">
+                                    <div class="d-inline-flex gap-2">
+                                        <a asp-action="Details" 
+                                           asp-route-id="@item.MaTinTuc"
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a asp-action="Edit" 
+                                           asp-route-id="@item.MaTinTuc"
+                                           class="btn btn-sm btn-outline-warning">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a asp-action="Delete" 
+                                           asp-route-id="@item.MaTinTuc"
+                                           class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
-    @Html.PagedListPager(Model, page=>Url.Action("index", new {page = page}), new PagedListRenderOptions()
-    {
-        MaximumPageNumbersToDisplay = 5,
-        LiElementClasses = new List<String> {"page-item"},
-        PageClasses = new List<String> {"page-link"}
-    })
+    <div class="mt-3">
+        @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), 
+        new PagedListRenderOptions {
+            LiElementClasses = new[] { "page-item" },
+            PageClasses = new[] { "page-link" },
+            UlElementClasses = new[] { "pagination justify-content-center" }
+        })
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+        // Xử lý thông báo tự đóng
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                const alert = document.querySelector('.alert');
+                if (alert) {
+                    alert.style.transition = 'opacity 0.5s';
+                    alert.style.opacity = '0';
+                    setTimeout(() => alert.remove(), 500);
+                }
+            }, 3000);
+        });
+    </script>
+}

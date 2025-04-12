@@ -6,37 +6,149 @@
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
 
-<div class="container mb-3">
-    <h3 class="page-title">
-        Sửa khách hàng: <span class="text-muted">@ViewBag.name</span>
-    </h3>
-</div>
+<div class="container-fluid px-4">
+    <div class="card shadow mb-4">
+        <!-- Card Header -->
+        <div class="card-header bg-gradient-primary text-white py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4 class="m-0">
+                    <i class="fas fa-user-edit me-2"></i>
+                    Chỉnh sửa thông tin: @ViewBag.name
+                </h4>
+                <a asp-action="Index" class="btn btn-light btn-sm">
+                    <i class="fas fa-arrow-left me-2"></i>Quay lại
+                </a>
+            </div>
+        </div>
+        
 
-<hr />
-<div class="row">
-    <div class="col-md-6">
-        <form asp-action="Edit" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="MaKhachHang" />
-            <div class="form-group">
-                <label asp-for="TenKhachHang" class="control-label">Họ và tên</label>
-                <input asp-for="TenKhachHang" class="form-control"  />
-                <span asp-validation-for="TenKhachHang" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SdtkhachHang" class="control-label">Số điện thoại</label>
-                <input asp-for="SdtkhachHang" class="form-control" />
-                <span asp-validation-for="SdtkhachHang" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DiaChi" class="control-label">Địa chỉ</label>
-                <input asp-for="DiaChi" class="form-control" />
-                <span asp-validation-for="DiaChi" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Lưu" class="btn btn-primary" />
-                <a asp-action="Index" class="btn btn-secondary">Quay về</a>
-            </div>
-        </form>
+        <!-- Card Body -->
+        <div class="card-body">
+            <form asp-action="Edit" method="post" class="needs-validation" novalidate>
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                <input type="hidden" asp-for="MaKhachHang" />
+
+                <div class="row g-4">
+                    <!-- Họ và tên -->
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input asp-for="TenKhachHang" class="form-control" placeholder="Họ và tên" required />
+                            <label asp-for="TenKhachHang">
+                                <i class="fas fa-user me-2"></i>Họ và tên
+                            </label>
+                            <span asp-validation-for="TenKhachHang" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- Số điện thoại -->
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input asp-for="SdtkhachHang" class="form-control" placeholder="Số điện thoại"
+                                pattern="[0-9]{10,11}" />
+                            <label asp-for="SdtkhachHang">
+                                <i class="fas fa-mobile-alt me-2"></i>Số điện thoại
+                            </label>
+                            <span asp-validation-for="SdtkhachHang" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- Địa chỉ -->
+                    <div class="col-12">
+                        <div class="form-floating">
+                            <input asp-for="DiaChi" class="form-control" placeholder="Địa chỉ" />
+                            <label asp-for="DiaChi">
+                                <i class="fas fa-map-marker-alt me-2"></i>Địa chỉ
+                            </label>
+                            <span asp-validation-for="DiaChi" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="col-12 mt-4">
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="submit" class="btn btn-success px-4">
+                                <i class="fas fa-save me-2"></i>Lưu thay đổi
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-2"></i>Huỷ bỏ
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
+
+@section Styles {
+    <style>
+        .card {
+            border-radius: 0.75rem;
+            border: none;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%);
+            border-radius: 0.75rem 0.75rem 0 0 !important;
+            padding: 1.25rem 1.5rem;
+        }
+
+        .form-floating {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-control {
+            border-radius: 0.5rem;
+            padding: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+            border-color: #86b7fe;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+            min-width: 160px;
+        }
+
+        .btn-outline-secondary {
+            border-color: #6c757d;
+        }
+
+        .text-danger.small {
+            font-size: 0.875em;
+            margin-top: 0.25rem;
+        }
+    </style>
+}
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        // Custom validation
+        (() => {
+            'use strict'
+
+            // Fetch all forms to apply custom Bootstrap validation styles to
+            const forms = document.querySelectorAll('.needs-validation')
+
+            // Loop over them and prevent submission
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+
+                    form.classList.add('was-validated')
+                }, false)
+            })
+        })()
+    </script>
+}

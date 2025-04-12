@@ -5,31 +5,93 @@
     ViewData["Title"] = "Xóa nguyên liệu";
 }
 
-<h1>Xóa nguyên liệu</h1>
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mt-4 fs-4 text-danger">
+            <i class="fas fa-trash-alt me-2"></i>Xóa nguyên liệu
+        </h1>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Quay về
+        </a>
+    </div>
 
-<h3>Bạn có chắc chắn muốn xóa nguyên liệu này không?</h3>
+    <div class="card shadow-sm border-danger">
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-exclamation-triangle me-2"></i>Cảnh báo xóa dữ liệu
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-warning" role="alert">
+                <h4 class="alert-heading">
+                    <i class="fas fa-radiation me-2"></i>Thao tác không thể hoàn tác!
+                </h4>
+                <p class="mb-0">Bạn đang chuẩn bị xóa vĩnh viễn một nguyên liệu khỏi hệ thống.</p>
+            </div>
 
-<div>
-    <h4>Nguyên liệu</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">Mã nguyên liệu</dt>
-        <dd class="col-sm-10">@Model.MaNguyenLieu</dd>
+            <div class="row g-3">
+                <!-- Thông tin chi tiết -->
+                <div class="col-md-6">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Mã nguyên liệu</dt>
+                        <dd class="col-sm-8 fw-bold text-danger">@Model.MaNguyenLieu</dd>
 
-        <dt class="col-sm-2">Tên nguyên liệu</dt>
-        <dd class="col-sm-10">@Model.TenNguyenLieu</dd>
+                        <dt class="col-sm-4">Tên nguyên liệu</dt>
+                        <dd class="col-sm-8">@Model.TenNguyenLieu</dd>
+                    </dl>
+                </div>
+                
+                <div class="col-md-6">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Số lượng tồn</dt>
+                        <dd class="col-sm-8">@Model.SoLuong.ToString("n0")</dd>
 
-        <dt class="col-sm-2">Số lượng</dt>
-        <dd class="col-sm-10">@Model.SoLuong</dd>
+                        <dt class="col-sm-4">Đơn vị tính</dt>
+                        <dd class="col-sm-8">@Model.DonViTinh</dd>
+                    </dl>
+                </div>
+            </div>
 
-        <dt class="col-sm-2">Đơn vị tính</dt>
-        <dd class="col-sm-10">@Model.DonViTinh</dd>
-    </dl>
+            <!-- Form xác nhận -->
+            <form asp-action="Delete" method="post" class="mt-4" id="deleteForm">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="MaNguyenLieu" />
+                
+                <div class="d-flex gap-2 justify-content-end">
+                    <button type="button" 
+                            class="btn btn-secondary" 
+                            onclick="history.back()">
+                        <i class="fas fa-times me-2"></i>Hủy bỏ
+                    </button>
+                    <button type="submit" 
+                            class="btn btn-danger"
+                            onclick="return confirmDelete()">
+                        <i class="fas fa-trash-alt me-2"></i>Xác nhận xóa
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
-<form asp-action="Delete" method="post">
-    @Html.AntiForgeryToken()
-    <input type="hidden" asp-for="MaNguyenLieu" />
-    <button type="submit" class="btn btn-danger">Xóa</button>
-    <a asp-action="Index" class="btn btn-secondary">Hủy</a>
-</form>
+@section Scripts {
+    <script>
+        function confirmDelete() {
+            Swal.fire({
+                title: 'Xác nhận xóa?',
+                text: "Bạn chắc chắn muốn xóa nguyên liệu này?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Xóa vĩnh viễn',
+                cancelButtonText: 'Hủy bỏ'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('deleteForm').submit();
+                }
+            })
+            return false;
+        }
+    </script>
+}

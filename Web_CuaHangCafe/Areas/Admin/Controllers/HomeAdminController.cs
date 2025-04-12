@@ -28,26 +28,26 @@ namespace Web_CuaHangCafe.Areas.Admin.Controllers
         [Authentication]
         public IActionResult Index(int? page)
         {
-            int pageSize = 30;
-            int pageNumber = page == null || page < 0 ? 1 : page.Value;
+            ViewBag.ProductGroups = _context.TbNhomSanPhams.ToList();
 
-            var listItem = (from product in _context.TbSanPhams
-                            join type in _context.TbNhomSanPhams on product.MaNhomSp equals type.MaNhomSp
-                            orderby product.MaSanPham
-                            select new ProductViewModel
-                            {
-                                MaSanPham = product.MaSanPham,
-                                TenSanPham = product.TenSanPham,
-                                GiaBan = product.GiaBan,
-                                MoTa = product.MoTa,
-                                HinhAnh = product.HinhAnh,
-                                GhiChu = product.GhiChu,
-                                LoaiSanPham = type.TenNhomSp
-                            }).ToList();
+            int pageSize = 8;
+            int pageNumber = page ?? 1;
 
-            PagedList<ProductViewModel> pagedListItem = new PagedList<ProductViewModel>(listItem, pageNumber, pageSize);
+            var query = _context.TbSanPhams
+                .Include(p => p.MaNhomSpNavigation)
+                .OrderBy(p => p.MaSanPham)
+                .Select(p => new ProductViewModel
+                {
+                    MaSanPham = p.MaSanPham,
+                    TenSanPham = p.TenSanPham,
+                    GiaBan = p.GiaBan,
+                    MoTa = p.MoTa,
+                    HinhAnh = p.HinhAnh,
+                    GhiChu = p.GhiChu,
+                    LoaiSanPham = p.MaNhomSpNavigation.TenNhomSp
+                });
 
-            return View(pagedListItem);
+            return View(query.ToPagedList(pageNumber, pageSize));
         }
 
         [Route("Search")]
@@ -77,112 +77,80 @@ namespace Web_CuaHangCafe.Areas.Admin.Controllers
             return View();
         }
 
-        // POST: /Access1/Create
-        //[Route("Create")]
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public IActionResult Create(TbSanPham sanPham, IFormFile imageFile)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        // Nếu không hợp lệ, nạp lại dropdown
-        //        ViewBag.MaNhomSp = new SelectList(_context.TbNhomSanPhams.ToList(), "MaNhomSp", "TenNhomSp");
-        //        return View(sanPham);
-        //    }
 
-        //    // Nếu có file hình ảnh được upload
-        //    if (imageFile != null && imageFile.Length > 0)
-        //    {
-        //        // Lấy đường dẫn upload: wwwroot/img/products
-        //        string uploadFolder = Path.Combine(_hostEnvironment.WebRootPath, "img", "products");
-        //        if (!Directory.Exists(uploadFolder))
-        //        {
-        //            Directory.CreateDirectory(uploadFolder);
-        //        }
-
-        //        // Tạo tên file duy nhất
-        //        string uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(imageFile.FileName);
-        //        string filePath = Path.Combine(uploadFolder, uniqueFileName);
-
-        //        // Lưu file vào đường dẫn trên
-        //        using (var stream = new FileStream(filePath, FileMode.Create))
-        //        {
-        //            imageFile.CopyTo(stream);
-        //        }
-
-        //        // Gán tên file (hoặc đường dẫn tương đối) cho thuộc tính HinhAnh của sản phẩm
-        //        sanPham.HinhAnh = uniqueFileName;
-        //    }
-
-        //    // Thêm sản phẩm vào cơ sở dữ liệu
-        //    _context.TbSanPhams.Add(sanPham);
-        //    int kq = _context.SaveChanges();
-        //    if (kq > 0)
-        //    {
-        //        TempData["Message"] = "Thêm sản phẩm thành công";
-        //    }
-        //    else
-        //    {
-        //        TempData["Message"] = "Không thêm được sản phẩm";
-        //    }
-
-        //    // Chuyển hướng đến trang Index của HomeAdmin
-        //    return RedirectToAction("Index", "HomeAdmin");
-        //}
-        [Route("Create")]
         [HttpPost]
+        [Route("Create")]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(SanPhamViewModel model)
+        public async Task<IActionResult> Create([FromForm] ProductCreateRequest request)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                ViewBag.MaNhomSp = new SelectList(_context.TbNhomSanPhams.ToList(), "MaNhomSp", "TenNhomSp");
-                return View(model);
-            }
-
-            // Nếu tên sản phẩm đã tồn tại, thêm timestamp để tạo tên riêng biệt
-            string tenSanPham = model.TenSanPham;
-            if (_context.TbSanPhams.Any(p => p.TenSanPham.ToLower() == tenSanPham.ToLower()))
-            {
-                tenSanPham = $"{tenSanPham}_{DateTime.Now:yyyyMMddHHmmssfff}";
-            }
-
-
-            TbSanPham sanPham = new TbSanPham
-            {
-                TenSanPham = tenSanPham,
-                GiaBan = model.GiaBan,
-                MoTa = model.MoTa,
-                GhiChu = model.GhiChu,
-                MaNhomSp = model.MaNhomSp
-                // Hình ảnh sẽ được gán sau khi xử lý file upload
-            };
-
-            // Xử lý file upload (nếu có)
-            if (model.ImageFile != null && model.ImageFile.Length > 0)
-            {
-                string uploadFolder = Path.Combine(_hostEnvironment.WebRootPath, "img", "products");
-                if (!Directory.Exists(uploadFolder))
+                if (!ModelState.IsValid)
                 {
-                    Directory.CreateDirectory(uploadFolder);
+                    var errors = ModelState.Values
+                        .SelectMany(v => v.Errors)
+                        .Select(e => e.ErrorMessage)
+                        .ToList();
+
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Dữ liệu không hợp lệ",
+                        errors = errors
+                    });
                 }
 
-                string uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(model.ImageFile.FileName);
-                string filePath = Path.Combine(uploadFolder, uniqueFileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
+                // Xử lý upload ảnh và thêm sản phẩm
+                string fileName = "default.jpg";
+                if (request.ImageFile != null && request.ImageFile.Length > 0)
                 {
-                    model.ImageFile.CopyTo(stream);
+                    fileName = $"{Guid.NewGuid()}_{Path.GetFileName(request.ImageFile.FileName)}";
+                    var filePath = Path.Combine(_hostEnvironment.WebRootPath, "img/products", fileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await request.ImageFile.CopyToAsync(stream);
+                    }
                 }
 
-                sanPham.HinhAnh = uniqueFileName;
+                var product = new TbSanPham
+                {
+                    TenSanPham = request.TenSanPham,
+                    GiaBan = request.GiaBan,
+                    MaNhomSp = request.MaNhomSp,
+                    MoTa = request.MoTa,
+                    GhiChu = request.GhiChu,
+                    HinhAnh = fileName
+                };
+
+                _context.TbSanPhams.Add(product);
+                await _context.SaveChangesAsync();
+
+                var productGroup = await _context.TbNhomSanPhams
+                    .FirstOrDefaultAsync(x => x.MaNhomSp == request.MaNhomSp);
+
+                return Json(new
+                {
+                    success = true,
+                    product = new
+                    {
+                        MaSanPham = product.MaSanPham,
+                        TenSanPham = product.TenSanPham,
+                        HinhAnh = product.HinhAnh,
+                        LoaiSanPham = productGroup?.TenNhomSp ?? "Không xác định",
+                        GiaBan = product.GiaBan.ToString("N0"),
+                        GhiChu = product.GhiChu ?? ""
+                    }
+                });
             }
-
-            _context.TbSanPhams.Add(sanPham);
-            int kq = _context.SaveChanges();
-
-            TempData["Message"] = kq > 0 ? "Thêm sản phẩm thành công" : "Không thêm được sản phẩm";
-            return RedirectToAction("Index", "HomeAdmin");
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = $"Lỗi server: {ex.Message}"
+                });
+            }
         }
 
 
@@ -193,91 +161,169 @@ namespace Web_CuaHangCafe.Areas.Admin.Controllers
         public IActionResult Details(int id, string name)
         {
             var productItem = (from product in _context.TbSanPhams
-                            join type in _context.TbNhomSanPhams on product.MaNhomSp equals type.MaNhomSp
-                            where product.MaSanPham == id
-                            select new ProductViewModel
-                            {
-                                MaSanPham = product.MaSanPham,
-                                TenSanPham = product.TenSanPham,
-                                GiaBan = product.GiaBan,
-                                MoTa = product.MoTa,
-                                HinhAnh = product.HinhAnh,
-                                GhiChu = product.GhiChu,
-                                LoaiSanPham = type.TenNhomSp
-                            }).SingleOrDefault();
+                               join type in _context.TbNhomSanPhams on product.MaNhomSp equals type.MaNhomSp
+                               where product.MaSanPham == id
+                               select new ProductViewModel
+                               {
+                                   MaSanPham = product.MaSanPham,
+                                   TenSanPham = product.TenSanPham,
+                                   GiaBan = product.GiaBan,
+                                   MoTa = product.MoTa,
+                                   HinhAnh = product.HinhAnh,
+                                   GhiChu = product.GhiChu,
+                                   LoaiSanPham = type.TenNhomSp
+                               }).SingleOrDefault();
 
             ViewBag.name = name;
 
             return View(productItem);
         }
 
+        // Trong HomeAdminController
         [Route("Edit")]
-        [Authentication]
         [HttpGet]
-        public IActionResult Edit(int id, string name)
+        public async Task<IActionResult> Edit(int id)
         {
-            var sanPham = _context.TbSanPhams.Find(id);
+            var product = await _context.TbSanPhams
+                .Include(p => p.MaNhomSpNavigation)
+                .FirstOrDefaultAsync(p => p.MaSanPham == id);
 
-            ViewBag.MaNhomSp = new SelectList(_context.TbNhomSanPhams.ToList(), "MaNhomSp", "TenNhomSp");
-            ViewBag.name = name;
+            if (product == null)
+            {
+                return Json(new { success = false, message = "Không tìm thấy sản phẩm" });
+            }
 
-            return View(sanPham);
+            return Json(new
+            {
+                success = true,
+                maSanPham = product.MaSanPham,
+                tenSanPham = product.TenSanPham,
+                giaBan = product.GiaBan,
+                maNhomSp = product.MaNhomSp,
+                moTa = product.MoTa,
+                ghiChu = product.GhiChu,
+                hinhAnh = product.HinhAnh,
+                loaiSanPham = product.MaNhomSpNavigation?.TenNhomSp
+            });
         }
 
-        [Route("Edit")]
-        [Authentication]
         [HttpPost]
+        [Route("EditProduct")]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(CreateProductViewModel createProduct)
+        public async Task<IActionResult> EditProduct([FromForm] ProductEditRequest request)
         {
-            string fileName = "";
-
-            if (createProduct.HinhAnh != null)
+            try
             {
-                string uploadFolder = Path.Combine(Path.Combine(_hostEnvironment.WebRootPath, "img"), "products");
-                fileName = createProduct.HinhAnh.FileName;
-                string filePath = Path.Combine(uploadFolder, fileName);
-                createProduct.HinhAnh.CopyTo(new FileStream(filePath, FileMode.Create));
+                // if (!ModelState.IsValid)
+                // {
+                //     var errors = ModelState.Values
+                //         .SelectMany(v => v.Errors)
+                //         .Select(e => e.ErrorMessage)
+                //         .ToList();
+
+                //     return Json(new
+                //     {
+                //         success = false,
+                //         message = "Dữ liệu không hợp lệ",
+                //         errors = errors
+                //     });
+                // }
+                var product = await _context.TbSanPhams.FindAsync(request.MaSanPham);
+                if (product == null)
+                {
+                    return Json(new { success = false, message = "Không tìm thấy sản phẩm" });
+                }
+
+                // Xử lý ảnh
+                if (request.ImageFile != null && request.ImageFile.Length > 0)
+                {
+                    var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(request.ImageFile.FileName)}";
+                    var filePath = Path.Combine(_hostEnvironment.WebRootPath, "img/products", fileName);
+
+                    // Xóa ảnh cũ nếu có
+                    if (!string.IsNullOrEmpty(product.HinhAnh) && product.HinhAnh != "default.jpg")
+                    {
+                        var oldPath = Path.Combine(_hostEnvironment.WebRootPath, "img/products", product.HinhAnh);
+                        if (System.IO.File.Exists(oldPath)) System.IO.File.Delete(oldPath);
+                    }
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await request.ImageFile.CopyToAsync(stream);
+                    }
+                    product.HinhAnh = "fileName";
+                }
+
+                // Cập nhật thông tin
+                product.TenSanPham = request.TenSanPham;
+                product.GiaBan = request.GiaBan;
+                product.MaNhomSp = request.MaNhomSp;
+                product.MoTa = request.MoTa;
+                product.GhiChu = request.GhiChu;
+
+
+
+
+                _context.Update(product);
+                await _context.SaveChangesAsync();
+
+                var productGroup = await _context.TbNhomSanPhams
+                    .FirstOrDefaultAsync(x => x.MaNhomSp == request.MaNhomSp);
+
+                return Json(new
+                {
+                    success = true,
+                    product = new
+                    {
+                        MaSanPham = product.MaSanPham,
+                        TenSanPham = product.TenSanPham,
+                        HinhAnh = product.HinhAnh,
+                        LoaiSanPham = productGroup?.TenNhomSp ?? "Không xác định",
+                        GiaBan = product.GiaBan.ToString("N0"),
+                        GhiChu = product.GhiChu ?? ""
+                    }
+                });
             }
-
-            var product = new TbSanPham
+            catch (Exception ex)
             {
-                MaSanPham = createProduct.MaSanPham,
-                TenSanPham = createProduct.TenSanPham,
-                GiaBan = (decimal)createProduct.GiaBan,
-                MoTa = createProduct.MoTa,
-                HinhAnh = fileName,
-                GhiChu = createProduct.GhiChu,
-                MaNhomSp = createProduct.MaLoaiSanPham
-            };
-
-            _context.Entry(product).State = EntityState.Modified;
-            _context.SaveChanges();
-            TempData["Message"] = "Sửa sản phẩm thành công";
-            return RedirectToAction("Index", "HomeAdmin");
+                return Json(new { success = false, message = "Lỗi server: " + ex.Message });
+            }
         }
 
-        [Route("Delete")]
-        [Authentication]
-        [HttpGet]
-        public IActionResult Delete(int id)
+        [HttpPost]
+        [Route("DeleteProduct")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteProduct(int id)
         {
-            TempData["Message"] = "";
-            var chiTietHoaDon = _context.TbChiTietHoaDonBans.Where(x => x.MaSanPham == id).ToList();
-
-            if (chiTietHoaDon.Count() > 0)
+            try
             {
-                TempData["Message"] = "Không xoá được sản phẩm";
+                var product = await _context.TbSanPhams.FindAsync(id);
+                if (product == null)
+                {
+                    return Json(new { success = false, message = "Không tìm thấy sản phẩm" });
+                }
 
-                return RedirectToAction("Index", "HomeAdmin");
+                // Kiểm tra ràng buộc
+                var hasOrders = await _context.TbChiTietHoaDonBans.AnyAsync(x => x.MaSanPham == id);
+                if (hasOrders)
+                {
+                    return Json(new { success = false, message = "Không thể xóa sản phẩm đã có đơn hàng" });
+                }
+
+                _context.TbSanPhams.Remove(product);
+                await _context.SaveChangesAsync();
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Xóa thành công",
+                    productId = id
+                });
             }
-
-            _context.Remove(_context.TbSanPhams.Find(id));
-            _context.SaveChanges();
-
-            TempData["Message"] = "Sản phẩm đã được xoá";
-
-            return RedirectToAction("Index", "HomeAdmin");
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Lỗi server: " + ex.Message });
+            }
         }
     }
 }

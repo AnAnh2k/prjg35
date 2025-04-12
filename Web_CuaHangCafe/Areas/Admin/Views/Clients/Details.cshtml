@@ -6,220 +6,264 @@
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
 
-<div class="container">
-    <h3 class="page-title">Chi tiết khách hàng: @Model.TenKhachHang</h3>
-    <hr />
-
-    <!-- Sử dụng Bootstrap Nav Tabs để hiển thị thông tin chi tiết theo nhóm -->
-    <ul class="nav nav-tabs" id="detailsTab" role="tablist">
-        <li class="nav-item">
-            <a class="nav-link active" id="info-tab" data-toggle="tab" href="#info" role="tab" aria-controls="info" aria-selected="true">
-                Thông tin
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" id="account-tab" data-toggle="tab" href="#account" role="tab" aria-controls="account" aria-selected="false">
-                Tài khoản
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" id="invoice-tab" data-toggle="tab" href="#invoice" role="tab" aria-controls="invoice" aria-selected="false">
-                Lịch sử giao dịch
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" id="cart-tab" data-toggle="tab" href="#cart" role="tab" aria-controls="cart" aria-selected="false">
-                Giỏ hàng
-            </a>
-        </li>
-    </ul>
-
-    <div class="tab-content" id="detailsTabContent">
-        <!-- Thông tin khách hàng -->
-        <div class="tab-pane fade show active p-3" id="info" role="tabpanel" aria-labelledby="info-tab">
-            <h4>Thông tin khách hàng</h4>
-            <dl class="row">
-                <dt class="col-sm-3">Mã khách hàng</dt>
-                <dd class="col-sm-9">@Model.MaKhachHang</dd>
-
-                <dt class="col-sm-3">Họ và tên</dt>
-                <dd class="col-sm-9">@Model.TenKhachHang</dd>
-
-                <dt class="col-sm-3">Số điện thoại</dt>
-                <dd class="col-sm-9">@Model.SdtkhachHang</dd>
-
-                <dt class="col-sm-3">Địa chỉ</dt>
-                <dd class="col-sm-9">@Model.DiaChi</dd>
-            </dl>
+<div class="container-fluid px-4">
+    <div class="card shadow mb-4">
+        <!-- Card Header -->
+        <div class="card-header bg-gradient-primary text-white py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4 class="m-0"><i class="fas fa-user-circle me-2"></i>@Model.TenKhachHang</h4>
+                <a asp-action="Index" class="btn btn-light btn-sm">
+                    <i class="fas fa-arrow-left me-2"></i>Quay lại
+                </a>
+            </div>
         </div>
 
-        <!-- Tài khoản đăng nhập -->
-        <div class="tab-pane fade p-3" id="account" role="tabpanel" aria-labelledby="account-tab">
-            <h4>Tài khoản đăng nhập</h4>
-            @if (Model.TbTaiKhoanKhs != null && Model.TbTaiKhoanKhs.Any())
-            {
-                <table class="table table-striped table-bordered">
-                    <thead class="thead-light">
-                        <tr>
-                            <th>Mã tài khoản</th>
-                            <th>Tên tài khoản</th>
-                            <th>Ghi chú</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var acc in Model.TbTaiKhoanKhs)
-                        {
-                            <tr>
-                                <td>@acc.MaTaiKhoan</td>
-                                <td>@acc.TenTaiKhoan</td>
-                                <td>
-                                    <span class="text-muted">Không có hành động</span>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            }
-            else
-            {
-                <p>Chưa có tài khoản đăng nhập.</p>
-            }
-        </div>
+        <!-- Card Body -->
+        <div class="card-body">
+            <!-- Navigation Tabs -->
+            <ul class="nav nav-pills mb-4" id="detailsTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="info-tab" data-bs-toggle="tab" 
+                            data-bs-target="#info" type="button" role="tab"
+                            aria-controls="info" aria-selected="true">
+                        <i class="fas fa-info-circle me-2"></i>Thông tin
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="account-tab" data-bs-toggle="tab"
+                            data-bs-target="#account" type="button" role="tab"
+                            aria-controls="account" aria-selected="false">
+                        <i class="fas fa-user-lock me-2"></i>Tài khoản
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="invoice-tab" data-bs-toggle="tab"
+                            data-bs-target="#invoice" type="button" role="tab"
+                            aria-controls="invoice" aria-selected="false">
+                        <i class="fas fa-receipt me-2"></i>Giao dịch
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="cart-tab" data-bs-toggle="tab"
+                            data-bs-target="#cart" type="button" role="tab"
+                            aria-controls="cart" aria-selected="false">
+                        <i class="fas fa-shopping-cart me-2"></i>Giỏ hàng
+                    </button>
+                </li>
+            </ul>
 
-        <!-- Lịch sử giao dịch -->
-        <div class="tab-pane fade p-3" id="invoice" role="tabpanel" aria-labelledby="invoice-tab">
-            <h4>Lịch sử giao dịch</h4>
-            @if (Model.TbHoaDonBans != null && Model.TbHoaDonBans.Any())
-            {
-                <table class="table table-striped table-bordered">
-                    <thead class="thead-light">
-                        <tr>
-                            <th>Mã hóa đơn</th>
-                            <th>Ngày lập</th>
-                            <th>Tổng tiền</th>
-                            <th>Trạng thái</th>
-                            <th>Chi tiết</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var invoice in Model.TbHoaDonBans)
-                        {
-                            <tr>
-                                <td>@invoice.MaHoaDon</td>
-                                <td>@invoice.NgayLap.ToString("dd/MM/yyyy HH:mm")</td>
-                                <td>@invoice.TongTien.ToString("N2")</td>
-                                <td>@(invoice.TrangThai)</td>
-                                <td>
-                                    @if (invoice.TbChiTietHoaDonBans != null && invoice.TbChiTietHoaDonBans.Any())
-                                    {
-                                        <a href="javascript:void(0);" class="toggle-invoice-details" data-invoice-id="@invoice.MaHoaDon">
-                                            Chi tiết
-                                        </a>
-                                    }
-                                    else
-                                    {
-                                        <span>Không có chi tiết</span>
-                                    }
-                                </td>
-                            </tr>
+            <!-- Tab Content -->
+            <div class="tab-content" id="detailsTabContent">
+                <!-- Thông tin -->
+                <div class="tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info-tab">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="info-card bg-light p-4 rounded-3">
+                                <h5 class="mb-3 text-primary"><i class="fas fa-id-card me-2"></i>Thông tin cơ bản</h5>
+                                <dl class="row">
+                                    <dt class="col-sm-4">Mã KH</dt>
+                                    <dd class="col-sm-8 fw-bold text-primary">#@Model.MaKhachHang</dd>
 
-                            @* Dòng chi tiết sẽ được ẩn mặc định *@
-                            @if (invoice.TbChiTietHoaDonBans != null && invoice.TbChiTietHoaDonBans.Any())
+                                    <dt class="col-sm-4">Họ tên</dt>
+                                    <dd class="col-sm-8">@Model.TenKhachHang</dd>
+
+                                    <dt class="col-sm-4">Điện thoại</dt>
+                                    <dd class="col-sm-8">@Model.SdtkhachHang</dd>
+
+                                    <dt class="col-sm-4">Địa chỉ</dt>
+                                    <dd class="col-sm-8">@Model.DiaChi</dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tài khoản -->
+                <div class="tab-pane fade" id="account" role="tabpanel" aria-labelledby="account-tab">
+                    @if (Model.TbTaiKhoanKhs != null && Model.TbTaiKhoanKhs.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-primary">
+                                    <tr>
+                                        <th>Tài khoản</th>
+                                        <th>Trạng thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var acc in Model.TbTaiKhoanKhs)
+                                    {
+                                        <tr>
+                                            <td>@acc.TenTaiKhoan</td>
+                                            <td>
+                                                <span class="badge bg-success">Hoạt động</span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info d-flex align-items-center">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Không có tài khoản đăng nhập
+                        </div>
+                    }
+                </div>
+
+                <!-- Hóa đơn -->
+                <div class="tab-pane fade" id="invoice" role="tabpanel" aria-labelledby="invoice-tab">
+                    @if (Model.TbHoaDonBans != null && Model.TbHoaDonBans.Any())
+                    {
+                        <div class="accordion" id="invoiceAccordion">
+                            @foreach (var invoice in Model.TbHoaDonBans)
                             {
-                                <tr class="invoice-details-row" id="invoice-details-@invoice.MaHoaDon" style="display:none;">
-                                    <td colspan="5">
-                                        <table class="table table-sm table-bordered">
-                                            <thead>
-                                                <tr>
-                                                    <th>Mã hóa đơn</th>
-                                                    <th>Mã sản phẩm</th>
-                                                    <th>Tên sản phẩm</th>
-                                                    <th>Số lượng</th>
-                                                    <th>Đơn giá</th>
-                                                    <th>Thành tiền</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach (var detail in invoice.TbChiTietHoaDonBans)
-                                                {
-                                                    <tr>
-                                                        <td>@detail.MaHoaDon</td>
-                                                        <td>@detail.MaSanPham</td>
-                                                        <td>@detail.MaSanPhamNavigation?.TenSanPham</td>
-                                                        <td>@detail.SoLuong</td>
-                                                        <td>@detail.DonGia.ToString("N2")</td>
-                                                        <td>@detail.ThanhTien?.ToString("N2")</td>
-                                                    </tr>
-                                                }
-                                            </tbody>
-                                        </table>
-                                    </td>
-                                </tr>
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading-@invoice.MaHoaDon">
+                                        <button class="accordion-button collapsed" type="button" 
+                                                data-bs-toggle="collapse" 
+                                                data-bs-target="#collapse-@invoice.MaHoaDon">
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <div>
+                                                    <span class="badge bg-primary me-2">#@invoice.MaHoaDon</span>
+                                                    @invoice.NgayLap.ToString("dd/MM/yyyy HH:mm")
+                                                </div>
+                                                <div>
+                                                    <span class="me-3">Tổng: @invoice.TongTien.ToString("N0")₫</span>
+                                                    <span class="badge bg-success">@invoice.TrangThai</span>
+                                                </div>
+                                            </div>
+                                        </button>
+                                    </h2>
+                                    <div id="collapse-@invoice.MaHoaDon" class="accordion-collapse collapse" 
+                                         data-bs-parent="#invoiceAccordion">
+                                        <div class="accordion-body">
+                                            <div class="table-responsive">
+                                                <table class="table table-sm">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Sản phẩm</th>
+                                                            <th>Số lượng</th>
+                                                            <th>Đơn giá</th>
+                                                            <th>Thành tiền</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var detail in invoice.TbChiTietHoaDonBans)
+                                                        {
+                                                            <tr>
+                                                                <td>@detail.MaSanPhamNavigation?.TenSanPham</td>
+                                                                <td>@detail.SoLuong</td>
+                                                                <td>@detail.DonGia.ToString("N0")₫</td>
+                                                                <td>@detail.ThanhTien?.ToString("N0")₫</td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             }
-                        }
-                    </tbody>
-                </table>
-            }
-            else
-            {
-                <p>Không có hóa đơn giao dịch.</p>
-            }
-        </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info d-flex align-items-center">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Không có lịch sử giao dịch
+                        </div>
+                    }
+                </div>
 
-        <!-- Giỏ hàng -->
-        <div class="tab-pane fade p-3" id="cart" role="tabpanel" aria-labelledby="cart-tab">
-            <h4>Giỏ hàng</h4>
-            @if (Model.TbGioHangs != null && Model.TbGioHangs.Any())
-            {
-                <table class="table table-striped table-bordered">
-                    <thead class="thead-light">
-                        <tr>
-                            <th>Mã khách hàng</th>
-                            <th>Mã sản phẩm</th>
-                            <th>Số lượng sản phẩm</th>
-                   
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var cart in Model.TbGioHangs)
-                        {
-                            <tr>
-                                <td>@cart.MaKhachHang</td>
-                                <td>@cart.MaSanPham</td>
-                                <td>@cart.SoLuong</td>
-                       
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            }
-            else
-            {
-                <p>Không có giỏ hàng.</p>
-            }
+                <!-- Giỏ hàng -->
+                <div class="tab-pane fade" id="cart" role="tabpanel" aria-labelledby="cart-tab">
+                    @if (Model.TbGioHangs != null && Model.TbGioHangs.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-warning">
+                                    <tr>
+                                        <th>Sản phẩm</th>
+                                        <th>Số lượng</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var cart in Model.TbGioHangs)
+                                    {
+                                        <tr>
+                                            <td>@cart.MaSanPhamNavigation?.TenSanPham</td>
+                                            <td>@cart.SoLuong</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info d-flex align-items-center">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Giỏ hàng trống
+                        </div>
+                    }
+                </div>
+            </div>
         </div>
-    </div>
-
-    <div class="mt-3">
-        <a asp-action="Index" class="btn btn-secondary">Quay về danh sách</a>
     </div>
 </div>
 
+<style>
+    .card-header {
+        background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%);
+        border-radius: 0.5rem 0.5rem 0 0;
+    }
+
+    .nav-pills .nav-link {
+        border-radius: 0.5rem;
+        margin-right: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .nav-pills .nav-link.active {
+        background: #4b6cb7;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .info-card {
+        border-left: 4px solid #4b6cb7;
+    }
+
+    .accordion-button {
+        background-color: #f8f9fa;
+        font-weight: 500;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .badge {
+        font-weight: 500;
+        padding: 0.5em 0.8em;
+    }
+</style>
+
 @section Scripts {
     <script>
-        $(document).ready(function () {
-            // Kích hoạt tab
-            $('#detailsTab a').on('click', function (e) {
-                e.preventDefault();
-                $(this).tab('show');
-            });
+        // Khởi tạo tooltip
+        $(document).ready(function(){
+            $('[data-bs-toggle="tooltip"]').tooltip();
+        });
 
-            // Sự kiện cho link "Chi tiết" của hóa đơn
-            $('.toggle-invoice-details').on('click', function (e) {
-                e.preventDefault();
-                var invoiceId = $(this).data('invoice-id');
-                $('#invoice-details-' + invoiceId).slideToggle('fast');
-            });
+        // Tự động scroll đến tab active khi load trang
+        document.addEventListener("DOMContentLoaded", function(){
+            const activeTab = document.querySelector('.nav-pills .nav-link.active');
+            if(activeTab){
+                activeTab.scrollIntoView({behavior: "smooth", block: "nearest"});
+            }
         });
     </script>
 }

@@ -5,43 +5,70 @@
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
 
-<div class="container mt-3">
-    <h2>Sửa Phiếu nhập hàng</h2>
-    <form asp-action="Edit" method="post">
-        <input type="hidden" asp-for="MaPhieuNhap" />
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mt-4 fs-4 text-primary">
+            <i class="fas fa-edit me-2"></i>Sửa phiếu nhập hàng
+        </h1>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-times me-2"></i>Hủy bỏ
+        </a>
+    </div>
 
-        <div class="form-group">
-            <label asp-for="MaQuan"></label>
-            <select asp-for="MaQuan" class="form-control" asp-items="ViewBag.MaQuan"></select>
-        </div>
-        <div class="form-group">
-            <label asp-for="MaNhanVien"></label>
-            <select asp-for="MaNhanVien" class="form-control" asp-items="ViewBag.MaNhanVien"></select>
-        </div>
-        <div class="form-group">
-            <label asp-for="MaNhaCungCap"></label>
-            <select asp-for="MaNhaCungCap" class="form-control" asp-items="ViewBag.MaNhaCungCap"></select>
-        </div>
-        <div class="form-group">
-            <label asp-for="NgayLap"></label>
-            <input asp-for="NgayLap" class="form-control" type="datetime-local" />
-            <span asp-validation-for="NgayLap" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <label asp-for="GhiChu"></label>
-            <input asp-for="GhiChu" class="form-control" />
-            <span asp-validation-for="GhiChu" class="text-danger"></span>
-        </div>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form asp-action="Edit" method="post">
+                <input type="hidden" asp-for="MaPhieuNhap" />
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-        <div class="form-group">
-            <input type="submit" value="Lưu lại" class="btn btn-primary" />
-            <a asp-action="Index" class="btn btn-secondary">Quay về</a>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <select asp-for="MaQuan" asp-items="ViewBag.MaQuan" class="form-select">
+                                <option value="">-- Chọn quán --</option>
+                            </select>
+                            <label asp-for="MaQuan"></label>
+                            <span asp-validation-for="MaQuan" class="text-danger small"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <select asp-for="MaNhaCungCap" asp-items="ViewBag.MaNhaCungCap" class="form-select">
+                                <option value="">-- Chọn NCC --</option>
+                            </select>
+                            <label asp-for="MaNhaCungCap"></label>
+                            <span asp-validation-for="MaNhaCungCap" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input asp-for="NgayLap" class="form-control" type="datetime-local" />
+                            <label asp-for="NgayLap"></label>
+                            <span asp-validation-for="NgayLap" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <textarea asp-for="GhiChu" class="form-control" style="height:100px"></textarea>
+                            <label asp-for="GhiChu"></label>
+                            <span asp-validation-for="GhiChu" class="text-danger small"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 text-end">
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="fas fa-save me-2"></i>Lưu thay đổi
+                    </button>
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
 </div>
+
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

@@ -5,28 +5,54 @@
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
 
-<div class="container mt-3">
-    <h2>Chi tiết Nhà cung cấp</h2>
-    <div>
-        <dl class="row">
-            <dt class="col-sm-3">Mã Nhà cung cấp</dt>
-            <dd class="col-sm-9">@Model.MaNhaCungCap</dd>
-
-            <dt class="col-sm-3">Tên Nhà cung cấp</dt>
-            <dd class="col-sm-9">@Model.TenNhaCungCap</dd>
-
-            <dt class="col-sm-3">Địa chỉ</dt>
-            <dd class="col-sm-9">@Model.DiaChi</dd>
-
-            <dt class="col-sm-3">SĐT NCC</dt>
-            <dd class="col-sm-9">@Model.Sdtncc</dd>
-
-            <dt class="col-sm-3">Số TK</dt>
-            <dd class="col-sm-9">@Model.Stk</dd>
-        </dl>
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mt-4 fs-4 text-primary">
+            <i class="fas fa-truck-moving me-2"></i>Chi tiết Nhà cung cấp
+        </h1>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Quay lại
+        </a>
     </div>
-    <p>
-        <a asp-action="Edit" asp-route-id="@Model.MaNhaCungCap" class="btn btn-warning">Sửa</a>
-        <a asp-action="Index" class="btn btn-secondary">Quay về danh sách</a>
-    </p>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0 text-primary">Thông tin chung</h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Mã NCC:</dt>
+                        <dd class="col-sm-8">@Model.MaNhaCungCap</dd>
+
+                        <dt class="col-sm-4">Tên NCC:</dt>
+                        <dd class="col-sm-8">@Model.TenNhaCungCap</dd>
+                    </dl>
+                </div>
+                <div class="col-md-6">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Điện thoại:</dt>
+                        <dd class="col-sm-8">@Model.Sdtncc</dd>
+
+                        <dt class="col-sm-4">Số TK:</dt>
+                        <dd class="col-sm-8">@Model.Stk</dd>
+                    </dl>
+                </div>
+                <div class="col-12">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-2">Địa chỉ:</dt>
+                        <dd class="col-sm-10">@Model.DiaChi</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-3 text-end">
+        <a asp-action="Edit" asp-route-id="@Model.MaNhaCungCap" 
+           class="btn btn-primary px-4">
+            <i class="fas fa-edit me-2"></i>Sửa thông tin
+        </a>
+    </div>
 </div>

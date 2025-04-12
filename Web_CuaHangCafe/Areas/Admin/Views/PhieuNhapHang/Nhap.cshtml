@@ -1,101 +1,188 @@
 ﻿@model Web_CuaHangCafe.ViewModels.PhieuNhapViewModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-
 @{
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
-    ViewData["Title"] = "Phiếu nhập nguyên liệu";
+    ViewData["Title"] = "Tạo phiếu nhập hàng";
 }
 
-<h2>Phiếu nhập nguyên liệu</h2>
-
-<form asp-action="Nhap" method="post">
-    @Html.AntiForgeryToken()
-
-    <div class="form-group">
-        <label asp-for="NgayNhap"></label>
-        <input asp-for="NgayNhap" class="form-control" type="date" />
-        <span asp-validation-for="NgayNhap" class="text-danger"></span>
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mt-4 fs-4 text-primary">
+            <i class="fas fa-cart-plus me-2"></i>Tạo phiếu nhập mới
+        </h1>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Quay lại
+        </a>
     </div>
 
-    <div class="form-group">
-        <label asp-for="GhiChu"></label>
-        <textarea asp-for="GhiChu" class="form-control"></textarea>
-        <span asp-validation-for="GhiChu" class="text-danger"></span>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form asp-action="Nhap" method="post">
+                @Html.AntiForgeryToken()
+                
+                <div class="row g-3">
+                    <!-- Date and Shop Selection -->
+                    <div class="col-md-4">
+                        <div class="form-floating">
+                            <input asp-for="NgayNhap" class="form-control" type="date" />
+                            <label asp-for="NgayNhap"></label>
+                            <span asp-validation-for="NgayNhap" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-floating">
+                            <select asp-for="MaQuan" asp-items="ViewBag.MaQuan" class="form-select">
+                                <option value="">-- Chọn quán --</option>
+                            </select>
+                            <label asp-for="MaQuan"></label>
+                            <span asp-validation-for="MaQuan" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-floating">
+                            <select asp-for="MaNhaCungCap" asp-items="ViewBag.MaNhaCungCap" class="form-select">
+                                <option value="">-- Chọn NCC --</option>
+                            </select>
+                            <label asp-for="MaNhaCungCap"></label>
+                            <span asp-validation-for="MaNhaCungCap" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- Employee Info -->
+                    @* <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent">
+                                <i class="fas fa-id-badge text-primary"></i>
+                            </span>
+                            <input type="text" class="form-control" 
+                                   value="@ViewBag.MaNhanVien" 
+                                   placeholder="Mã nhân viên" readonly>
+                        </div>
+                    </div> *@
+
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent">
+                                <i class="fas fa-user-tie text-primary"></i>
+                            </span>
+                            <input type="text" class="form-control" 
+                                   value="@ViewBag.TenNhanVien" 
+                                   placeholder="Tên nhân viên" readonly>
+                        </div>
+                    </div>
+
+                    <!-- Note Field -->
+                    <div class="col-12">
+                        <div class="form-floating">
+                            <textarea asp-for="GhiChu" class="form-control" style="height:100px"></textarea>
+                            <label asp-for="GhiChu"></label>
+                            <span asp-validation-for="GhiChu" class="text-danger small"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Materials List -->
+                <div class="mt-4">
+                    <h5 class="text-primary mb-3">
+                        <i class="fas fa-boxes me-2"></i>Danh sách nguyên liệu
+                    </h5>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0" id="cart-table">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-4">Mã</th>
+                                    <th>Tên nguyên liệu</th>
+                                    <th>Số lượng</th>
+                                    <th>Đơn giá</th>
+                                    <th>Thành tiền</th>
+                                    <th class="pe-4"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- JS populated content -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="text-end mt-3">
+                        <h5 class="text-primary">
+                            Tổng tiền: 
+                            <span id="cart-total" class="ms-2">0</span> ₫
+                        </h5>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="mt-4 text-end">
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="fas fa-check-circle me-2"></i>Xác nhận
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-
-    <!-- Nếu muốn hiển thị thông tin nhân viên đăng nhập (tùy chọn): -->
-    <!-- Hiển thị mã nhân viên -->
-    <div class="form-group">
-        <label>Mã nhân viên</label>
-        <input type="text" class="form-control" value="@ViewBag.MaNhanVien" readonly />
-    </div>
-    <!-- Hiển thị tên nhân viên -->
-    <div class="form-group">
-        <label>Nhân viên</label>
-        <input type="text" class="form-control" value="@ViewBag.TenNhanVien" readonly />
-    </div>
-
-
-    <div class="form-group">
-        <label asp-for="MaQuan"></label>
-        <select asp-for="MaQuan" asp-items="ViewBag.MaQuan" class="form-control"></select>
-        <span asp-validation-for="MaQuan" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="MaNhaCungCap"></label>
-        <select asp-for="MaNhaCungCap" asp-items="ViewBag.MaNhaCungCap" class="form-control"></select>
-        <span asp-validation-for="MaNhaCungCap" class="text-danger"></span>
-    </div>
-
-    <h4>Danh sách nguyên liệu nhập</h4>
-    <table class="table table-bordered" id="cart-table">
-        <thead>
-            <tr>
-                <th>Mã</th>
-                <th>Tên nguyên liệu</th>
-                <th>Số lượng nhập</th>
-                <th>Đơn giá nhập</th>
-                <th>Thành tiền</th>
-                <th>Thao tác</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Nội dung được load bằng JavaScript từ localStorage -->
-        </tbody>
-    </table>
-
-    <div class="text-right">
-        <strong>Tổng tiền: </strong> <span id="cart-total">0</span>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Xác nhận</button>
-</form>
+</div>
 
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         // Đọc giỏ hàng từ localStorage
-        var cart = JSON.parse(localStorage.getItem("cartNhap")) || [];
+        let cart = JSON.parse(localStorage.getItem("cartNhap")) || [];
+
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('vi-VN').format(value);
+        }
 
         function updateCartView() {
-            var html = "";
-            var total = 0;
-            for (var i = 0; i < cart.length; i++) {
-                var item = cart[i];
-                var thanhtien = item.SoLuongNhap * item.DonGiaNhap;
+            let html = "";
+            let total = 0;
+            
+            cart.forEach((item, index) => {
+                const thanhtien = item.SoLuongNhap * item.DonGiaNhap;
                 total += thanhtien;
-                html += "<tr>" +
-                    "<td>" + item.MaNguyenLieu + "<input type='hidden' name='ChiTietNhap[" + i + "].MaNguyenLieu' value='" + item.MaNguyenLieu + "' /></td>" +
-                    "<td>" + item.TenNguyenLieu + "<input type='hidden' name='ChiTietNhap[" + i + "].TenNguyenLieu' value='" + item.TenNguyenLieu + "' /></td>" +
-                    "<td><input type='number' name='ChiTietNhap[" + i + "].SoLuongNhap' class='form-control' value='" + item.SoLuongNhap + "' onchange='updateQuantity(" + i + ", this.value)' /></td>" +
-                    "<td><input type='number' readonly name='ChiTietNhap[" + i + "].DonGiaNhap' class='form-control' value='" + item.DonGiaNhap + "' step='0.01' /></td>" +
-                    "<td>" + thanhtien.toFixed(2) + "</td>" +
-                    "<td><button type='button' class='btn btn-danger btn-sm' onclick='deleteItem(" + i + ")'>Xóa</button></td>" +
-                    "</tr>";
-            }
+                
+                html += `
+                <tr>
+                    <td class="ps-4">
+                        ${item.MaNguyenLieu}
+                        <input type="hidden" name="ChiTietNhap[${index}].MaNguyenLieu" value="${item.MaNguyenLieu}" />
+                    </td>
+                    <td>
+                        ${item.TenNguyenLieu}
+                        <input type="hidden" name="ChiTietNhap[${index}].TenNguyenLieu" value="${item.TenNguyenLieu}" />
+                    </td>
+                    <td>
+                        <input type="number" 
+                               name="ChiTietNhap[${index}].SoLuongNhap" 
+                               class="form-control form-control-sm" 
+                               value="${item.SoLuongNhap}" 
+                               min="1" 
+                               onchange="updateQuantity(${index}, this.value)">
+                    </td>
+                    <td>
+                        <input type="number" 
+                               name="ChiTietNhap[${index}].DonGiaNhap" 
+                               class="form-control form-control-sm" 
+                               value="${item.DonGiaNhap.toFixed(2)}" 
+                               step="0.01" 
+                               readonly>
+                    </td>
+                    <td class="fw-bold">${formatCurrency(thanhtien)} ₫</td>
+                    <td class="pe-4">
+                        <button type="button" 
+                                class="btn btn-danger btn-sm" 
+                                onclick="deleteItem(${index})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>`;
+            });
+
             $("#cart-table tbody").html(html);
-            $("#cart-total").text(total.toFixed(2));
+            $("#cart-total").text(formatCurrency(total));
         }
 
         function updateQuantity(index, value) {
@@ -105,15 +192,12 @@
         }
 
         function deleteItem(index) {
-            // Xóa phần tử tại vị trí index
             cart.splice(index, 1);
-            // Cập nhật lại giỏ hàng trong localStorage
             localStorage.setItem("cartNhap", JSON.stringify(cart));
-            // Cập nhật lại hiển thị giỏ hàng
             updateCartView();
         }
 
-        $(document).ready(function(){
+        $(document).ready(function() {
             updateCartView();
         });
     </script>

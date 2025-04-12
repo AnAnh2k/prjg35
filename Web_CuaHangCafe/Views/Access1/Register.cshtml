@@ -4,7 +4,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="row justify-content-center mt-5">
+<div class="row justify-content-center auth-container">
     <div class="col-md-6 col-lg-4">
         <div class="card shadow">
             <div class="card-header text-center">
@@ -56,6 +56,16 @@
         </div>
     </div>
 </div>
+
+<style>
+    .auth-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        display: flex;
+        align-items: center;
+        padding: 2rem;
+    }
+</style>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

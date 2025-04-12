@@ -4,34 +4,286 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="row justify-content-center mt-5">
-    <div class="col-md-6 col-lg-4">
-        <div class="card shadow">
-            <div class="card-header text-center">
-                <h4 class="mb-0">Đăng nhập</h4>
-            </div>
-            <div class="card-body">
-                <form asp-action="Login1" method="post">
-                    <div asp-validation-summary="All" class="text-danger"></div>
-                    <div class="mb-3">
-                        <label asp-for="TenTaiKhoan" class="form-label"></label>
-                        <input asp-for="TenTaiKhoan" class="form-control" />
-                        <span asp-validation-for="TenTaiKhoan" class="text-danger"></span>
-                    </div>
-                    <div class="mb-3">
-                        <label asp-for="MatKhau" class="form-label"></label>
-                        <input asp-for="MatKhau" type="password" class="form-control" />
-                        <span asp-validation-for="MatKhau" class="text-danger"></span>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">Đăng nhập</button>
-                </form>
-                <div class="mt-3 text-center">
-                    <span>Bạn chưa có tài khoản?</span>
-                    <a asp-action="Register" asp-controller="Access1">Đăng ký ngay!</a>
+<div class="auth-container">
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <!-- Header -->
+            <div class="auth-header">
+                <div class="brand-logo">
+                    <i class="fas fa-coffee"></i>
+                    THE SPACE COFFEE
                 </div>
+                <h2 class="auth-title">Chào mừng trở lại!</h2>
+                <p class="auth-subtitle">Vui lòng đăng nhập để tiếp tục</p>
             </div>
+
+            <!-- Form -->
+            <form asp-action="Login1" method="post" class="auth-form">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <!-- Username Input -->
+                <div class="form-group">
+                    <div class="input-group">
+                        <span class="input-group-icon">
+                            <i class="fas fa-user"></i>
+                        </span>
+                        <input asp-for="TenTaiKhoan" 
+                               class="form-control" 
+                               placeholder="Tên đăng nhập"
+                               autocomplete="username">
+                    </div>
+                    <span asp-validation-for="TenTaiKhoan" class="form-error"></span>
+                </div>
+
+                <!-- Password Input -->
+                <div class="form-group">
+                    <div class="input-group">
+                        <span class="input-group-icon">
+                            <i class="fas fa-lock"></i>
+                        </span>
+                        <input asp-for="MatKhau" 
+                               type="password" 
+                               class="form-control" 
+                               placeholder="Mật khẩu"
+                               autocomplete="current-password">
+                        <button type="button" class="password-toggle">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <span asp-validation-for="MatKhau" class="form-error"></span>
+                </div>
+
+                <!-- Remember & Forgot -->
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox"> Ghi nhớ đăng nhập
+                    </label>
+                    <a href="#" class="forgot-password">Quên mật khẩu?</a>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn-auth-submit">
+                    <i class="fas fa-sign-in-alt"></i> Đăng nhập
+                </button>
+
+                <!-- Social Login -->
+                <div class="social-login">
+                    <div class="divider">Hoặc tiếp tục với</div>
+                    <div class="social-buttons">
+                        <button type="button" class="btn-social google">
+                            <i class="fab fa-google"></i>
+                        </button>
+                        <button type="button" class="btn-social facebook">
+                            <i class="fab fa-facebook-f"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Registration Link -->
+                <div class="auth-footer">
+                    Bạn chưa có tài khoản? 
+                    <a asp-action="Register" asp-controller="Access1" class="register-link">
+                        Tạo tài khoản mới
+                    </a>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
+<style>
+    /* Base Styles */
+    .auth-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        display: flex;
+        align-items: center;
+        padding: 2rem;
+    }
 
+    .auth-wrapper {
+        max-width: 480px;
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    /* Card Styles */
+    .auth-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 1.5rem;
+        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+        backdrop-filter: blur(10px);
+        padding: 2.5rem;
+    }
+
+    /* Header Styles */
+    .auth-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .brand-logo {
+        font-size: 1.75rem;
+        color: #2d3748;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+    }
+
+    .auth-title {
+        font-size: 1.5rem;
+        color: #1a202c;
+        margin-bottom: 0.5rem;
+    }
+
+    .auth-subtitle {
+        color: #718096;
+        font-size: 0.875rem;
+    }
+
+    /* Form Styles */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .input-group {
+        position: relative;
+        display: flex;
+        align-items: center;
+        background: #f7fafc;
+        border-radius: 0.75rem;
+        transition: all 0.3s ease;
+    }
+
+    .input-group:hover {
+        background: #edf2f7;
+    }
+
+    .input-group-icon {
+        padding: 0 1rem;
+        color: #a0aec0;
+    }
+
+    .form-control {
+        border: none;
+        background: transparent;
+        padding: 1rem;
+        flex: 1;
+    }
+
+    .form-control:focus {
+        box-shadow: none;
+    }
+
+    .password-toggle {
+        background: transparent;
+        border: none;
+        padding: 0 1rem;
+        color: #a0aec0;
+        cursor: pointer;
+    }
+
+    /* Button Styles */
+    .btn-auth-submit {
+        width: 100%;
+        background: #4a5568;
+        color: white;
+        padding: 1rem;
+        border: none;
+        border-radius: 0.75rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-auth-submit:hover {
+        background: #2d3748;
+    }
+
+    /* Social Login */
+    .social-login {
+        margin: 2rem 0;
+    }
+
+    .divider {
+        position: relative;
+        text-align: center;
+        color: #a0aec0;
+        margin: 1.5rem 0;
+    }
+
+    .divider::before,
+    .divider::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        width: 45%;
+        height: 1px;
+        background: #e2e8f0;
+    }
+
+    .divider::before {
+        left: 0;
+    }
+
+    .divider::after {
+        right: 0;
+    }
+
+    .social-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .btn-social {
+        width: 3rem;
+        height: 3rem;
+        border-radius: 50%;
+        border: 1px solid #e2e8f0;
+        background: white;
+        transition: all 0.3s ease;
+    }
+
+    .btn-social:hover {
+        background: #f7fafc;
+        transform: translateY(-2px);
+    }
+
+    /* Footer Links */
+    .auth-footer {
+        text-align: center;
+        margin-top: 1.5rem;
+        color: #718096;
+    }
+
+    .register-link {
+        color: #4a5568;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .register-link:hover {
+        text-decoration: underline;
+    }
+
+    /* Error Messages */
+    .form-error {
+        color: #e53e3e;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        display: block;
+    }
+</style>
+
+<script>
+    // Password Toggle
+    document.querySelector('.password-toggle').addEventListener('click', function() {
+        const passwordInput = document.querySelector('input[type="password"]');
+        const isPassword = passwordInput.type === 'password';
+        passwordInput.type = isPassword ? 'text' : 'password';
+        this.querySelector('i').classList.toggle('fa-eye-slash');
+    });
+</script>

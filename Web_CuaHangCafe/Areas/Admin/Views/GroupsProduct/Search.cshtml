@@ -8,68 +8,130 @@
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
 
-<div class="container" style="margin-bottom:20px;">
-    <div class="row">
-        <div class="col-lg-8 col-md-12 col-sm-12">
-            <div class="page-header">
-                <h3 class="page-title">Kết quả tìm kiếm: <span style="color:#666;text-transform:capitalize;">@ViewBag.search</span></h3>
-            </div>
-        </div>
-        <div class="col-lg-4 col-md-12 col-sm-12">
-            <div class="search-field">
-                @using (Html.BeginForm("Search", "GroupsProduct", FormMethod.Get))
-                {
-                    <div class="input-group">
-                        <input type="text" class="form-control" name="search" style="border:none" placeholder="Tìm kiếm">
-                        <button class="btn" type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
-                    </div>
-                }
-            </div>
-        </div>
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mt-4 fs-4 text-primary">
+            <i class="fas fa-search me-2"></i>Kết quả tìm kiếm: 
+            <span class="text-secondary">"@ViewBag.search"</span>
+        </h1>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="fas fa-plus-circle me-2"></i>Thêm mới
+        </a>
     </div>
-</div>
 
-<div class="container">
-    <div class="row">
-        <p>
-            <a asp-action="Create" class="btn btn-secondary">Thêm mới</a>
-        </p>
-        <p id="status-message">@TempData["Message"]</p>
-        <div class="table-responsive">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Mã nhóm sản phẩm</th>
-                        <th>Tên nhóm sản phẩm</th>
-                        <th>Thao tác</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model)
-                    {
+    <div class="card shadow-sm mb-4">
+        <div class="card-header py-3">
+            <form asp-action="Search" method="get" class="search-form">
+                <div class="input-group">
+                    <span class="input-group-text bg-transparent border-end-0">
+                        <i class="fas fa-search text-secondary"></i>
+                    </span>
+                    <input type="text" 
+                           name="search" 
+                           class="form-control border-start-0 ps-0" 
+                           placeholder="Nhập từ khóa tìm kiếm..."
+                           value="@ViewBag.Search">
+                </div>
+            </form>
+        </div>
+
+        <div class="card-body p-0">
+            @if (TempData["Message"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show m-3" role="alert">
+                    @TempData["Message"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
                         <tr>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.MaNhomSp)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.TenNhomSp)
-                            </td>
-                            <td>
-                                <a class="btn btn-primary btn-sm" asp-action="Details" asp-route-id="@item.MaNhomSp" asp-route-name="@item.TenNhomSp">Xem</a>
-                                <a class="btn btn-success btn-sm" asp-action="Edit" asp-route-id="@item.MaNhomSp" asp-route-name="@item.TenNhomSp">Sửa</a>
-                                <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.MaNhomSp">Xoá</a>
-                            </td>
+                            <th class="ps-4">Mã nhóm</th>
+                            <th>Tên nhóm sản phẩm</th>
+                            <th class="text-end pe-4">Thao tác</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="ps-4 fw-medium">@item.MaNhomSp</td>
+                                <td>@item.TenNhomSp</td>
+                                <td class="text-end pe-4">
+                                    <div class="d-inline-flex gap-2">
+                                        <a asp-action="Details" 
+                                           asp-route-id="@item.MaNhomSp"
+                                           class="btn btn-sm btn-outline-info">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a asp-action="Edit" 
+                                           asp-route-id="@item.MaNhomSp"
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a asp-action="Delete" 
+                                           asp-route-id="@item.MaNhomSp"
+                                           class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
-    @Html.PagedListPager(Model, page=>Url.Action("search", new {page = page}), new PagedListRenderOptions()
-    {
-        MaximumPageNumbersToDisplay = 5,
-        LiElementClasses = new List<String> {"page-item"},
-        PageClasses = new List<String> {"page-link"}
-    })
+    <div class="mt-3">
+        @Html.PagedListPager(Model, page => Url.Action("Search", new { page, search = ViewBag.Search }), 
+        new PagedListRenderOptions {
+            LiElementClasses = new[] { "page-item" },
+            PageClasses = new[] { "page-link" },
+            UlElementClasses = new[] { "pagination justify-content-center" }
+        })
+    </div>
 </div>
+
+<style>
+    .search-form {
+        max-width: 400px;
+        margin-left: auto;
+    }
+    
+    .table {
+        border-radius: 0.5rem;
+        overflow: hidden;
+        box-shadow: 0 0.15rem 1rem rgba(0, 0, 0, 0.05);
+    }
+    
+    .table thead {
+        background: #4f46e5;
+        color: white;
+    }
+    
+    .table th {
+        border-bottom: none;
+        padding: 1rem;
+        font-weight: 600;
+    }
+    
+    .table td {
+        vertical-align: middle;
+        padding: 0.75rem;
+        border-color: #f3f4f6;
+    }
+    
+    .btn-outline-primary {
+        border-color: #4f46e5;
+        color: #4f46e5;
+    }
+    
+    .btn-outline-primary:hover {
+        background-color: #4f46e5;
+        color: white;
+    }
+</style>

@@ -2,56 +2,68 @@
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 @{
-    ViewData["Title"] = "Chi tiết";
+    ViewData["Title"] = "Chi tiết tin tức";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
 
-<div class="container" style="margin-bottom:20px;">
-    <div class="row">
-        <div class="col-lg-8 col-md-12 col-sm-12">
-            <div class="page-header">
-                <h3 class="page-title">Chi tiết tin tức: <span style="color:#666;">@ViewBag.name</span></h3>
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mt-4 fs-4 text-primary">
+            <i class="fas fa-newspaper me-2"></i>Chi tiết tin tức
+        </h1>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Quay lại
+        </a>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="row">
+                <!-- Thông tin chi tiết -->
+                <div class="col-md-8">
+                    <dl class="row g-3">
+                        <dt class="col-sm-3 text-muted">Mã tin</dt>
+                        <dd class="col-sm-9">@Model.MaTinTuc</dd>
+
+                        <dt class="col-sm-3 text-muted">Tiêu đề</dt>
+                        <dd class="col-sm-9 fw-semibold">@Model.TieuDe</dd>
+
+                        <dt class="col-sm-3 text-muted">Ngày đăng</dt>
+                        <dd class="col-sm-9">@Model.NgayDang.ToString("dd/MM/yyyy")</dd>
+
+                        <dt class="col-sm-3 text-muted">Nội dung</dt>
+                        <dd class="col-sm-9 text-justify">@Html.Raw(Model.NoiDung)</dd>
+                    </dl>
+                </div>
+
+                <!-- Hình ảnh -->
+                <div class="col-md-4">
+                    <div class="border rounded p-3 bg-light">
+                        <dt class="text-muted mb-3">Hình ảnh đính kèm</dt>
+                        <img src="@Url.Content("~/img/news/" + Model.HinhAnh)" 
+                             class="img-fluid rounded-3 shadow-sm" 
+                             alt="@Model.TieuDe"
+                             style="max-height: 300px; object-fit: cover;">
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+
+    <div class="d-flex justify-content-end gap-2">
+        <a asp-action="Edit" asp-route-id="@Model.MaTinTuc" class="btn btn-primary">
+            <i class="fas fa-edit me-2"></i>Chỉnh sửa
+        </a>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="fas fa-list me-2"></i>Danh sách tin
+        </a>
+    </div>
 </div>
 
-<div>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            Mã tin tức
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.MaTinTuc)
-        </dd>
-        <dt class="col-sm-2">
-            Tiêu đề
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.TieuDe)
-        </dd>
-        <dt class="col-sm-2">
-            Ngày đăng
-        </dt>
-        <dd class="col-sm-10">
-            @Model.NgayDang.ToString("dd/MM/yyyy")
-        </dd>
-        <dt class="col-sm-2">
-            Nội dung
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.NoiDung)
-        </dd>
-        <dt class="col-sm-2">
-            Hình ảnh
-        </dt>
-        <dd class="col-sm-10">
-            <img style="width:250px;" src=@Url.Content("../../img/news/" + Model.HinhAnh) />
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.MaTinTuc">Sửa</a> |
-    <a asp-action="Index">Quay về</a>
-</div>
+<style>
+    .text-justify {
+        text-align: justify;
+        white-space: pre-line;
+        line-height: 1.6;
+    }
+</style>

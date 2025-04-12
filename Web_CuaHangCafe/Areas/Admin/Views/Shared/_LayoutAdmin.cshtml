@@ -1,18 +1,8 @@
 ﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-@{
-    // Lấy thông tin đăng nhập từ session
-    var tenTaiKhoan = Context.Session.GetString("TenTaiKhoan");
-    var role = Context.Session.GetString("Role");
-}
-
-@using Microsoft.AspNetCore.Mvc.Rendering
-@{
-    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
-    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
-}
 
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -28,195 +18,118 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="~/lib/fontawesome/css/all.min.css" type="text/css" />
 
-    <!-- Các thư viện CSS khác -->
-    <link rel="stylesheet" href="~/lib/jquery-ui/jquery-ui.min.css" type="text/css" />
-    <link rel="stylesheet" href="~/lib/magnific-popup/dist/magnific-popup.css" type="text/css" />
-    <link rel="stylesheet" href="~/lib/owl-carousel-2/dist/assets/owl.carousel.min.css" type="text/css" />
-    <link rel="stylesheet" href="~/lib/owl-carousel-2/dist/assets/owl.theme.default.min.css" type="text/css" />
-    <link rel="stylesheet" href="~/lib/slick-nav/dist/slicknav.min.css" type="text/css" />
-
     <!-- CSS tùy chỉnh Admin -->
-    <link rel="stylesheet" href="~/css/style-admin.css" type="text/css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/style-admin-additional.css" type="text/css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/admin.css" type="text/css" />
 
-    <!-- Inline CSS (sau các file CSS bên ngoài) -->
-    <style>
-        /* Khi nav-link có class active, phần tử con .menu-title sẽ nhận style này */
-        .nav-link.active .menu-title {
-            color: #b66dff !important;
-            font-family: "Montserrat", sans-serif;
-            font-weight: 400;
-        }
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Trong _AdminLayout -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
-        /* Nếu dùng cho sales-mini-tabs (nếu có) */
-        .sales-mini-tabs .nav-item .nav-link.active {
-            font-weight: 600;
-            background: white;
-            color: #b66dff !important;
-        }
-    </style>
+     @RenderSection("Styles", required: false)
 </head>
+
 <body>
+    <div class="overlay" onclick="toggleSidebar()"></div>
     <div class="container-scroller">
-        <!-- Navbar -->
+        <!-- Phần Navbar-->
         <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
             <div class="navbar-brand-wrapper d-flex align-items-center justify-content-center">
                 <a asp-controller="homeadmin" asp-action="index" class="admin__logo">
-                    <i class="fas fa-coffee"></i> | @role
+                    <i class="fas fa-coffee"></i>
+                    <span class="logo-text">| Admin</span>
                 </a>
-            </div>
-            <div class="navbar-menu-wrapper d-flex align-items-stretch">
-                <ul class="navbar-nav navbar-nav-right">
-                    <li class="nav-item nav-item-logout">
-                        <a asp-controller="access1" asp-action="logout" class="nav-link">
-                            <i class="fas fa-sign-out-alt"></i>
-                            <span class="menu-title" style="padding-left:10px;">Đăng xuất</span>
-                        </a>
-                    </li>
-                </ul>
-                <!-- Nút toggle sidebar ở mobile -->
-                <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" onclick="openNavbar()">
+                <!-- nút toggle  -->
+                <button class="navbar-toggler align-self-center ms-3" onclick="toggleSidebar()">
                     <i class="fas fa-bars"></i>
                 </button>
             </div>
+            <div class="navbar-menu-wrapper d-flex align-items-stretch">
+                <ul class="navbar-nav navbar-nav-right ml-auto">
+                    <li class="nav-item nav-item-logout">
+                        <a asp-controller="access1" asp-action="logout" class="nav-link">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span class="menu-title">Đăng xuất</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </nav>
 
-        <!-- Wrapper cho nội dung -->
         <div class="container-fluid page-body-wrapper">
             <!-- Sidebar -->
             <nav class="sidebar sidebar-offcanvas" id="sidebar">
                 <ul class="nav nav-bar-fixed">
-                    @if (role == "Admin" || role == "Employee")
-                    {
-                        <li class="nav-item">
-                            <a asp-controller="HomeAdmin" asp-action="Index"
-                               class="nav-link @(currentController == "HomeAdmin" ? "active" : "")">
-                                <i class="fas fa-box-open"></i>
-                                <span class="menu-title">Quản lí sản phẩm</span>
-                            </a>
-                        </li>
-                    }
-
-                    @if (role == "Admin" || role == "Employee")
-                    {
-                        <li class="nav-item">
-                            <a asp-controller="GroupsProduct" asp-action="Index"
-                               class="nav-link @(currentController == "GroupsProduct" ? "active" : "")">
-                                <i class="fas fa-layer-group"></i>
-                                <span class="menu-title">Quản lí nhóm sản phẩm</span>
-                            </a>
-                        </li>
-                    }
-
-                    @if (role == "Admin" || role == "Employee")
-                    {
-                        <li class="nav-item">
-                            <a asp-controller="NguyenLieus" asp-action="Index"
-                               class="nav-link @(currentController == "NguyenLieus" ? "active" : "")">
-                                <i class="fas fa-carrot"></i>
-                                <span class="menu-title">Quản lí nguyên liệu</span>
-                            </a>
-                        </li>
-                    }
-
-                    @if (role == "Admin")
-                    {
-                        <li class="nav-item">
-                            <a asp-controller="ThuChi" asp-action="All"
-                               class="nav-link @(currentController == "ThuChi" ? "active" : "")">
-                                <i class="fas fa-file-invoice-dollar"></i>
-                                <span class="menu-title">Quản lí thu chi</span>
-                            </a>
-                        </li>
-                    }
-
-                    @if (role == "Admin" || role == "Employee")
-                    {
-                        <li class="nav-item">
-                            <a asp-controller="Bill" asp-action="Index"
-                               class="nav-link @(currentController == "Bill" ? "active" : "")">
-                                <i class="fas fa-receipt"></i>
-                                <span class="menu-title">Quản lí hoá đơn</span>
-                            </a>
-                        </li>
-                    }
-
-                    @if (role == "Admin" || role == "Employee")
-                    {
-                        <li class="nav-item">
-                            <a asp-controller="PhieuNhapHang" asp-action="Index"
-                               class="nav-link @(currentController == "PhieuNhapHang" ? "active" : "")">
-                                <i class="fas fa-truck"></i>
-                                <span class="menu-title">Quản lí phiếu nhập</span>
-                            </a>
-                        </li>
-                    }
-
-                    @if (role == "Admin")
-                    {
-                        <li class="nav-item">
-                            <a asp-controller="NhaCungCap" asp-action="Index"
-                               class="nav-link @(currentController == "NhaCungCap" ? "active" : "")">
-                                <i class="fas fa-building"></i>
-                                <span class="menu-title">Quản lí nhà cung cấp</span>
-                            </a>
-                        </li>
-                    }
-
-                    @if (role == "Admin")
-                    {
-                        <li class="nav-item">
-                            <a asp-controller="Clients" asp-action="Index"
-                               class="nav-link @(currentController == "Clients" ? "active" : "")">
-                                <i class="fas fa-users"></i>
-                                <span class="menu-title">Quản lí khách hàng</span>
-                            </a>
-                        </li>
-                    }
-
-                    @if (role == "Admin")
-                    {
-                        <li class="nav-item">
-                            <a asp-controller="NhanViens" asp-action="Index"
-                               class="nav-link @(currentController == "NhanViens" ? "active" : "")">
-                                <i class="fas fa-user-tie"></i>
-                                <span class="menu-title">Quản lí nhân viên</span>
-                            </a>
-                        </li>
-                    }
-
-                    @if (role == "Admin" || role == "Employee")
-                    {
-                        <li class="nav-item">
-                            <a asp-controller="NewsManage" asp-action="Index"
-                               class="nav-link @(currentController == "NewsManage" ? "active" : "")">
-                                <i class="fas fa-newspaper"></i>
-                                <span class="menu-title">Quản lí bài viết</span>
-                            </a>
-                        </li>
-                    }
-
-                    @if (role == "Admin")
-                    {
-                        <li class="nav-item">
-                            <a asp-controller="QuanCafe" asp-action="Index"
-                               class="nav-link @(currentController == "QuanCafe" ? "active" : "")">
-                                <i class="fas fa-store"></i>
-                                <span class="menu-title">Quản lí thông tin của hàng</span>
-                            </a>
-                        </li>
-                    }
-
-                    @if (role == "Admin" || role == "Employee")
-                    {
-                        <li class="nav-item">
-                            <a asp-controller="Access1" asp-action="Logout"
-                               class="nav-link">
-                                <i class="fas fa-sign-out-alt"></i>
-                                <span class="menu-title">Đăng xuất</span>
-                            </a>
-                        </li>
-                    }
+                    <li class="nav-item">
+                        <a asp-controller="HomeAdmin" asp-action="Index" class="nav-link">
+                            <i class="fas fa-list-ul" > </i>
+                            <span class="menu-title">Quản lí sản phẩm</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-controller="GroupsProduct" asp-action="Index" class="nav-link">
+                            <i class="fas fa-table"></i>
+                            <span class="menu-title">Quản lí nhóm SP</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-controller="NguyenLieus" asp-action="Index" class="nav-link">
+                            <i class="fas fa-boxes me-2"></i>
+                            <span class="menu-title">Quản lí nguyên liệu</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-controller="Bill" asp-action="Index" class="nav-link">
+                            <i class="fas fa-file-invoice"></i>
+                            <span class="menu-title">Quản lí hoá đơn</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-controller="PhieuNhapHang" asp-action="Index" class="nav-link">
+                            <i class="fas fa-file-invoice"></i>
+                            <span class="menu-title">Phiếu nhập</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-controller="NhaCungCap" asp-action="Index" class="nav-link">
+                            <i class="fas fa-truck"></i>
+                            <span class="menu-title">Nhà cung cấp</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-controller="Clients" asp-action="Index" class="nav-link">
+                            <i class="fas fa-user"></i>
+                            <span class="menu-title">Khách hàng</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-controller="NhanViens" asp-action="Index" class="nav-link">
+                            <i class="fas fa-users"></i>
+                            <span class="menu-title">Nhân viên</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-controller="NewsManage" asp-action="Index" class="nav-link">
+                            <i class="fas fa-newspaper"></i>
+                            <span class="menu-title">Bài viết</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-controller="QuanCafe" asp-action="Index" class="nav-link">
+                            <i class="fas fa-store"></i>
+                            <span class="menu-title">Cửa hàng</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-controller="ThuChi" asp-action="All" class="nav-link">
+                            <i class="fas fa-lock"></i>
+                            <span class="menu-title">Thu chi</span>
+                        </a>
+                    </li>
+                    
                 </ul>
             </nav>
 
@@ -229,7 +142,8 @@
                     <div class="container-fluid">
                         <div class="row">
                             <span class="copyright_text">
-                                Bản quyền &copy; <script>document.write(new Date().getFullYear());</script>.
+                                Bản quyền &copy;
+                                <script>document.write(new Date().getFullYear());</script>
                                 <a asp-controller="home" asp-action="index">THE SPACE COFFEE</a>
                             </span>
                         </div>
@@ -239,29 +153,51 @@
         </div>
     </div>
 
-    <!-- JS Libraries -->
+    <!-- Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
-    <script src="~/lib/fontawesome/js/all.min.js"></script>
-
-    <!-- Các file JS tùy chỉnh -->
-    <script src="~/js/off-canvas.js"></script>
-    <script src="~/js/hoverable-collapse.js"></script>
-    <script src="~/js/misc.js"></script>
-    <script src="~/js/main-admin.js" asp-append-version="true"></script>
-    <script src="~/js/main-admin-additional.js" asp-append-version="true"></script>
-    @RenderSection("Scripts", required: false)
-
-    <!-- JS để xử lý active class khi click -->
     <script>
-        $(document).ready(function(){
-            $('.nav-link').on('click', function(){
-                // Xóa class active khỏi tất cả nav-link
-                $('.nav-link').removeClass('active');
-                // Thêm class active cho nav-link vừa được click
-                $(this).addClass('active');
-            });
+        // Toggle sidebar
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+            localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('active'));
+        }
+
+        // Khôi phục trạng thái sidebar
+        document.addEventListener('DOMContentLoaded', () => {
+            const sidebar = document.getElementById('sidebar');
+            const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+
+            if (window.innerWidth >= 992) {
+                sidebar.classList.toggle('active', isCollapsed);
+            }
         });
+
+        // Xử lý responsive
+        window.addEventListener('resize', () => {
+            const sidebar = document.getElementById('sidebar');
+            if (window.innerWidth < 992) {
+                sidebar.classList.remove('active');
+            } else {
+                const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+                sidebar.classList.toggle('active', isCollapsed);
+            }
+        });
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.querySelector('.overlay');
+            sidebar.classList.toggle('active');
+
+            if (window.innerWidth < 992) {
+                overlay.style.display = sidebar.classList.contains('active') ? 'block' : 'none';
+            }
+
+            localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('active'));
+        }
     </script>
+    @RenderSection("Scripts", required: false)
 </body>
+
 </html>

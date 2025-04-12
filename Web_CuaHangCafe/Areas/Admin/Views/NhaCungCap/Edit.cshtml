@@ -4,44 +4,91 @@
     ViewData["Title"] = "Sửa Nhà cung cấp";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
-<div class="container mt-3">
-    <h2>Sửa Nhà cung cấp</h2>
-    <form asp-action="Edit" method="post">
-        <input type="hidden" asp-for="MaNhaCungCap" />
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-        <div class="form-group">
-            <label asp-for="TenNhaCungCap"></label>
-            <input asp-for="TenNhaCungCap" class="form-control" />
-            <span asp-validation-for="TenNhaCungCap" class="text-danger"></span>
-        </div>
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mt-4 fs-4 text-primary">
+            <i class="fas fa-truck-moving me-2"></i>Sửa Nhà cung cấp
+        </h1>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Quay lại
+        </a>
+    </div>
 
-        <div class="form-group">
-            <label asp-for="DiaChi"></label>
-            <input asp-for="DiaChi" class="form-control" />
-            <span asp-validation-for="DiaChi" class="text-danger"></span>
-        </div>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form asp-action="Edit" method="post">
+                <input type="hidden" asp-for="MaNhaCungCap" />
+                
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-        <div class="form-group">
-            <label asp-for="Sdtncc"></label>
-            <input asp-for="Sdtncc" class="form-control" />
-            <span asp-validation-for="Sdtncc" class="text-danger"></span>
-        </div>
+                <div class="row g-3">
+                    <!-- Supplier Name -->
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <div class="input-group">
+                                <span class="input-group-text bg-transparent">
+                                    <i class="fas fa-building text-primary"></i>
+                                </span>
+                                <input asp-for="TenNhaCungCap" class="form-control" placeholder="Tên nhà cung cấp" />
+                            </div>
+                            <span asp-validation-for="TenNhaCungCap" class="text-danger small"></span>
+                        </div>
+                    </div>
 
-        <div class="form-group">
-            <label asp-for="Stk"></label>
-            <input asp-for="Stk" class="form-control" />
-            <span asp-validation-for="Stk" class="text-danger"></span>
-        </div>
+                    <!-- Phone Number -->
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <div class="input-group">
+                                <span class="input-group-text bg-transparent">
+                                    <i class="fas fa-phone text-primary"></i>
+                                </span>
+                                <input asp-for="Sdtncc" class="form-control" placeholder="Số điện thoại" />
+                                <label asp-for="Sdtncc"></label>
+                            </div>
+                            <span asp-validation-for="Sdtncc" class="text-danger small"></span>
+                        </div>
+                    </div>
 
-        <div class="form-group">
-            <input type="submit" value="Lưu lại" class="btn btn-primary" />
-            <a asp-action="Index" class="btn btn-secondary">Quay về</a>
+                    <!-- Address -->
+                    <div class="col-12">
+                        <div class="form-floating">
+                            <div class="input-group">
+                                <span class="input-group-text bg-transparent">
+                                    <i class="fas fa-map-marker-alt text-primary"></i>
+                                </span>
+                                <input asp-for="DiaChi" class="form-control" placeholder="Địa chỉ" />
+                                <label asp-for="DiaChi"></label>
+                            </div>
+                            <span asp-validation-for="DiaChi" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- Bank Account -->
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <div class="input-group">
+                                <span class="input-group-text bg-transparent">
+                                    <i class="fas fa-credit-card text-primary"></i>
+                                </span>
+                                <input asp-for="Stk" class="form-control" placeholder="Số tài khoản" />
+                                <label asp-for="Stk"></label>
+                            </div>
+                            <span asp-validation-for="Stk" class="text-danger small"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 text-end">
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="fas fa-save me-2"></i>Lưu thay đổi
+                    </button>
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
 </div>
+
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

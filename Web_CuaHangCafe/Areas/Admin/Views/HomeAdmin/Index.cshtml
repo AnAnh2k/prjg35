@@ -9,84 +9,693 @@
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
 
-<div class="container" style="margin-bottom:20px;">
-    <div class="row">
-        <div class="col-lg-8 col-md-12 col-sm-12">
-            <div class="page-header">
-                <h3 class="page-title">Danh sách sản phẩm</h3>
-            </div>
-        </div>
-        <div class="col-lg-4 col-md-12 col-sm-12">
-            <div class="search-field">
-                @using (Html.BeginForm("Search", "HomeAdmin", FormMethod.Get))
-                {
-                    <div class="input-group">
-                        <input type="text" class="form-control" name="search" style="border:none" placeholder="Tìm kiếm" autocomplete="off">
-                        <button class="btn" type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
-                    </div>
-                }
-            </div>
-        </div>
-    </div>
-</div>
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mt-4 fs-4 text-uppercase text-primary">Quản lý sản phẩm</h1>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">
+        <i class="fas fa-plus-circle me-2"></i>Thêm mới
+    </button>
 
-<div class="container">
-    <div class="row">
-        <p>
-            <a asp-action="Create" class="btn btn-secondary">Thêm mới</a>
-        </p>
-        <p id="status-message">@TempData["Message"]</p>
-        <div class="table-responsive">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Mã sản phẩm</th>
-                        <th>Tên sản phẩm</th>
-                        <th>Hình ảnh</th>
-                        <th>Loại sản phẩm</th>
-                        <th>Giá bán</th>
-                        <th>Ghi chú</th>
-                        <th>Thao tác</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model)
-                    {
-                        <tr>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.MaSanPham)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.TenSanPham)
-                            </td>
-                            <td>
-                                <img src=@Url.Content("../img/products/" + item.HinhAnh) style="width: 80px;height: 80px;border-radius: 0;" />
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.LoaiSanPham)
-                            </td>
-                            <td>
-                                @(item.GiaBan.Value.ToString("n0")) &#8363;
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.GhiChu)
-                            </td>
-                            <td>
-                                <a class="btn btn-primary btn-sm" asp-action="Details" asp-route-id="@item.MaSanPham" asp-route-name="@item.TenSanPham">Xem</a>
-                                <a class="btn btn-success btn-sm" asp-action="Edit" asp-route-id="@item.MaSanPham" asp-route-name="@item.TenSanPham">Sửa</a>
-                                <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.MaSanPham">Xoá</a>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+        
     </div>
 
-    @Html.PagedListPager(Model, page=>Url.Action("index", new {page = page}), new PagedListRenderOptions()
+    @if (TempData["Message"] != null)
     {
-        MaximumPageNumbersToDisplay = 5,
-        LiElementClasses = new List<String> {"page-item"},
-        PageClasses = new List<String> {"page-link"}
-    })
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Message"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white py-3">
+            <form asp-action="Search" method="get">
+                <div class="input-group">
+                    <input type="text" 
+                           class="form-control border-end-0" 
+                           name="search" 
+                           placeholder="Tìm kiếm sản phẩm..."
+                           aria-label="Search">
+                    <button class="btn btn-outline-secondary bg-light border-start-0" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">Mã SP</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Hình ảnh</th>
+                            <th>Loại SP</th>
+                            <th>Giá bán</th>
+                            <th>Ghi chú</th>
+                            <th class="text-end pe-4">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr data-product-id="@item.MaSanPham">
+                                <td class="ps-4 fw-medium">@item.MaSanPham</td>
+                                <td>@item.TenSanPham</td>
+                                <td>
+                                    <img src="/img/products/@item.HinhAnh" 
+                                        class="img-thumbnail" 
+                                        style="width: 80px; height: 80px; object-fit: cover;">
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">@item.LoaiSanPham</span>
+                                </td>
+                                <td class="text-danger fw-bold">@(item.GiaBan?.ToString("n0")) ₫</td>
+                                <td class="text-truncate" style="max-width: 200px;">@item.GhiChu</td>
+                                <td class="text-end pe-4">
+                                    <div class="d-inline-flex gap-2">
+                                        <a asp-action="Details" 
+                                           asp-route-id="@item.MaSanPham" 
+                                           class="btn btn-sm btn-outline-secondary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <button class="btn btn-sm btn-outline-primary btn-edit" 
+                                                data-product-id="@item.MaSanPham">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger btn-delete" 
+                                            data-product-id="@item.MaSanPham">
+                                             <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card-footer bg-white">
+            @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), 
+            new PagedListRenderOptions {
+                LiElementClasses = new[] { "page-item" },
+                PageClasses = new[] { "page-link" },
+                UlElementClasses = new[] { "pagination justify-content-center mb-0" }
+            })
+        </div>
+    </div>
+    
 </div>
+ <div class="modal fade" id="addProductModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Thêm sản phẩm mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="createProductForm" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <div class="row g-4">
+                        <!-- Left Column -->
+                        <div class="col-md-8">
+                            <div class="row g-3">
+                                <!-- Product Name -->
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">Tên sản phẩm</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-tag"></i>
+                                        </span>
+                                        <input type="text" name="TenSanPham" class="form-control" 
+                                               placeholder="Nhập tên sản phẩm" required>
+                                    </div>
+                                    <span class="text-danger small" data-valmsg-for="TenSanPham"></span>
+                                </div>
+
+                                <!-- Price & Category -->
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Giá bán</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">₫</span>
+                                        <input type="number" name="GiaBan" class="form-control" 
+                                               placeholder="Nhập giá bán" required>
+                                    </div>
+                                    <span class="text-danger small" data-valmsg-for="GiaBan"></span>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Loại sản phẩm</label>
+                                    <select name="MaNhomSp" class="form-select" required>
+                                        <option value="">-- Chọn loại --</option>
+                                        @foreach (var group in ViewBag.ProductGroups)
+                                        {
+                                            <option value="@group.MaNhomSp">@group.TenNhomSp</option>
+                                        }
+                                    </select>
+                                    <span class="text-danger small" data-valmsg-for="MaNhomSp"></span>
+                                </div>
+
+                                <!-- Description & Note -->
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">Mô tả sản phẩm</label>
+                                    <textarea name="MoTa" class="form-control" rows="3"
+                                              placeholder="Nhập mô tả ngắn"></textarea>
+                                    <span class="text-danger small" data-valmsg-for="MoTa"></span>
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">Ghi chú</label>
+                                    <textarea name="GhiChu" class="form-control" rows="2"
+                                              placeholder="Thông tin bổ sung"></textarea>
+                                    <span class="text-danger small" data-valmsg-for="GhiChu"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column - Image Upload -->
+                        <div class="col-md-4">
+                            <div class="card border-0 bg-light">
+                                <div class="card-body text-center">
+                                    <!-- Image Preview -->
+                                    <div class="image-upload-wrapper">
+                                        <img id="imgPreview" class="img-fluid mb-3 rounded-3"
+                                             style="max-height: 250px; object-fit: cover; display: none;">
+
+                                        <!-- Upload Box -->
+                                        <div id="uploadArea" class="border-2 border-dashed rounded-3 p-4">
+                                            <i class="fas fa-image fa-3x text-muted mb-3"></i>
+                                            <p class="mb-1 small text-muted">
+                                                Kéo thả ảnh hoặc
+                                                <span class="text-primary">chọn từ máy</span>
+                                            </p>
+                                            <input type="file" name="ImageFile" class="form-control d-none" 
+                                                   id="HinhAnh" accept="image/*" onchange="previewImage(event)">
+                                            <button type="button" class="btn btn-sm btn-outline-primary mt-2"
+                                                    onclick="document.getElementById('HinhAnh').click()">
+                                                Chọn ảnh
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <span class="text-danger small" data-valmsg-for="HinhAnh"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-primary">
+                        <span class="submit-text">Lưu</span>
+                        <span class="spinner-border spinner-border-sm d-none" role="status"></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editProductModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chỉnh sửa sản phẩm</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="editProductForm" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="MaSanPham" id="editMaSanPham">
+                <div class="modal-body">
+                    <div class="row g-4">
+                        <!-- Left Column -->
+                        <div class="col-md-8">
+                            <div class="row g-3">
+                                <!-- Product Name -->
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">Tên sản phẩm</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-tag"></i>
+                                        </span>
+                                        <input type="text" name="TenSanPham" class="form-control" 
+                                               placeholder="Nhập tên sản phẩm" required>
+                                    </div>
+                                    <span class="text-danger small" data-valmsg-for="TenSanPham"></span>
+                                </div>
+
+                                <!-- Price & Category -->
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Giá bán</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">₫</span>
+                                        <input type="number" name="GiaBan" class="form-control" 
+                                               placeholder="Nhập giá bán" required>
+                                    </div>
+                                    <span class="text-danger small" data-valmsg-for="GiaBan"></span>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Loại sản phẩm</label>
+                                    <select name="MaNhomSp" class="form-select" required>
+                                        <option value="">-- Chọn loại --</option>
+                                        @foreach (var group in ViewBag.ProductGroups)
+                                        {
+                                            <option value="@group.MaNhomSp">@group.TenNhomSp</option>
+                                        }
+                                    </select>
+                                    <span class="text-danger small" data-valmsg-for="MaNhomSp"></span>
+                                </div>
+
+                                <!-- Description & Note -->
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">Mô tả sản phẩm</label>
+                                    <textarea name="MoTa" class="form-control" rows="3"
+                                              placeholder="Nhập mô tả ngắn"></textarea>
+                                    <span class="text-danger small" data-valmsg-for="MoTa"></span>
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">Ghi chú</label>
+                                    <textarea name="GhiChu" class="form-control" rows="2"
+                                              placeholder="Thông tin bổ sung"></textarea>
+                                    <span class="text-danger small" data-valmsg-for="GhiChu"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column - Image Upload -->
+                        <div class="col-md-4">
+                            <div class="card border-0 bg-light">
+                                <div class="card-body text-center">
+                                    <!-- Image Preview -->
+                                    <div class="image-upload-wrapper">
+                                        <img id="imgPreview" class="img-fluid mb-3 rounded-3"
+                                             style="max-height: 250px; object-fit: cover; display: none;">
+
+                                        <!-- Upload Box -->
+                                        <div id="uploadArea" class="border-2 border-dashed rounded-3 p-4">
+                                            <i class="fas fa-image fa-3x text-muted mb-3"></i>
+                                            <p class="mb-1 small text-muted">
+                                                Kéo thả ảnh hoặc
+                                                <span class="text-primary">chọn từ máy</span>
+                                            </p>
+                                            <input type="file" name="ImageFile" class="form-control d-none" 
+                                                   id="HinhAnh" accept="image/*" onchange="previewImage(event)">
+                                            <button type="button" class="btn btn-sm btn-outline-primary mt-2"
+                                                    onclick="document.getElementById('HinhAnh').click()">
+                                                Chọn ảnh
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <span class="text-danger small" data-valmsg-for="HinhAnh"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-primary">
+                        <span class="submit-text">Cập nhật</span>
+                        <span class="spinner-border spinner-border-sm d-none" role="status"></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+document.getElementById('createProductForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const form = this;
+    const modalEl = document.getElementById('addProductModal');
+    const modal = bootstrap.Modal.getInstance(modalEl);
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const spinner = submitBtn.querySelector('.spinner-border');
+    const submitText = submitBtn.querySelector('.submit-text');
+    
+    // Hiển thị loading
+    submitText.classList.add('d-none');
+    spinner.classList.remove('d-none');
+    
+    try {
+        const formData = new FormData(form);
+        const response = await fetch('@Url.Action("Create", "HomeAdmin")', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'RequestVerificationToken': document.querySelector('[name="__RequestVerificationToken"]').value
+            }
+        });
+
+        const result = await response.json();
+        
+        if (result.success) {
+            // Thêm hàng mới vào bảng
+            const newRow = createProductRow(result.product);
+            document.querySelector('tbody').insertAdjacentHTML('beforeend', newRow);
+            
+            alert('Thêm sản phẩm thành công:', result.product);
+
+
+            // Đóng modal và xử lý backdrop
+            if (modal) {
+                modal.hide();
+                
+                const handleHidden = () => {
+                    // Xóa backdrop
+                    document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                    // Reset body style
+                    document.body.style.overflow = 'visible';
+                    document.body.style.paddingRight = '';
+                    document.body.classList.remove('modal-open');
+                    // Gỡ bỏ sự kiện
+                    modalEl.removeEventListener('hidden.bs.modal', handleHidden);
+                };
+                
+                modalEl.addEventListener('hidden.bs.modal', handleHidden);
+            }
+            
+            // Reset form
+            form.reset();
+            // Reset validation
+            $('#createProductForm').validate().resetForm();
+            
+           
+        } else {
+            // Hiển thị thông báo lỗi từ server
+            let errorMessage = result.message || 'Có lỗi xảy ra';
+            if (result.errors && result.errors.length > 0) {
+                errorMessage += ": " + result.errors.join(", ");
+            }
+            alert(errorMessage, 'danger');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        
+    } finally {
+        submitText.classList.remove('d-none');
+        spinner.classList.add('d-none');
+    }
+});
+
+function createProductRow(product) {
+    return `
+    <tr data-product-id="${product.MaSanPham}">
+        <td class="ps-4 fw-medium">${product.MaSanPham}</td>
+        <td>${product.TenSanPham}</td>
+        <td>
+            <img src="/img/products/${product.HinhAnh}" 
+                 class="img-thumbnail" 
+                 style="width:80px;height:80px;object-fit:cover;">
+        </td>
+        <td><span class="badge bg-info">${product.LoaiSanPham}</span></td>
+        <td class="text-danger fw-bold">${product.GiaBan} ₫</td>
+        <td class="text-truncate" style="max-width:200px;">${product.GhiChu}</td>
+        <td class="text-end pe-4">
+            <div class="d-inline-flex gap-2">
+                <a href="/Admin/HomeAdmin/Details/${product.MaSanPham}" 
+                       class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-eye"></i>
+                    </a>
+                <button class="btn btn-sm btn-outline-primary btn-edit" 
+                    data-product-id="${product.MaSanPham}">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger btn-delete" 
+                    data-product-id="${product.MaSanPham}">
+                    <i class="fas fa-trash-alt"></i>
+                </button>                        
+            </div>
+        </td>
+    </tr>`;
+}
+
+
+
+// Validation với jQuery
+$(document).ready(function() {
+    $('#createProductForm').validate({
+        rules: {
+            TenSanPham: 'required',
+            GiaBan: { required: true, number: true },
+            MaNhomSp: 'required'
+        },
+        messages: {
+            TenSanPham: 'Vui lòng nhập tên sản phẩm',
+            GiaBan: {
+                required: 'Vui lòng nhập giá bán',
+                number: 'Giá bán phải là số hợp lệ'
+            },
+            MaNhomSp: 'Vui lòng chọn loại sản phẩm'
+        },
+        errorElement: 'div',
+        errorClass: 'invalid-feedback',
+        highlight: function(element) {
+            $(element).addClass('is-invalid');
+        },
+        unhighlight: function(element) {
+            $(element).removeClass('is-invalid');
+        }
+    });
+});
+
+function previewImage(event) {
+        const input = event.target;
+        const preview = document.getElementById('imgPreview');
+        const uploadArea = document.getElementById('uploadArea');
+
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                uploadArea.style.display = 'none';
+            }
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    // Currency Formatting
+    function formatCurrency(input) {
+        input.value = input.value.replace(/\D/g, '');
+        if (input.value.length > 0) {
+            input.value = parseInt(input.value).toLocaleString('vi-VN');
+        }
+    }
+
+// Xử lý Delete
+document.addEventListener('click', async function(e) {
+    const deleteBtn = e.target.closest('.btn-delete');
+    if (deleteBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const productId = deleteBtn.dataset.productId;
+        const row = deleteBtn.closest('tr');
+        
+        if (!confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) return;
+
+        try {
+            // Hiển thị loading
+            const originalContent = deleteBtn.innerHTML;
+            deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            deleteBtn.disabled = true;
+
+            // Tạo form data
+            const formData = new FormData();
+            formData.append('id', productId);
+            formData.append('__RequestVerificationToken', document.querySelector('input[name="__RequestVerificationToken"]').value);
+
+            const response = await fetch('@Url.Action("DeleteProduct", "HomeAdmin")', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Accept': 'application/json' // Yêu cầu server trả về JSON
+                }
+            });
+
+            const result = await response.json();
+            
+            if (result.success) {
+                // Xóa hàng khỏi DOM bằng productId từ response
+                const rowToRemove = document.querySelector(`tr[data-product-id="${result.productId}"]`);
+                if (rowToRemove) {
+                    rowToRemove.remove();
+                }
+                alert('Xóa thành công', 'success');
+            } else {
+                alert(result.message || 'Xóa thất bại', 'danger');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Lỗi kết nối server', 'danger');
+        } finally {
+            // Khôi phục trạng thái nút
+            if (deleteBtn) {
+                deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+                deleteBtn.disabled = false;
+            }
+        }
+    }
+});
+
+// Xử lý mở modal edit và điền dữ liệu
+document.addEventListener('click', async function(e) {
+    const editBtn = e.target.closest('.btn-edit');
+    if (editBtn) {
+        e.preventDefault();
+        const productId = editBtn.dataset.productId;
+        
+        try {
+            // Hiển thị loading
+            editBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            
+            // Lấy thông tin sản phẩm
+            const response = await fetch(`@Url.Action("Edit", "HomeAdmin")?id=${productId}`);
+            const product = await response.json();
+
+            // Điền dữ liệu vào form edit
+            fillEditForm(product);
+            
+            // Mở modal
+            const editModal = new bootstrap.Modal(document.getElementById('editProductModal'));
+            editModal.show();
+            
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Lỗi tải dữ liệu sản phẩm', 'danger');
+        } finally {
+            editBtn.innerHTML = '<i class="fas fa-edit"></i>';
+        }
+    }
+});
+
+// Hàm điền dữ liệu vào form edit
+function fillEditForm(product) {
+    document.getElementById('editMaSanPham').value = product.maSanPham;
+    document.querySelector('#editProductModal [name="TenSanPham"]').value = product.tenSanPham;
+    document.querySelector('#editProductModal [name="GiaBan"]').value = product.giaBan;
+    document.querySelector('#editProductModal [name="MaNhomSp"]').value = product.maNhomSp;
+    document.querySelector('#editProductModal [name="MoTa"]').value = product.moTa || '';
+    document.querySelector('#editProductModal [name="GhiChu"]').value = product.ghiChu || '';
+    
+    // Xử lý ảnh preview
+    const imgPreview = document.querySelector('#editProductModal #imgPreview');
+    imgPreview.src = `/img/products/${product.hinhAnh}`;
+    imgPreview.style.display = 'block';
+    document.querySelector('#editProductModal #uploadArea').style.display = 'none';
+}
+
+// Xử lý submit form edit
+document.getElementById('editProductForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const form = this;
+    const modal = bootstrap.Modal.getInstance(document.getElementById('editProductModal'));
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const spinner = submitBtn.querySelector('.spinner-border');
+    const submitText = submitBtn.querySelector('.submit-text');
+
+    // Hiển thị loading
+    submitText.classList.add('d-none');
+    spinner.classList.remove('d-none');
+
+    try {
+        const formData = new FormData(form);
+        const response = await fetch('@Url.Action("EditProduct", "HomeAdmin")', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'RequestVerificationToken': document.querySelector('#editProductModal [name="__RequestVerificationToken"]').value
+            }
+        });
+
+        const result = await response.json();
+        
+        if (result.success) {
+            // Cập nhật dòng trong bảng
+            updateProductRow(result.product);
+            modal.hide();
+            alert('Cập nhật thành công!', 'success');
+        } else {
+            alert(result.message || 'Cập nhật thất bại', 'danger');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Lỗi kết nối server', 'danger');
+    } finally {
+        submitText.classList.remove('d-none');
+        spinner.classList.add('d-none');
+    }
+});
+
+// Hàm cập nhật dòng sản phẩm
+function updateProductRow(product) {
+    const row = document.querySelector(`tr[data-product-id="${product.MaSanPham}"]`);
+    if (row) {
+        row.innerHTML = `
+            <td class="ps-4 fw-medium">${product.MaSanPham}</td>
+            <td>${product.TenSanPham}</td>
+            <td>
+                <img src="/img/products/${product.HinhAnh}" 
+                     class="img-thumbnail" 
+                     style="width:80px;height:80px;object-fit:cover;">
+            </td>
+            <td><span class="badge bg-info">${product.LoaiSanPham}</span></td>
+            <td class="text-danger fw-bold">${product.GiaBan.toLocaleString()} ₫</td>
+            <td class="text-truncate" style="max-width:200px;">${product.GhiChu || ''}</td>
+            <td class="text-end pe-4">
+                <div class="d-inline-flex gap-2">
+                    <button class="btn btn-sm btn-outline-secondary btn-details" 
+                        data-product-id="${product.MaSanPham}">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-primary btn-edit" 
+                        data-product-id="${product.MaSanPham}">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger btn-delete" 
+                        data-product-id="${product.MaSanPham}">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>                        
+                </div>
+            </td>`;
+    }
+}
+
+$(document).ready(function() {
+    $('#editProductForm').validate({
+        rules: {
+            TenSanPham: 'required',
+            GiaBan: { required: true, number: true },
+            MaNhomSp: 'required'
+        },
+        messages: {
+            TenSanPham: 'Vui lòng nhập tên sản phẩm',
+            GiaBan: {
+                required: 'Vui lòng nhập giá bán',
+                number: 'Giá bán phải là số hợp lệ'
+            },
+            MaNhomSp: 'Vui lòng chọn loại sản phẩm'
+        },
+        errorElement: 'div',
+        errorClass: 'invalid-feedback',
+        highlight: function(element) {
+            $(element).addClass('is-invalid');
+        },
+        unhighlight: function(element) {
+            $(element).removeClass('is-invalid');
+        }
+    });
+});
+
+</script>
+}

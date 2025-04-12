@@ -2,47 +2,120 @@
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
-    ViewData["Title"] = "Chỉnh sửa nguyên liệu";
+    ViewData["Title"] = ViewBag.Title;
 }
 
-<h1>Chỉnh sửa nguyên liệu</h1>
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mt-4 fs-4 text-primary">
+            <i class="fas fa-@(ViewContext.RouteData.Values["action"].ToString() == "Create" ? "plus" : "edit") me-2"></i>
+            @ViewData["Title"]
+        </h1>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Quay về
+        </a>
+    </div>
 
-<form asp-action="Edit" method="post">
-    @Html.AntiForgeryToken()
-    <input type="hidden" asp-for="MaNguyenLieu" />
-    <div class="form-group">
-        <label asp-for="TenNguyenLieu"></label>
-        <input asp-for="TenNguyenLieu" class="form-control" />
-        <span asp-validation-for="TenNguyenLieu" class="text-danger"></span>
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form asp-action="@ViewContext.RouteData.Values["action"]" method="post">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                
+                @if (ViewContext.RouteData.Values["action"].ToString() == "Edit")
+                {
+                    <input type="hidden" asp-for="MaNguyenLieu" />
+                }
+
+                <div class="row g-3">
+                    <!-- Tên nguyên liệu -->
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input asp-for="TenNguyenLieu" 
+                                   class="form-control" 
+                                   placeholder="Tên nguyên liệu"
+                                   required>
+                            <label asp-for="TenNguyenLieu"></label>
+                            <span asp-validation-for="TenNguyenLieu" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- Đơn vị tính -->
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input asp-for="DonViTinh" 
+                                   class="form-control" 
+                                   placeholder="Đơn vị tính"
+                                   required>
+                            <label asp-for="DonViTinh"></label>
+                            <span asp-validation-for="DonViTinh" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- Số lượng -->
+                    <div class="col-md-4">
+                        <div class="form-floating">
+                            <input asp-for="SoLuong" 
+                                   type="number" 
+                                   class="form-control" 
+                                   placeholder="Số lượng"
+                                   min="0"
+                                   required>
+                            <label asp-for="SoLuong"></label>
+                            <span asp-validation-for="SoLuong" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- Đơn giá -->
+                    <div class="col-md-4">
+                        <div class="form-floating">
+                            <input asp-for="DonGia" 
+                                   type="number" 
+                                   class="form-control" 
+                                   placeholder="Đơn giá"
+                                   min="0"
+                                   required>
+                            <label asp-for="DonGia"></label>
+                            <span asp-validation-for="DonGia" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- SL tối thiểu -->
+                    <div class="col-md-4">
+                        <div class="form-floating">
+                            <input asp-for="SoLuongToiThieu" 
+                                   type="number" 
+                                   class="form-control" 
+                                   placeholder="SL tối thiểu"
+                                   min="0"
+                                   required>
+                            <label asp-for="SoLuongToiThieu"></label>
+                            <span asp-validation-for="SoLuongToiThieu" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- Hạn sử dụng -->
+                    <div class="col-md-12">
+                        <div class="form-floating">
+                            <input asp-for="HanSuDung" 
+                                   type="date" 
+                                   class="form-control" 
+                                   placeholder="Hạn sử dụng">
+                            <label asp-for="HanSuDung"></label>
+                            <span asp-validation-for="HanSuDung" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="col-12 text-end">
+                        <button type="submit" class="btn btn-primary px-5">
+                            <i class="fas fa-save me-2"></i>Lưu
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
-    <div class="form-group">
-        <label asp-for="SoLuong"></label>
-        <input asp-for="SoLuong" class="form-control" />
-        <span asp-validation-for="SoLuong" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="DonViTinh"></label>
-        <input asp-for="DonViTinh" class="form-control" />
-        <span asp-validation-for="DonViTinh" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="HanSuDung"></label>
-        <input asp-for="HanSuDung" class="form-control" type="date" />
-        <span asp-validation-for="HanSuDung" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="DonGia"></label>
-        <input asp-for="DonGia" class="form-control" />
-        <span asp-validation-for="DonGia" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="SoLuongToiThieu"></label>
-        <input asp-for="SoLuongToiThieu" class="form-control" />
-        <span asp-validation-for="SoLuongToiThieu" class="text-danger"></span>
-    </div>
-    <button type="submit" class="btn btn-success">Lưu thay đổi</button>
-    <a asp-action="Index" class="btn btn-secondary">Hủy</a>
-</form>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
