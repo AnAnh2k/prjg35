@@ -13,15 +13,28 @@
         <h1 class="mt-4 fs-4 text-primary">
             <i class="fas fa-newspaper me-2"></i>Quản lý tin tức
         </h1>
+       @*   <div class="d-flex gap-3">  *@
+       @*     <a asp-action="Create" class="btn btn-primary">  *@
+       @*          <i class="fas fa-plus-circle me-2"></i>Thêm mới  *@
+       @*      </a>  *@
+       @* </div>  *@
         <div class="d-flex gap-3">
-            <a asp-action="Create" class="btn btn-primary">
+            <a asp-action="Create" class="btn btn-primary ajax-link">
                 <i class="fas fa-plus-circle me-2"></i>Thêm mới
             </a>
         </div>
     </div>
-
+   
     <div class="card shadow-sm mb-4">
         <div class="card-header py-3">
+                @if (TempData["Message"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show m-3" role="alert">
+                        @TempData["Message"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+
             <form asp-action="Search" method="get" class="search-form">
                 <div class="input-group">
                     <span class="input-group-text bg-transparent border-end-0">
@@ -35,16 +48,11 @@
                 </div>
             </form>
         </div>
-
+        </div>
+    <div id="dataListContainer">
+        <!-- Data Table -->
+        <div class="card shadow-sm">
         <div class="card-body p-0">
-            @if (TempData["Message"] != null)
-            {
-                <div class="alert alert-success alert-dismissible fade show m-3" role="alert">
-                    @TempData["Message"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            }
-
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
@@ -64,21 +72,34 @@
                                 <td>@item.NgayDang.ToString("dd/MM/yyyy")</td>
                                 <td class="text-end pe-4">
                                     <div class="d-inline-flex gap-2">
-                                        <a asp-action="Details" 
+                                        @* <a asp-action="Details"  *@
+                                        @*    asp-route-id="@item.MaTinTuc" *@
+                                        @*    class="btn btn-sm btn-outline-primary"> *@
+                                        @*     <i class="fas fa-eye"></i> *@
+                                        @* </a> *@
+                                            <a asp-action="Details"
+                                               asp-route-id="@item.MaTinTuc"
+                                               class="btn btn-sm btn-outline-primary ajax-link">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                         @* <a asp-action="Edit"  *@
+                                         @*   asp-route-id="@item.MaTinTuc"  *@
+                                         @*   class="btn btn-sm btn-outline-warning">  *@
+                                         @*    <i class="fas fa-edit"></i>  *@
+                                         @* </a>  *@
+                                        <a asp-action="Edit"
                                            asp-route-id="@item.MaTinTuc"
-                                           class="btn btn-sm btn-outline-primary">
-                                            <i class="fas fa-eye"></i>
+                                           class="btn btn-sm btn-outline-warning ajax-link">
+                                            <i class="fas fa-edit me-1"></i>Sửa
                                         </a>
-                                        <a asp-action="Edit" 
-                                           asp-route-id="@item.MaTinTuc"
-                                           class="btn btn-sm btn-outline-warning">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <a asp-action="Delete" 
-                                           asp-route-id="@item.MaTinTuc"
-                                           class="btn btn-sm btn-outline-danger">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </a>
+                                        @* <a asp-action="Delete"  *@
+                                        @*    asp-route-id="@item.MaTinTuc" *@
+                                        @*    class="btn btn-sm btn-outline-danger"> *@
+                                        @*     <i class="fas fa-trash-alt"></i> *@
+                                        @* </a> *@
+                                            <a asp-action="Delete" asp-route-id="@item.MaTinTuc" class="btn btn-sm btn-outline-danger btn-delete">
+                                                <i class="fas fa-trash-alt me-1"></i>Xóa
+                                            </a>
                                     </div>
                                 </td>
                             </tr>
@@ -87,8 +108,8 @@
                 </table>
             </div>
         </div>
+        </div>
     </div>
-
     <div class="mt-3">
         @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), 
         new PagedListRenderOptions {
@@ -101,9 +122,10 @@
 
 @section Scripts {
     <script>
-        // Xử lý thông báo tự đóng
+    
         document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(function() {
+             // Xử lý thông báo tự đóng
+             setTimeout(function() {
                 const alert = document.querySelector('.alert');
                 if (alert) {
                     alert.style.transition = 'opacity 0.5s';
@@ -111,6 +133,134 @@
                     setTimeout(() => alert.remove(), 500);
                 }
             }, 3000);
+
+            // --- Hàm mở modal và hiển thị HTML form ---
+            function openModal(htmlContent) {
+                const modalContainer = document.getElementById('modalContainer');
+                const modalContent = document.getElementById('modalContent');
+                // Chèn nút đóng modal và nội dung form vừa load vào modalContent
+                modalContent.innerHTML = `<button id="closeModal" style="position: absolute; top: 10px; right: 10px;">X</button>` + htmlContent;
+                modalContainer.style.display = 'flex';
+                attachCloseEvent();
+            }
+
+            // --- Hàm đóng modal ---
+            function closeModal() {
+                const modalContainer = document.getElementById('modalContainer');
+                modalContainer.style.display = 'none';
+                // Reset nội dung modalContent về chỉ có nút đóng để chuẩn bị cho lần load sau
+                document.getElementById('modalContent').innerHTML = `<button id="closeModal" style="position: absolute; top: 10px; right: 10px;">X</button>`;
+                attachCloseEvent();
+            }
+
+            // --- Gán sự kiện cho nút đóng modal ---
+            function attachCloseEvent() {
+                const btn = document.getElementById('closeModal');
+                if (btn) {
+                    btn.addEventListener('click', closeModal);
+                }
+            }
+            attachCloseEvent();
+
+            // --- Hàm làm mới danh sách dữ liệu ---
+            // Cách 1: tải toàn bộ trang Index qua AJAX rồi trích xuất phần chứa container "dataListContainer"
+            function refreshList() {
+                fetch('/Admin/NewsManage/Index')
+                    .then(response => response.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const newDataList = doc.getElementById('dataListContainer');
+                        if (newDataList) {
+                            document.getElementById('dataListContainer').innerHTML = newDataList.innerHTML;
+                        } else {
+                            console.error('Không tìm thấy container dataListContainer trong trang mới tải.');
+                        }
+                    })
+                    .catch(error => console.error('Error refreshing list:', error));
+            }
+
+            // --- Event Delegation: Xử lý các liên kết thêm/sửa có class "ajax-link" ---
+            document.addEventListener('click', function(e) {
+                const ajaxLink = e.target.closest('a.ajax-link');
+                if (ajaxLink) {
+                    e.preventDefault();
+                    const url = ajaxLink.href;
+                    fetch(url, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.text())
+                    .then(html => {
+                        openModal(html);
+                    })
+                    .catch(error => console.error('Error loading form:', error));
+                }
+            });
+
+            // --- Event Delegation: Xử lý submit form bên trong modal (thêm/sửa) ---
+            document.getElementById('modalContent').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const form = e.target;
+                const formData = new FormData(form);
+                const actionUrl = form.getAttribute('action');
+                const method = form.getAttribute('method') || 'POST';
+
+                fetch(actionUrl, {
+                    method: method,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    if (data.success) {
+                        closeModal();
+                        refreshList();
+                    }
+                })
+                .catch(error => console.error('Error submitting form:', error));
+            });
+
+            // --- Event Delegation: Xử lý nút Xóa trong container dữ liệu ---
+            document.getElementById('dataListContainer').addEventListener('click', function(e) {
+                const deleteLink = e.target.closest('a.btn-delete');
+                if (deleteLink) {
+                    e.preventDefault();
+                    if (!confirm('Bạn có chắc chắn muốn xóa?')) return;
+                    const url = deleteLink.href;
+                    fetch(url, {
+                        method: 'GET', // Tham khảo: nếu có thể, chuyển sang POST hoặc DELETE
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert(data.message);
+                        if (data.success) {
+                            refreshList();
+                        }
+                    })
+                    .catch(error => console.error('Error deleting item:', error));
+                }
+            });
+
+            // --- Event Delegation: Xử lý nút "Quay về" trong modal ---
+            // Giả sử trong nội dung form bạn có một nút với id "btnBack"
+            document.addEventListener('click', function(e) {
+                const backBtn = e.target.closest('button#btnBack');
+                if (backBtn) {
+                    e.preventDefault();
+                    closeModal();
+                    // Nếu cần, bạn có thể gọi refreshList() để cập nhật lại danh sách
+                    // refreshList();
+                }
+            });
+
         });
     </script>
 }

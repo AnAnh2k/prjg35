@@ -85,7 +85,39 @@
                         </div>
                         <div class="checkout__order__total">
                             <ul>
+                                
                                 <li>Tổng tiền <span>@Model.Total &#8363;</span></li>
+                                @{
+                                    // Chuyển đổi Model.Total sang kiểu decimal, có thể sử dụng CultureInfo.InvariantCulture nếu cần
+                                    decimal totalAmount = 0;
+                                    if (!string.IsNullOrEmpty(Model.Total))
+                                    {
+                                        decimal.TryParse(Model.Total, System.Globalization.NumberStyles.AllowThousands, System.Globalization.CultureInfo.InvariantCulture, out totalAmount);
+                                    }
+                                }
+                                
+                                @* Nếu tổng tiền >= 2 triệu, cho phép chọn giảm 10% hoặc 20; nếu >= 1 triệu mà nhỏ hơn 2 triệu thì chỉ giảm 10% *@
+                                @if (totalAmount >= 2000000)
+                                {
+                                    <li>
+                                        Giảm giá
+                                        <select name="discountPercent" class="form-control">
+                                            <option value="0">Không giảm giá</option>
+                                            <option value="10">Giảm 10%</option>
+                                            <option value="20">Giảm 20%</option>
+                                        </select>
+                                    </li>
+                                }
+                                else if (totalAmount >= 1000000)
+                                {
+                                    <li>
+                                        Giảm giá
+                                        <select name="discountPercent" class="form-control">
+                                            <option value="0">Không giảm giá</option>
+                                            <option value="10">Giảm 10%</option>
+                                        </select>
+                                    </li>
+                                }
                             </ul>
                             <div class="checkout__order__widget">
                                 <label for="qr">

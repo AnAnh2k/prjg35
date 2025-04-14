@@ -1,6 +1,8 @@
 ﻿@{
     ViewData["Title"] = @Html.DisplayFor(model => model.TenSanPham);
     ViewData["Products"] = "active";
+    var tenTaiKhoan = Context.Session.GetString("TenTaiKhoan");
+    var role = Context.Session.GetString("Role");
 }
 
 @model Web_CuaHangCafe.Models.TbSanPham
@@ -39,6 +41,9 @@
             </div>
             <div class="col-lg-6">
                 <div class="product__details__text">
+                    <strong>Người dùng:</strong> @tenTaiKhoan &nbsp;&nbsp;
+                    <strong>Quyền:</strong> @role
+                    <button id="btnShowCookie" class="btn btn-info">Xem thông tin Cookie</button>
                     <h3>@Html.DisplayFor(model => model.TenSanPham)</h3>
                     <div class="product__details__price">@Model.GiaBan.ToString("n0") &#8363;</div>
                     <form id="myForm">
@@ -119,6 +124,93 @@
         </div>
     </div>
 </section>
+
+<!-- Phần hiển thị danh sách sản phẩm vừa xem -->
+@if (ViewBag.RecentProducts != null)
+{
+    var recentProducts = (List<Web_CuaHangCafe.Models.TbSanPham>)ViewBag.RecentProducts;
+    if (recentProducts.Count > 0)
+    {
+        <section class="recent-products spad">
+            <div class="container">
+                <h3 class="mb-4">Sản phẩm bạn vừa xem</h3>
+                <div class="row">
+                    @foreach (var p in recentProducts)
+                    {
+                        <div class="col-lg-2 col-md-3 col-sm-4 col-6 mb-3">
+                            <div class="recent-product-item">
+                                <a asp-controller="Products" asp-action="Details" asp-route-id="@p.MaSanPham">
+                                    <img src="@Url.Content("~/img/products/" + p.HinhAnh)" alt="@p.TenSanPham" class="img-fluid" />
+                                    <p class="mt-2 text-center">@p.TenSanPham</p>
+                                </a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </section>
+    }
+}
+
+<!-- Phần hiển thị danh sách người dùng đã xem sản phẩm -->
+@if (ViewBag.Viewers != null && ((List<string>)ViewBag.Viewers).Any())
+{
+    var viewers = (List<string>)ViewBag.Viewers;
+    <section class="viewers-section spad">
+        <div class="container">
+            <h4 class="mb-4">Người dùng đã xem sản phẩm này</h4>
+            <ul class="list-inline">
+                @foreach (var user in viewers)
+                {
+                    <li class="list-inline-item badge bg-secondary me-2">
+                        @user
+                    </li>
+                }
+            </ul>
+        </div>
+    </section>
+}
+
+<style>
+    .recent-products {
+        margin-top: 3rem;
+        padding: 1rem 0;
+        background-color: #f7fafc;
+    }
+
+    .recent-product-item {
+        border: 1px solid #e2e8f0;
+        padding: 0.5rem;
+        border-radius: 5px;
+        background-color: #fff;
+        transition: transform 0.2s ease-in-out;
+    }
+
+        .recent-product-item:hover {
+            transform: scale(1.05);
+        }
+
+        .recent-product-item img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+        }
+
+        .recent-product-item p {
+            font-size: 0.9rem;
+        }
+
+    .viewers-section {
+        margin-top: 2rem;
+        padding: 1rem 0;
+        background-color: #f7fafc;
+    }
+
+        .viewers-section h4 {
+            margin-bottom: 1rem;
+        }
+</style>
+
 <!--Product Details Section End-->
 @Html.AntiForgeryToken()
 
@@ -176,5 +268,29 @@
         }
 
 
+    </script>
+    <script>
+        document.getElementById("btnShowCookie").addEventListener("click", function () {
+            // Lấy danh sách các cookie dưới dạng mảng [ "key=value", ... ]
+            let cookieArr = document.cookie.split("; ");
+            let cookieObj = {};
+
+            // Chuyển đổi mảng thành đối tượng
+            cookieArr.forEach(function (cookie) {
+                let parts = cookie.split("=");
+                let key = parts[0];
+                let value = parts.slice(1).join("="); // định dạng nếu có dấu "=" trong giá trị
+                cookieObj[key] = decodeURIComponent(value);
+            });
+            // Lấy tên người dùng và role từ session (được inject qua Razor)
+        let tenTaiKhoan = '@(Context.Session.GetString("TenTaiKhoan") ?? "")';
+        let role = '@(Context.Session.GetString("Role") ?? "")';
+
+            // Hiển thị giá trị của cookie 'lastAccess'
+
+            alert("Thông tin cookie 'lastAccess': " + (cookieObj["lastAccess"] || "Không tồn tại") +
+              "\nTên người dùng: " + tenTaiKhoan +
+              "\nRole: " + role);
+        });
     </script>
 }

@@ -11,20 +11,33 @@
                 <h4 class="mb-0">Đăng ký</h4>
             </div>
             <div class="card-body">
+                <div asp-validation-summary="All" class="text-danger"></div>
                 <form asp-action="Register" method="post">
+                    <!-- Tên tài khoản -->
                     <div class="mb-3">
                         <label asp-for="TenTaiKhoan" class="form-label"></label>
                         <input asp-for="TenTaiKhoan" class="form-control" />
                         <span asp-validation-for="TenTaiKhoan" class="text-danger"></span>
                     </div>
+                    
+                    <!-- Nhập Mật khẩu và danh sách yêu cầu -->
                     <div class="mb-3">
+                        <!-- Danh sách yêu cầu mật khẩu hiển thị ở trên -->
+                        <ul class="password-requirements">
+                            <li id="lengthRequirement" class="text-muted">Ít nhất 6 ký tự</li>
+                            <li id="numberRequirement" class="text-muted">Có ít nhất một chữ số (0-9)</li>
+                            <li id="uppercaseRequirement" class="text-muted">Có ít nhất một chữ cái viết hoa (A-Z)</li>
+                            <li id="specialCharRequirement" class="text-muted">Có ít nhất một ký tự đặc biệt (#$%^&*()!)</li>
+                        </ul>
                         <label asp-for="MatKhau" class="form-label"></label>
-                        <input asp-for="MatKhau" class="form-control" />
+                        <input asp-for="MatKhau" class="form-control" id="passwordInput" type="password" />
                         <span asp-validation-for="MatKhau" class="text-danger"></span>
                     </div>
+                    
+                    <!-- Xác nhận mật khẩu -->
                     <div class="mb-3">
                         <label asp-for="XacNhanMatKhau" class="form-label"></label>
-                        <input asp-for="XacNhanMatKhau" class="form-control" />
+                        <input asp-for="XacNhanMatKhau" class="form-control" type="password" />
                         <span asp-validation-for="XacNhanMatKhau" class="text-danger"></span>
                     </div>
 
@@ -57,6 +70,7 @@
     </div>
 </div>
 
+<!-- CSS cho giao diện đăng ký và yêu cầu mật khẩu -->
 <style>
     .auth-container {
         min-height: 100vh;
@@ -65,8 +79,75 @@
         align-items: center;
         padding: 2rem;
     }
+    .password-requirements {
+        list-style: none;
+        padding-left: 0;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+    .password-requirements li {
+        margin-bottom: 5px;
+    }
+    .text-success {
+        color: green;
+        font-weight: bold;
+    }
+    .text-muted {
+        color: #6c757d;
+    }
 </style>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const passwordInput = document.getElementById("passwordInput");
+            const lengthRequirement = document.getElementById("lengthRequirement");
+            const numberRequirement = document.getElementById("numberRequirement");
+            const uppercaseRequirement = document.getElementById("uppercaseRequirement");
+            const specialCharRequirement = document.getElementById("specialCharRequirement");
+
+            function validatePassword() {
+                const pwd = passwordInput.value;
+
+                // Kiểm tra độ dài >= 6 ký tự
+                if (pwd.length >= 6) {
+                    lengthRequirement.classList.add("text-success");
+                    lengthRequirement.classList.remove("text-muted");
+                } else {
+                    lengthRequirement.classList.add("text-muted");
+                    lengthRequirement.classList.remove("text-success");
+                }
+
+                // Kiểm tra có ít nhất một chữ số
+                if (/\d/.test(pwd)) {
+                    numberRequirement.classList.add("text-success");
+                    numberRequirement.classList.remove("text-muted");
+                } else {
+                    numberRequirement.classList.add("text-muted");
+                    numberRequirement.classList.remove("text-success");
+                }
+
+                // Kiểm tra có ít nhất một chữ cái viết hoa
+                if (/[A-Z]/.test(pwd)) {
+                    uppercaseRequirement.classList.add("text-success");
+                    uppercaseRequirement.classList.remove("text-muted");
+                } else {
+                    uppercaseRequirement.classList.add("text-muted");
+                    uppercaseRequirement.classList.remove("text-success");
+                }
+
+                // Kiểm tra có ít nhất một ký tự đặc biệt (#$%^&*()!)
+                if (/[#$%^&*()!]/.test(pwd)) {
+                    specialCharRequirement.classList.add("text-success");
+                    specialCharRequirement.classList.remove("text-muted");
+                } else {
+                    specialCharRequirement.classList.add("text-muted");
+                    specialCharRequirement.classList.remove("text-success");
+                }
+            }
+
+            passwordInput.addEventListener("input", validatePassword);
+        });
+    </script>
 }

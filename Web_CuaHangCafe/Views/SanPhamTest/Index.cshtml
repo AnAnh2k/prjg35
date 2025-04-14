@@ -1,0 +1,58 @@
+﻿@model IEnumerable<Web_CuaHangCafe.Models.TbSanPham>
+
+@{
+    ViewData["Title"] = "Danh sách Sản Phẩm Test";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["SanPhamTest"] = "active";
+}
+
+<h2>Danh sách Sản Phẩm Test</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Tạo mới</a>
+</p>
+
+<div class="product-container">
+    @foreach (var item in Model)
+    {
+        <div class="product-card">
+            <h3>@item.TenSanPham</h3>
+            <p>Giá bán: @item.GiaBan</p>
+            <p>Mô tả: @item.MoTa</p>
+            <p class="VerifyKey">VerifyKey: @item.VerifyKey</p>
+            <p>
+                <a asp-action="Edit" asp-route-id="@item.MaSanPham">Sửa</a> |
+                <a asp-action="Details" asp-route-id="@item.MaSanPham">Chi tiết</a> |
+                <a asp-action="Delete" asp-route-id="@item.MaSanPham">Xóa</a>
+            </p>
+        </div>
+    }
+</div>
+
+<style>
+    .product-container {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+        .product-container .VerifyKey {
+            overflow-x:scroll;
+        }
+
+    .product-card {
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin: 10px;
+        width: calc(33.33% - 20px);
+        box-sizing: border-box;
+    }
+
+    @@media (max-width: 768px) {
+        .product-card
+
+    {
+        width: 100%;
+    }
+
+    }
+</style>

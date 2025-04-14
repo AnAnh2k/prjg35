@@ -15,6 +15,8 @@ public partial class ApplicationDbContext : DbContext
         : base(options)
     {
     }
+   
+
 
     public virtual DbSet<TbChiTietHoaDonBan> TbChiTietHoaDonBans { get; set; }
 

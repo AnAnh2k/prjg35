@@ -44,6 +44,7 @@ namespace Web_CuaHangCafe.Areas.Admin.Controllers
                     MoTa = p.MoTa,
                     HinhAnh = p.HinhAnh,
                     GhiChu = p.GhiChu,
+                     VerifyKey = p.VerifyKey,
                     LoaiSanPham = p.MaNhomSpNavigation.TenNhomSp
                 });
 
@@ -120,6 +121,7 @@ namespace Web_CuaHangCafe.Areas.Admin.Controllers
                     MaNhomSp = request.MaNhomSp,
                     MoTa = request.MoTa,
                     GhiChu = request.GhiChu,
+                    VerifyKey = request.VerifyKey,
                     HinhAnh = fileName
                 };
 
@@ -139,7 +141,8 @@ namespace Web_CuaHangCafe.Areas.Admin.Controllers
                         HinhAnh = product.HinhAnh,
                         LoaiSanPham = productGroup?.TenNhomSp ?? "Không xác định",
                         GiaBan = product.GiaBan.ToString("N0"),
-                        GhiChu = product.GhiChu ?? ""
+                        GhiChu = product.GhiChu ?? "",
+                         VerifyKey = product.VerifyKey ?? ""
                     }
                 });
             }
@@ -171,6 +174,7 @@ namespace Web_CuaHangCafe.Areas.Admin.Controllers
                                    MoTa = product.MoTa,
                                    HinhAnh = product.HinhAnh,
                                    GhiChu = product.GhiChu,
+                                   VerifyKey = product.VerifyKey,
                                    LoaiSanPham = type.TenNhomSp
                                }).SingleOrDefault();
 
@@ -202,7 +206,9 @@ namespace Web_CuaHangCafe.Areas.Admin.Controllers
                 maNhomSp = product.MaNhomSp,
                 moTa = product.MoTa,
                 ghiChu = product.GhiChu,
+                VerifyKey = product.VerifyKey,
                 hinhAnh = product.HinhAnh,
+          
                 loaiSanPham = product.MaNhomSpNavigation?.TenNhomSp
             });
         }
@@ -260,6 +266,7 @@ namespace Web_CuaHangCafe.Areas.Admin.Controllers
                 product.MaNhomSp = request.MaNhomSp;
                 product.MoTa = request.MoTa;
                 product.GhiChu = request.GhiChu;
+                product.VerifyKey = request.VerifyKey;
 
 
 
@@ -280,7 +287,8 @@ namespace Web_CuaHangCafe.Areas.Admin.Controllers
                         HinhAnh = product.HinhAnh,
                         LoaiSanPham = productGroup?.TenNhomSp ?? "Không xác định",
                         GiaBan = product.GiaBan.ToString("N0"),
-                        GhiChu = product.GhiChu ?? ""
+                        GhiChu = product.GhiChu ?? "",
+                         VerifyKey = product.VerifyKey ?? "null"
                     }
                 });
             }

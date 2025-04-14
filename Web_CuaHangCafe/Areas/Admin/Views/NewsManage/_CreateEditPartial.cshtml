@@ -1,0 +1,38 @@
+﻿@model Web_CuaHangCafe.Models.TbTinTuc
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<form id="frmCreateEdit" asp-action="@ViewBag.FormAction" method="post" novalidate>
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+    @if (Model.MaTinTuc != 0)
+    {
+        <!-- Nếu là sửa thì hiển thị input ẩn chứa id -->
+        <input type="hidden" asp-for="MaTinTuc" />
+    }
+    <div class="form-group mb-3">
+        <label for="TieuDe">Tiêu đề</label>
+        <input type="text" asp-for="TieuDe" id="TieuDe" class="form-control" placeholder="Nhập tên nhóm sản phẩm" required />
+        <span asp-validation-for="TieuDe" class="text-danger"></span>
+    </div>
+    <div class="form-group mb-3">
+        <label for="NgayDang">Ngày đăng</label>
+        <input type="date" asp-for="NgayDang" id="NgayDang" class="form-control" placeholder="Nhập tên nhóm sản phẩm" required />
+        <span asp-validation-for="NgayDang" class="text-danger"></span>
+    </div>
+    <div class="form-group mb-3">
+        <label for="NoiDung">Nội dung</label>
+        <input type="text" asp-for="NoiDung" id="NoiDung" class="form-control" placeholder="Nhập tên nhóm sản phẩm" required />
+        <span asp-validation-for="NoiDung" class="text-danger"></span>
+    </div>
+    <div class="form-group mb-3">
+        <label for="HinhAnh">Hình ảnh</label>
+        <input type="text" asp-for="HinhAnh" id="HinhAnh" class="form-control" placeholder="Nhập tên nhóm sản phẩm" required />
+        <span asp-validation-for="HinhAnh" class="text-danger"></span>
+    </div>
+    <div class="text-end">
+        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+        <button type="button" id="btnBack" class="btn btn-secondary">Quay về</button>
+    </div>
+
+</form>
+
+<!-- Nếu cần style đặc biệt cho modal, bạn có thể thêm style inline hoặc qua file CSS -->

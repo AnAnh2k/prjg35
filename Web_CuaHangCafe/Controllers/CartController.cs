@@ -21,7 +21,6 @@ namespace Web_CuaHangCafe.Controllers
         }
 
 
-        // GET: /Cart/Index
         public async Task<IActionResult> Index()
         {
             string maKhachHangStr = HttpContext.Session.GetString("MaKhachHang");
@@ -30,7 +29,11 @@ namespace Web_CuaHangCafe.Controllers
                 // Nếu chưa đăng nhập, chuyển hướng đến trang đăng nhập.
                 return RedirectToAction("Login1", "Access1");
             }
-            int maKhachHang = int.Parse(maKhachHangStr);
+            if (!int.TryParse(maKhachHangStr, out int maKhachHang))
+            {
+                // Xử lý lỗi nếu chuyển đổi không thành công.
+                return RedirectToAction("Login1", "Access1");
+            }
 
             var cartItems = await _context.TbGioHangs
                 .Include(g => g.MaSanPhamNavigation)
@@ -38,55 +41,39 @@ namespace Web_CuaHangCafe.Controllers
                 .ToListAsync();
 
             decimal tongTien = cartItems.Sum(item => item.SoLuong * item.MaSanPhamNavigation.GiaBan);
+            // Lưu tổng tiền vào session dưới dạng chưa được định dạng
+            HttpContext.Session.SetString("TotalAmount", tongTien.ToString());
             ViewData["total"] = tongTien.ToString("n0");
 
             return View(cartItems);
         }
 
-        // Thêm sản phẩm vào giỏ hàng
-        //public async Task<IActionResult> Add(int id, int quantity)
-        //{
-        //    string maKhachHangStr = HttpContext.Session.GetString("MaKhachHang");
-        //    if (string.IsNullOrEmpty(maKhachHangStr))
-        //    {
-        //        return RedirectToAction("Login1", "Access1");
-        //    }
-        //    int maKhachHang = int.Parse(maKhachHangStr);
+        [HttpPost]
+        public IActionResult ApplyDiscount()
+        {
+            try
+            {
+                // Loại bỏ dấu phẩy trong vùng số nếu có
+                string totalStr = HttpContext.Session.GetString("TotalAmount")?.Replace(",", "") ?? "0";
+                decimal total = Convert.ToDecimal(totalStr);
 
-        //    // Kiểm tra xem sản phẩm có tồn tại không
-        //    var product = await _context.TbSanPhams.FirstOrDefaultAsync(p => p.MaSanPham == id);
-        //    if (product == null)
-        //    {
-        //        return NotFound("Sản phẩm không tồn tại.");
-        //    }
+                if (total > 1000000)
+                {
+                    decimal newTotal = total * 0.9m;
+                    return Json(new { success = true, newTotal = newTotal.ToString("n0") });
+                }
+                return Json(new { success = false, message = "Không thể áp dụng giảm giá." });
+            }
+            catch (Exception ex)
+            {
+                // Ghi log lỗi (nếu bạn sử dụng một framework logging)
+                // Ví dụ: _logger.LogError(ex, "Error applying discount");
+                return Json(new { success = false, message = "Lỗi máy chủ: " + ex.Message });
+            }
+        }
 
-        //    // Tìm xem đã có mục giỏ hàng cho sản phẩm của khách hàng chưa
-        //    var cartItem = await _context.TbGioHangs
-        //        .FirstOrDefaultAsync(g => g.MaKhachHang == maKhachHang && g.MaSanPham == id);
 
-        //    if (cartItem == null)
-        //    {
-        //        // Thêm mới một mục giỏ hàng
-        //        cartItem = new TbGioHang
-        //        {
-        //            MaKhachHang = maKhachHang,
-        //            MaSanPham = id,
-        //            SoLuong = quantity
-        //        };
-        //        _context.TbGioHangs.Add(cartItem);
-        //    }
-        //    else
-        //    {
-        //        // Nếu đã có, cập nhật số lượng
-        //        cartItem.SoLuong += quantity;
-        //        _context.TbGioHangs.Update(cartItem);
-        //    }
 
-        //    await _context.SaveChangesAsync();
-        //    return RedirectToAction("Index");
-        //}
-
-        // Tạo file DTO (AddItemRequest.cs) nếu chưa có
         public class AddItemRequest
         {
             public int id { get; set; }
@@ -337,7 +324,7 @@ namespace Web_CuaHangCafe.Controllers
         }
 
 
-        public async Task<IActionResult> Confirmation(string customerName, string phoneNumber, string address, string checkoutMethod,int MaQuan)
+        public async Task<IActionResult> Confirmation(string customerName, string phoneNumber, string address, string checkoutMethod,int MaQuan, int discountPercent)
         {
             string maKhachHangStr = HttpContext.Session.GetString("MaKhachHang");
             if (string.IsNullOrEmpty(maKhachHangStr))
@@ -370,6 +357,18 @@ namespace Web_CuaHangCafe.Controllers
                 await _context.SaveChangesAsync();
             }
 
+            // Tính tổng tiền của giỏ hàng
+            decimal total = cartItems.Sum(x => x.SoLuong * x.MaSanPhamNavigation.GiaBan);
+
+            // Tính số tiền giảm dựa trên phần trăm giảm có được truyền vào,
+            // nếu không có giảm giá, discountPercent sẽ là 0.
+            decimal discount = 0;
+            if (discountPercent > 0)
+            {
+                discount = total * discountPercent / 100;
+            }
+            decimal finalTotal = total - discount;
+
             // Tạo hóa đơn mới cho khách hàng
             var order = new TbHoaDonBan
             {
@@ -379,9 +378,12 @@ namespace Web_CuaHangCafe.Controllers
                 MaNhanVien = null,
                 MaKhachHang = customer.MaKhachHang,
                 HinhThucThanhToan = checkoutMethod,
-                TongTien = cartItems.Sum(x => x.SoLuong * x.MaSanPhamNavigation.GiaBan),
+                //TongTien = cartItems.Sum(x => x.SoLuong * x.MaSanPhamNavigation.GiaBan),
+                TongTien = finalTotal,
+                GiamGia = discount,
+
                 TrangThai = "Chưa hoàn thành",
-             
+
             };
             _context.TbHoaDonBans.Add(order);
             await _context.SaveChangesAsync();

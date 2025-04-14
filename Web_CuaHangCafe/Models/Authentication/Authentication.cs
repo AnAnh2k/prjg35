@@ -13,8 +13,9 @@ namespace Web_CuaHangCafe.Models.Authentication
             string role = context.HttpContext.Session.GetString("Role");
 
             // Kiểm tra nếu chưa đăng nhập hoặc role không phải là Admin
-            if (string.IsNullOrEmpty(tenTaiKhoan) && (role != "Admin" && role != "Employee"))
-            {
+            //if (string.IsNullOrEmpty(tenTaiKhoan) && (role != "Admin" || role != "Employee"))
+                if (role != "Admin" && role != "Employee")
+                {
                 context.Result = new RedirectToRouteResult(new RouteValueDictionary
                 {
                     { "controller", "access1" },

@@ -1,0 +1,17 @@
+﻿@model Web_CuaHangCafe.Models.TbNhomSanPham
+<div class="card">
+    <div class="card-header">Sửa Nhóm Sản Phẩm</div>
+    <div class="card-body">
+        <form id="editForm">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="MaNhomSp" value="@Model.MaNhomSp" />
+            <div class="form-group">
+                <label for="TenNhomSp">Tên nhóm sản phẩm</label>
+                <input type="text" class="form-control" id="TenNhomSp" name="TenNhomSp" value="@Model.TenNhomSp" required />
+                <span class="text-danger" data-valmsg-for="TenNhomSp"></span>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Cập Nhật</button>
+        </form>
+    </div>
+</div>

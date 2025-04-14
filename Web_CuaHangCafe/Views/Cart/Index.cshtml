@@ -3,7 +3,15 @@
 @{
     ViewData["Title"] = "Giỏ hàng";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    // Bạn có thể lưu tổng tiền gốc (không định dạng) vào một biến khác để dùng cho logic hiển thị
+    decimal totalAmount = 0;
+    // Giả sử tổng tiền gốc được lưu trong session hoặc bạn có thể chuyển nó qua ViewBag từ controller.
+    if (decimal.TryParse(Context.Session.GetString("TotalAmount") ?? "0", out decimal rawTotal))
+    {
+        totalAmount = rawTotal;
+    }
 }
+
 
 <!-- Breadcrumb -->
 <div class="breadcrumb-option">
@@ -98,9 +106,20 @@
                 <h5>
                     Tổng tiền:
                     <span id="totalAmount" class="text-danger">@ViewData["total"]</span> &#8363;
+                   
                 </h5>
                 <a asp-action="Checkout" id="checkoutLink" class="btn btn-success">Thanh toán</a>
             </div>
+            <!-- Nếu tổng tiền > 1tr thì hiển thị nút giảm giá -->
+            @* @if (totalAmount > 1000000) *@
+            @* { *@
+            @*     <div class="discount-section mt-3 text-center"> *@
+            @*         <button id="applyDiscountBtn" type="button" class="btn btn-warning"> *@
+            @*             Áp dụng giảm giá 10% *@
+            @*         </button> *@
+            @*     </div> *@
+            @* } *@
+
         </div>
     </div>
 </section>
@@ -112,6 +131,8 @@
         const updateQuantityUrl = '@Url.Action("Update", "Cart")';
         const removeUrl = '@Url.Action("Remove", "Cart")';
         const getCartCountUrl = '@Url.Action("GetCartCount", "Cart")';
+            // Định nghĩa URL cho action áp dụng giảm giá
+        const discountUrl = '@Url.Action("ApplyDiscount", "Cart")';
 
         // Lấy token CSRF từ input ẩn được tạo bởi @Html.AntiForgeryToken()
         const csrfTokenElement = document.querySelector('input[name="__RequestVerificationToken"]');
@@ -217,6 +238,43 @@
                 console.error("Error updating cart badge:", error);
             }
         }
+
+
+        // Hàm áp dụng giảm giá 10% nếu người dùng xác nhận
+        //          document.getElementById("applyDiscountBtn").addEventListener("click", async function(e) {
+        //     e.preventDefault(); Ngăn form submit (nếu có)
+        //     console.log("applyDiscountBtn clicked");
+        //     if (!confirm("Bạn có chắc chắn muốn áp dụng giảm giá 10%?")) {
+        //         return;
+        //     }
+        //     try {
+        //         const response = await fetch(discountUrl, {
+        //             method: 'POST',
+        //             credentials: 'same-origin',
+        //             headers: {
+        //                 'Content-Type': 'application/json',
+        //                 'X-CSRF-TOKEN': csrfToken
+        //             },
+        //             body: JSON.stringify({})
+        //         });
+        //         console.log("Response status:", response.status);
+        //         if (!response.ok) {
+        //             throw new Error(`HTTP error ${response.status}`);
+        //         }
+        //         const data = await response.json();
+        //         console.log("Discount response data:", data);
+        //         if (data.success) {
+        //             document.getElementById("totalAmount").textContent = data.newTotal;
+        //             alert("Giảm giá 10% đã được áp dụng!");
+        //         } else {
+        //             alert(data.message || "Không thể áp dụng giảm giá.");
+        //         }
+        //     } catch (error) {
+        //         console.error("Error applying discount:", error);
+        //         alert("Có lỗi xảy ra khi áp dụng giảm giá.");
+        //     }
+        // });
+
 
 
         // Xử lý các sự kiện tăng/giảm số lượng và xóa sản phẩm

@@ -1,0 +1,68 @@
+﻿@model Web_CuaHangCafe.Models.TbSanPham
+
+@{
+    ViewData["Title"] = "Tạo Sản Phẩm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["SanPhamTest"] = "active";
+}
+
+<h2>Tạo Sản Phẩm</h2>
+
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="form-group">
+        <label asp-for="TenSanPham" class="control-label"></label>
+        <input asp-for="TenSanPham" class="form-control" />
+        <span asp-validation-for="TenSanPham" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="GiaBan" class="control-label"></label>
+        <input asp-for="GiaBan" class="form-control" />
+        <span asp-validation-for="GiaBan" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="MoTa" class="control-label"></label>
+        <textarea asp-for="MoTa" class="form-control"></textarea>
+        <span asp-validation-for="MoTa" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="HinhAnh" class="control-label"></label>
+        <input asp-for="HinhAnh" class="form-control" />
+        <span asp-validation-for="HinhAnh" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="GhiChu" class="control-label"></label>
+        <textarea asp-for="GhiChu" class="form-control"></textarea>
+        <span asp-validation-for="GhiChu" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="MaNhomSp" class="control-label"></label>
+        <select asp-for="MaNhomSp" class="form-control" asp-items="ViewBag.MaNhomSP">
+            <option value="">-- Chọn nhóm sản phẩm --</option>
+        </select>
+        <span asp-validation-for="MaNhomSp" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="VerifyKey" class="control-label"></label>
+        <input asp-for="VerifyKey" class="form-control" />
+        <span asp-validation-for="VerifyKey" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <input type="submit" value="Tạo" class="btn btn-primary" />
+        <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

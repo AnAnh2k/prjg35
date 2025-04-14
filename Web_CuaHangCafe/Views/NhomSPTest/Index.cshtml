@@ -1,0 +1,10 @@
+﻿@model List<Web_CuaHangCafe.Models.TbNhomSanPham>
+
+@{
+    ViewData["Title"] = "Danh Sách Nhóm Sản Phẩm";
+    Layout = "/Views/Shared/_Layout2.cshtml";
+}
+<!-- Bạn có thể hiển thị một container để load nội dung qua AJAX -->
+<div id="mainContainer">
+    @Html.Partial("PartialList", Model)
+</div>

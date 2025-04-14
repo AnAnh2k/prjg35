@@ -68,6 +68,7 @@ namespace Web_CuaHangCafe.Areas.Admin.Controllers
             int pageNumber = page == null || page < 0 ? 1 : page.Value;
             var listItem = _context.TbHoaDonBans
                                    .Include(x => x.MaKhachHangNavigation)
+                                 
                                         .Include(x => x.MaNhanVienNavigation)
                                         .Include(x => x.MaQuanNavigation)// Load thông tin khách hàng
                                    .AsNoTracking()
@@ -135,7 +136,11 @@ namespace Web_CuaHangCafe.Areas.Admin.Controllers
             // Đảm bảo Include navigation property của hóa đơn và sản phẩm
             var listItem = _context.TbChiTietHoaDonBans
                 .Include(ct => ct.MaHoaDonNavigation)
+                .ThenInclude(x => x.MaKhachHangNavigation)
+                  .Include(ct => ct.MaHoaDonNavigation)
+                .ThenInclude(x => x.MaNhanVienNavigation)
                 .Include(ct => ct.MaSanPhamNavigation)
+              
                 .AsNoTracking()
                 .Where(x => x.MaHoaDon == billGuid)
                 .OrderBy(x => x.MaHoaDon)

@@ -1,0 +1,40 @@
+﻿@model IEnumerable<Web_CuaHangCafe.Models.TbNhomSanPham>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<!-- Ví dụ hiển thị danh sách dưới dạng bảng; bạn có thể chỉnh sửa thành form nếu cần -->
+<form id="searchResultForm" method="post" action="@Url.Action("Search", "GroupsProduct")">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th class="ps-4">Mã nhóm</th>
+                    <th>Tên nhóm sản phẩm</th>
+                    <th class="text-end pe-4">Thao Tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                        <tr>
+                            <td class="ps-4 fw-medium">@item.MaNhomSp</td>
+                            <td>@item.TenNhomSp</td>
+                            <td class="text-end pe-4">
+                                <!-- Ví dụ: Nút chọn hoặc chỉnh sửa -->
+                            <a asp-action="Edit"
+                               asp-route-id="@item.MaNhomSp"
+                               class="btn btn-sm btn-outline-primary ajax-link">
+                                <i class="fas fa-edit me-1"></i>Sửa
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@item.MaNhomSp" class="btn btn-sm btn-outline-danger btn-delete">
+                                <i class="fas fa-trash-alt me-1"></i>Xóa
+                            </a>
+
+                            </td>
+                        </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <!-- hoặc bạn có thể có nút submit nếu form thực sự cần được gửi -->
+    <button type="button" id="btnBack" class="btn btn-secondary">Quay về</button>
+</form>

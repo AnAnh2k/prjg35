@@ -27,7 +27,64 @@
     <link rel="stylesheet" href="~/css/style.css" type="text/css" asp-append-version="true">
     <link rel="stylesheet" href="~/css/style-additional.css" type="text/css" asp-append-version="true">
 
+    <style>
+        /* Menu dropdown mobile ẩn mặc định */
+        .mobile-dropdown-menu {
+            display: none;
+            background: #fff;
+            position: fixed;
+            top: 60px; /* điều chỉnh theo chiều cao header của bạn */
+            right: 0;
+            left: 0;
+            z-index: 11000;
+            border-top: 1px solid #ddd;
+        }
 
+            /* Khi có class 'open' thì hiện ra */
+            .mobile-dropdown-menu.open {
+                display: block;
+            }
+
+            /* Cài đặt kiểu cho các mục menu */
+            .mobile-dropdown-menu ul {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+
+            .mobile-dropdown-menu li {
+                border-bottom: 1px solid #eee;
+            }
+
+                .mobile-dropdown-menu li a {
+                    display: block;
+                    padding: 10px;
+                    text-decoration: none;
+                    color: #333;
+                }
+
+        /* Nút hamburger chỉ hiển thị trên mobile */
+        .canvas__open {
+            display: none;
+            position: fixed;
+            top: 15px;
+            /* left: 15px; */
+            left: 100%; /* Đặt từ trái bằng 50% của màn hình */
+            transform: translateX(-120%); /* Dịch lại 50% chiều ngang để căn giữa */
+            font-size: 1.8rem;
+            z-index: 12000;
+            cursor: pointer;
+        }
+
+        @@media (max-width:1000px) {
+            .canvas__open
+
+        {
+            display: block;
+        }
+
+        }
+    </style>
 </head>
 <body>
     <!-- Page Preloader -->
@@ -73,6 +130,26 @@
     <script src="~/js/main-additional.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Lấy phần tử nút hamburger và menu dropdown
+            const canvasOpen = document.querySelector(".canvas__open");
+            const mobileMenu = document.querySelector(".mobile-dropdown-menu");
+
+            // Khi click vào nút hamburger: toggle class "open" cho menu dropdown
+            canvasOpen.addEventListener("click", function(e) {
+                e.stopPropagation(); // Ngăn chặn sự kiện nổi lên
+                mobileMenu.classList.toggle("open");
+            });
+
+            // Đóng menu dropdown khi click ra bên ngoài menu
+            document.addEventListener("click", function(e) {
+                if (!mobileMenu.contains(e.target) && !canvasOpen.contains(e.target)) {
+                    mobileMenu.classList.remove("open");
+                }
+            });
+        });
+    </script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             var dropdown = document.getElementById("userDropdown");

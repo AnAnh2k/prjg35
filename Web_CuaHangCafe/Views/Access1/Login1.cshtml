@@ -19,7 +19,15 @@
 
             <!-- Form -->
             <form asp-action="Login1" method="post" class="auth-form">
-                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                <!-- Hiển thị tổng hợp lỗi từ ModelState -->
+              <div asp-validation-summary="All" class="alert alert-danger"></div> 
+                <!-- Nếu có số lần đăng nhập sai, hiển thị thông báo -->
+                @* @if (ViewBag.FailedCount != null && (int)ViewBag.FailedCount > 0) *@
+                @* { *@
+                @*     <div class="alert alert-warning"> *@
+                @*         Đăng nhập không đúng: @ViewBag.FailedCount / 3 lần. *@
+                @*     </div> *@
+                @* } *@
 
                 <!-- Username Input -->
                 <div class="form-group">
@@ -27,8 +35,8 @@
                         <span class="input-group-icon">
                             <i class="fas fa-user"></i>
                         </span>
-                        <input asp-for="TenTaiKhoan" 
-                               class="form-control" 
+                        <input asp-for="TenTaiKhoan"
+                               class="form-control"
                                placeholder="Tên đăng nhập"
                                autocomplete="username">
                     </div>
@@ -41,9 +49,9 @@
                         <span class="input-group-icon">
                             <i class="fas fa-lock"></i>
                         </span>
-                        <input asp-for="MatKhau" 
-                               type="password" 
-                               class="form-control" 
+                        <input asp-for="MatKhau"
+                               type="password"
+                               class="form-control"
                                placeholder="Mật khẩu"
                                autocomplete="current-password">
                         <button type="button" class="password-toggle">
@@ -81,7 +89,7 @@
 
                 <!-- Registration Link -->
                 <div class="auth-footer">
-                    Bạn chưa có tài khoản? 
+                    Bạn chưa có tài khoản?
                     <a asp-action="Register" asp-controller="Access1" class="register-link">
                         Tạo tài khoản mới
                     </a>
@@ -91,6 +99,7 @@
     </div>
 </div>
 
+<!-- Styles (giữ nguyên giao diện hiện có) -->
 <style>
     /* Base Styles */
     .auth-container {
@@ -106,7 +115,6 @@
         width: 100%;
         margin: 0 auto;
     }
-
     /* Card Styles */
     .auth-card {
         background: rgba(255, 255, 255, 0.95);
@@ -115,7 +123,6 @@
         backdrop-filter: blur(10px);
         padding: 2.5rem;
     }
-
     /* Header Styles */
     .auth-header {
         text-align: center;
@@ -143,7 +150,6 @@
         color: #718096;
         font-size: 0.875rem;
     }
-
     /* Form Styles */
     .form-group {
         margin-bottom: 1.5rem;
@@ -158,9 +164,9 @@
         transition: all 0.3s ease;
     }
 
-    .input-group:hover {
-        background: #edf2f7;
-    }
+        .input-group:hover {
+            background: #edf2f7;
+        }
 
     .input-group-icon {
         padding: 0 1rem;
@@ -174,9 +180,9 @@
         flex: 1;
     }
 
-    .form-control:focus {
-        box-shadow: none;
-    }
+        .form-control:focus {
+            box-shadow: none;
+        }
 
     .password-toggle {
         background: transparent;
@@ -185,7 +191,6 @@
         color: #a0aec0;
         cursor: pointer;
     }
-
     /* Button Styles */
     .btn-auth-submit {
         width: 100%;
@@ -198,10 +203,9 @@
         transition: all 0.3s ease;
     }
 
-    .btn-auth-submit:hover {
-        background: #2d3748;
-    }
-
+        .btn-auth-submit:hover {
+            background: #2d3748;
+        }
     /* Social Login */
     .social-login {
         margin: 2rem 0;
@@ -214,23 +218,23 @@
         margin: 1.5rem 0;
     }
 
-    .divider::before,
-    .divider::after {
-        content: "";
-        position: absolute;
-        top: 50%;
-        width: 45%;
-        height: 1px;
-        background: #e2e8f0;
-    }
+        .divider::before,
+        .divider::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            width: 45%;
+            height: 1px;
+            background: #e2e8f0;
+        }
 
-    .divider::before {
-        left: 0;
-    }
+        .divider::before {
+            left: 0;
+        }
 
-    .divider::after {
-        right: 0;
-    }
+        .divider::after {
+            right: 0;
+        }
 
     .social-buttons {
         display: flex;
@@ -247,11 +251,10 @@
         transition: all 0.3s ease;
     }
 
-    .btn-social:hover {
-        background: #f7fafc;
-        transform: translateY(-2px);
-    }
-
+        .btn-social:hover {
+            background: #f7fafc;
+            transform: translateY(-2px);
+        }
     /* Footer Links */
     .auth-footer {
         text-align: center;
@@ -265,10 +268,9 @@
         text-decoration: none;
     }
 
-    .register-link:hover {
-        text-decoration: underline;
-    }
-
+        .register-link:hover {
+            text-decoration: underline;
+        }
     /* Error Messages */
     .form-error {
         color: #e53e3e;
@@ -276,10 +278,15 @@
         margin-top: 0.5rem;
         display: block;
     }
+
+    .alert.alert-danger {
+        margin-bottom: 1rem;
+        font-size: 0.875rem;
+    }
 </style>
 
 <script>
-    // Password Toggle
+    // Password Toggle Script
     document.querySelector('.password-toggle').addEventListener('click', function() {
         const passwordInput = document.querySelector('input[type="password"]');
         const isPassword = passwordInput.type === 'password';

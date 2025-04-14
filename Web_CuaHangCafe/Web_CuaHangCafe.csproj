@@ -168,4 +168,10 @@
     <None Include="wwwroot\lib\slick-nav\scss\slicknav.scss" />
     <None Include="wwwroot\lib\slick-nav\scss\theme.scss" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Update="Areas\Admin\Views\NewsManage\_CreateEditPartial.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
 </Project>

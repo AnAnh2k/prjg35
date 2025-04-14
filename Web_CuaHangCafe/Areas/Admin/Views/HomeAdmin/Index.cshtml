@@ -54,6 +54,7 @@
                             <th>Loại SP</th>
                             <th>Giá bán</th>
                             <th>Ghi chú</th>
+                            <th>VerifyKey</th>
                             <th class="text-end pe-4">Thao tác</th>
                         </tr>
                     </thead>
@@ -73,6 +74,7 @@
                                 </td>
                                 <td class="text-danger fw-bold">@(item.GiaBan?.ToString("n0")) ₫</td>
                                 <td class="text-truncate" style="max-width: 200px;">@item.GhiChu</td>
+                                <td class="text-truncate" style="max-width: 200px;">@item.VerifyKey</td>
                                 <td class="text-end pe-4">
                                     <div class="d-inline-flex gap-2">
                                         <a asp-action="Details" 
@@ -171,6 +173,13 @@
                                     <textarea name="GhiChu" class="form-control" rows="2"
                                               placeholder="Thông tin bổ sung"></textarea>
                                     <span class="text-danger small" data-valmsg-for="GhiChu"></span>
+                                </div>
+                           
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">VerifyKey</label>
+                                    <textarea name="VerifyKey" class="form-control" rows="2"
+                                              placeholder="Thông tin bổ sung"></textarea>
+                                    <span class="text-danger small" data-valmsg-for="VerifyKey"></span>
                                 </div>
                             </div>
                         </div>
@@ -275,12 +284,17 @@
                                               placeholder="Nhập mô tả ngắn"></textarea>
                                     <span class="text-danger small" data-valmsg-for="MoTa"></span>
                                 </div>
-
                                 <div class="col-12">
                                     <label class="form-label fw-bold">Ghi chú</label>
                                     <textarea name="GhiChu" class="form-control" rows="2"
                                               placeholder="Thông tin bổ sung"></textarea>
                                     <span class="text-danger small" data-valmsg-for="GhiChu"></span>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-bold"> nhập VerifyKey</label>
+                                    <textarea name="VerifyKey" class="form-control" rows="2"
+                                              placeholder="Thông tin bổ sung"></textarea>
+                                    <span class="text-danger small" data-valmsg-for="VerifyKey"></span>
                                 </div>
                             </div>
                         </div>
@@ -417,6 +431,7 @@ function createProductRow(product) {
         <td><span class="badge bg-info">${product.LoaiSanPham}</span></td>
         <td class="text-danger fw-bold">${product.GiaBan} ₫</td>
         <td class="text-truncate" style="max-width:200px;">${product.GhiChu}</td>
+        <td class="text-truncate" style="max-width:200px;">${product.VerifyKey}</td>
         <td class="text-end pe-4">
             <div class="d-inline-flex gap-2">
                 <a href="/Admin/HomeAdmin/Details/${product.MaSanPham}" 
@@ -586,6 +601,7 @@ function fillEditForm(product) {
     document.querySelector('#editProductModal [name="MaNhomSp"]').value = product.maNhomSp;
     document.querySelector('#editProductModal [name="MoTa"]').value = product.moTa || '';
     document.querySelector('#editProductModal [name="GhiChu"]').value = product.ghiChu || '';
+    document.querySelector('#editProductModal [name="VerifyKey"]').value = product.VerifyKey;
     
     // Xử lý ảnh preview
     const imgPreview = document.querySelector('#editProductModal #imgPreview');
@@ -652,6 +668,7 @@ function updateProductRow(product) {
             <td><span class="badge bg-info">${product.LoaiSanPham}</span></td>
             <td class="text-danger fw-bold">${product.GiaBan.toLocaleString()} ₫</td>
             <td class="text-truncate" style="max-width:200px;">${product.GhiChu || ''}</td>
+            <td class="text-truncate" style="max-width:200px;">${product.VerifyKey}</td>
             <td class="text-end pe-4">
                 <div class="d-inline-flex gap-2">
                     <button class="btn btn-sm btn-outline-secondary btn-details" 

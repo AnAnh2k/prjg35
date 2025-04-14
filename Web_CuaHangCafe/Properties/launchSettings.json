@@ -1,4 +1,12 @@
 {
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:57125",
+      "sslPort": 44358
+    }
+  },
   "profiles": {
     "Web_CuaHangCafe": {
       "commandName": "Project",
@@ -25,14 +33,16 @@
         "ASPNETCORE_URLS": "https://localhost:7147;http://localhost:5127"
       },
       "distributionName": ""
-    }
-  },
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    "iisExpress": {
-      "applicationUrl": "http://localhost:57125",
-      "sslPort": 44358
+    },
+    // Đây là profile mới để chạy dotnet watch run:
+    "Watch": {
+      "commandName": "Executable",
+      "executablePath": "dotnet.exe",
+      "workingDirectory": "$(ProjectDir)",
+      "commandLineArgs": "watch run",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
     }
   }
 }

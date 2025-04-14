@@ -1,0 +1,115 @@
+﻿@model List<Web_CuaHangCafe.Models.TbTinTuc>
+@{
+    var role = Context.Session.GetString("Role");
+}
+<div class="card">
+    <div class="card-header">Danh Sách Tin Tức</div>
+    <div class="card-body">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Tiêu đề</th>
+                    <th>Nội dung</th>
+                    <th>Ngày đăng</th>
+                    @if (role == "Admin")
+                    {
+                        <th>Hành động</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var tin in Model)
+                {
+                    <tr id="row-@tin.MaTinTuc">
+                        <td>@tin.TieuDe</td>
+                        <td>@tin.NoiDung</td>
+                        <td>@tin.NgayDang.ToString("dd/MM/yyyy")</td>
+                        @if (role == "Admin")
+                        {
+                            <td>
+                                <button class="btn btn-sm btn-warning" onclick="editTinTuc(@tin.MaTinTuc)">Sửa</button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteTinTuc(@tin.MaTinTuc)">Xóa</button>
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // Hàm gọi load partial view cho form sửa, truyền id tin tức
+    async function editTinTuc(id) {
+        try {
+            const response = await fetch(`/TinTuc/PartialEdit?id=${id}`);
+            if (!response.ok) throw new Error(response.statusText);
+            const html = await response.text();
+            document.getElementById("mainContainer").innerHTML = html;
+            attachEditFormHandler();
+        } catch(error) {
+            console.error("Lỗi load form sửa:", error);
+            alert("Không tải được form sửa!");
+        }
+    }
+
+    // Hàm gán sự kiện submit cho form sửa
+    function attachEditFormHandler() {
+        const editForm = document.getElementById("editForm");
+        if (editForm) {
+            editForm.addEventListener("submit", async function(e) {
+                e.preventDefault();
+                const formData = new FormData(editForm);
+                let data = {};
+                formData.forEach((value, key) => { data[key] = value });
+                const tokenElem = document.querySelector('input[name="__RequestVerificationToken"]');
+                const token = tokenElem ? tokenElem.value : "";
+                try {
+                    const response = await fetch("/TinTuc/Edit", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "RequestVerificationToken": token
+                        },
+                        body: JSON.stringify(data)
+                    });
+                    const result = await response.json();
+                    alert(result.message);
+                    if(result.success) {
+                        loadContent("list");
+                    }
+                } catch(error) {
+                    console.error("Lỗi sửa:", error);
+                    alert("Có lỗi khi cập nhật tin tức!");
+                }
+            });
+        } else {
+            console.error("Không tìm thấy form editForm.");
+        }
+    }
+
+    // Hàm xử lý xoá tin tức sử dụng Fetch API
+    async function deleteTinTuc(id) {
+        if (!confirm("Bạn có chắc muốn xóa tin tức này?")) return;
+        const tokenElem = document.querySelector('input[name="__RequestVerificationToken"]');
+        const token = tokenElem ? tokenElem.value : "";
+        try {
+            const response = await fetch("/TinTuc/Delete", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "RequestVerificationToken": token
+                },
+                body: JSON.stringify(id)
+            });
+            const result = await response.json();
+            alert(result.message);
+            if(result.success) {
+                loadContent("list");
+            }
+        } catch(error) {
+            console.error("Lỗi xoá:", error);
+            alert("Có lỗi khi xóa tin tức!");
+        }
+    }
+</script>

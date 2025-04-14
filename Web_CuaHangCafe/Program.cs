@@ -26,7 +26,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 // Đăng ký các repository và view component nếu cần
 builder.Services.AddScoped<INhomSpRepository, NhomSpRepository>();
+builder.Services.AddScoped<ITinTucRepository, TinTucRepository>();
 builder.Services.AddScoped<ShoppingCartSummaryViewComponent>();
+// Cấu hình MVC với runtime compilation
 
 // Cấu hình cache phân tán và Session
 builder.Services.AddDistributedMemoryCache();
@@ -43,6 +45,7 @@ builder.Services.AddControllersWithViews()
         options.JsonSerializerOptions.PropertyNamingPolicy = null; // Giữ nguyên PascalCase
     });
 var app = builder.Build();
+
 
 // Cấu hình pipeline xử lý request
 if (!app.Environment.IsDevelopment())

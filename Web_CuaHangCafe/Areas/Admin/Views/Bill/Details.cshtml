@@ -53,6 +53,14 @@
                         <dl class="mb-0">
                             <dt>Tổng tiền</dt>
                             <dd class="fw-bold">@bill.TongTien.ToString("n0") ₫</dd>
+                            <dt>Giảm giá</dt>
+                            <dd class="fw-bold">
+                                @bill.GiamGia.ToString("n0") đ
+                                (@(bill.TongTien > 0
+                                   ? ((bill.GiamGia / (bill.TongTien+bill.GiamGia)) * 100).ToString("n0")
+                                   : "0")%)
+                            </dd>
+
                             
                             <dt>Trạng thái</dt>
                             <dd>

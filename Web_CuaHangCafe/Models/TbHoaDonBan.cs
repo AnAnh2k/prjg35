@@ -19,6 +19,8 @@ public partial class TbHoaDonBan
 
     public int? MaNhanVien { get; set; }
 
+    // Thêm thuộc tính mới: Số tiền giảm
+    public decimal GiamGia { get; set; }
     public int MaKhachHang { get; set; }
 
     [StringLength(50)]

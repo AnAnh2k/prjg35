@@ -22,7 +22,13 @@
                     <ul>
                         <li class="@((string)ViewData["Home"])"><a asp-controller="home" asp-action="index">Trang chủ</a></li>
                         <li class="@((string)ViewData["Products"])"><a asp-controller="products" asp-action="index">Sản phẩm</a></li>
+                          @* @if (role == "Admin" || role =="Employee") *@
+                          @*               { *@
+                          @* <li class="@((string)ViewData["SanPhamTest"])"><a asp-controller="SanPhamTest" asp-action="index">Sản phẩm t</a></li> *@
+                          @*               } *@
                         <li class="@((string)ViewData["News"])"><a asp-controller="news" asp-action="index">Tin tức</a></li>
+                         @* <li class="@((string)ViewData["TinTuc"])"><a asp-controller="TinTuc" asp-action="index">Tin tức1</a></li>  *@
+                         @* <li class="@((string)ViewData["NhomSPTest"])"><a asp-controller="NhomSPTest" asp-action="index">Nhóm SP</a></li>  *@
                         <li class="@((string)ViewData["About"])"><a asp-controller="about" asp-action="index">Giới thiệu</a></li>
                     </ul>
                 </nav>
@@ -115,11 +121,38 @@
         <div class="canvas__open">
             <i class="fas fa-bars"></i>
         </div>
+        <nav class="mobile-dropdown-menu">
+            <ul>
+                <li><a asp-controller="home" asp-action="index">Trang chủ</a></li>
+                <li><a asp-controller="products" asp-action="index">Sản phẩm</a></li>
+                <li><a asp-controller="news" asp-action="index">Tin tức</a></li>
+                <li><a asp-controller="about" asp-action="index">Giới thiệu</a></li>
+                @if (string.IsNullOrEmpty(Context.Session.GetString("TenTaiKhoan")))
+                {
+                    <li><a asp-controller="Access1" asp-action="Login1">Đăng nhập</a></li>
+                    <li><a asp-controller="Access1" asp-action="Register">Đăng ký</a></li>
+                }
+                else
+                {
+                    <li>
+                        <a asp-controller="Account" asp-action="ThongTin">
+                            @Context.Session.GetString("TenTaiKhoan")
+                        </a>
+                    </li>
+                    <li><a asp-controller="Access1" asp-action="Logout">Đăng xuất</a></li>
+                }
+            </ul>
+        </nav>
+
     </div>
 </header>
 <div class="header__behind"></div>
+<style>
 
+</style>
 @section Scripts {
+   
+
     <script src="~/js/header-dropdown.js" asp-append-version="true"></script>
 }
 

@@ -21,6 +21,16 @@ namespace Web_CuaHangCafe.Controllers
             _context = context;
         }
 
+        
+        [HttpGet]
+        public JsonResult CheckUserName(string tenTaiKhoan)
+        {
+            // Kiểm tra xem tên tài khoản có tồn tại trong bảng tài khoản hay không
+            var exists = _context.TbTaiKhoanKhs.Any(x => x.TenTaiKhoan == tenTaiKhoan);
+            // Nếu tồn tại, trả về false -> hiển thị lỗi, nếu không trả về true.
+            return Json(!exists);
+        }
+
         // Hàm băm mật khẩu dùng SHA-256
         public static string HashPassword(string password)
         {
@@ -36,6 +46,8 @@ namespace Web_CuaHangCafe.Controllers
                 return builder.ToString();
             }
         }
+
+
 
         // GET: /Access1/Register
         [HttpGet]
@@ -99,29 +111,59 @@ namespace Web_CuaHangCafe.Controllers
         }
 
         // GET: /Access1/Login
+        // GET: /Access1/Login
         [HttpGet]
         public IActionResult Login1()
         {
+            // Lấy số lần đăng nhập thất bại từ session (nếu chưa có thì là 0)
+            int failedCount = HttpContext.Session.GetInt32("FailedLoginCount") ?? 0;
+            ViewBag.FailedCount = failedCount;
             return View();
         }
- // POST: /Access1/Login(Kiểm tra tài khoản trong cả 2 bảng)
+
+        // POST: /Access1/Login (Kiểm tra tài khoản trong cả 2 bảng)
         [HttpPost]
         public IActionResult Login1(LoginViewModel model)
         {
+            // Nếu account đang bị khóa
+            var lockoutUntilStr = HttpContext.Session.GetString("LockoutUntil");
+            if (!string.IsNullOrEmpty(lockoutUntilStr))
+            {
+                if (DateTime.TryParse(lockoutUntilStr, out DateTime lockoutUntil))
+                {
+                    if (DateTime.Now < lockoutUntil)
+                    {
+                        double minutesLeft = (lockoutUntil - DateTime.Now).TotalMinutes;
+                        ModelState.AddModelError("", $"Chức năng đăng nhập bị khóa do đăng nhập sai 3 lần, vui lòng thử lại sau {Math.Ceiling(minutesLeft)} phút.");
+                        ViewBag.FailedCount = HttpContext.Session.GetInt32("FailedLoginCount") ?? 0;
+                        return View(model);
+                    }
+                    else
+                    {
+                        // Hết thời gian khóa, reset lại
+                        HttpContext.Session.Remove("LockoutUntil");
+                        HttpContext.Session.SetInt32("FailedLoginCount", 0);
+                    }
+                }
+            }
+
             if (!ModelState.IsValid)
                 return View(model);
 
             // Băm mật khẩu của người dùng nhập
             string hashPassword = HashPassword(model.MatKhau);
 
-            // Kiểm tra tài khoản trong bảng tbTaiKhoan (nếu có thì là Admin)
+            // Kiểm tra tài khoản trong bảng tbTaiKhoan (Admin và Employee)
             var tkAdmin = _context.TbTaiKhoans
                 .FirstOrDefault(x => x.TenTaiKhoan == model.TenTaiKhoan && x.MatKhau == hashPassword);
             if (tkAdmin != null)
-            {// Giả sử: MaQuyen == 1 => Admin, MaQuyen == 2 => Employee
+            {
+                // Reset số lần đăng nhập thất bại nếu đăng nhập thành công
+                HttpContext.Session.Remove("FailedLoginCount");
+                HttpContext.Session.Remove("LockoutUntil");
+
                 if (tkAdmin.MaQuyen == 1)
                 {
-                    // Gán thông tin phiên cho Admin
                     HttpContext.Session.SetString("TenTaiKhoan", tkAdmin.TenTaiKhoan);
                     HttpContext.Session.SetString("Role", "Admin");
                     HttpContext.Session.SetString("MaNhanVien", tkAdmin.MaNhanVien.ToString());
@@ -129,7 +171,6 @@ namespace Web_CuaHangCafe.Controllers
                 }
                 else if (tkAdmin.MaQuyen == 3)
                 {
-                    // Gán thông tin phiên cho Employee
                     HttpContext.Session.SetString("TenTaiKhoan", tkAdmin.TenTaiKhoan);
                     HttpContext.Session.SetString("Role", "Employee");
                     HttpContext.Session.SetString("MaNhanVien", tkAdmin.MaNhanVien.ToString());
@@ -142,22 +183,38 @@ namespace Web_CuaHangCafe.Controllers
                 .FirstOrDefault(x => x.TenTaiKhoan == model.TenTaiKhoan && x.MatKhau == hashPassword);
             if (tkKH != null)
             {
-                // Gán thông tin phiên (Session) cho khách hàng
+                HttpContext.Session.Remove("FailedLoginCount");
+                HttpContext.Session.Remove("LockoutUntil");
+
                 HttpContext.Session.SetString("TenTaiKhoan", tkKH.TenTaiKhoan);
                 HttpContext.Session.SetString("Role", "User");
-                // Lưu MaKhachHang vào session để sau này dùng truy xuất giỏ hàng vv.
                 HttpContext.Session.SetString("MaKhachHang", tkKH.MaKhachHang.ToString());
                 return RedirectToAction("Index", "Home");
             }
 
+            // Nếu không tìm thấy tài khoản nào phù hợp, tăng số lần đăng nhập thất bại
+            int failedCount = HttpContext.Session.GetInt32("FailedLoginCount") ?? 0;
+            failedCount++;
+            HttpContext.Session.SetInt32("FailedLoginCount", failedCount);
+            ViewBag.FailedCount = failedCount;
 
-            // Không tìm thấy tài khoản nào phù hợp
-            ModelState.AddModelError("", "Tài khoản hoặc mật khẩu không đúng!");
+            if (failedCount >= 3)
+            {
+                // Khi đăng nhập sai 3 lần trở lên, khóa đăng nhập trong 30 phút
+                var lockoutUntil = DateTime.Now.AddMinutes(30);
+                HttpContext.Session.SetString("LockoutUntil", lockoutUntil.ToString());
+                ModelState.AddModelError("", "Bạn đã đăng nhập sai 3 lần. Tài khoản bị khóa trong 30 phút.");
+            }
+            else
+            {
+                ModelState.AddModelError("", $"Tài khoản hoặc mật khẩu không đúng! ({failedCount}/3)");
+            }
+
             return View(model);
         }
 
 
-      
+
 
 
         // Đăng xuất

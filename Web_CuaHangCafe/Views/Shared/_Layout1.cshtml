@@ -1,0 +1,180 @@
+﻿@{
+    // Lấy thông tin người dùng từ Session
+    var tenTaiKhoan = Context.Session.GetString("TenTaiKhoan");
+    var role = Context.Session.GetString("Role");
+    var viewTitle = ViewData["Title"] ?? "Ứng dụng";
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+
+    <title>@viewTitle - Web Cửa Hàng Cafe</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Liên kết CSS: Bootstrap và file style tùy chỉnh -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/style.css" />
+    <style>
+        /* Style sidebar */
+        .sidebar {
+            background-color: #343a40;
+            min-height: 100vh;
+            padding-top: 20px;
+        }
+
+            .sidebar .nav-link {
+                color: #fff;
+            }
+
+                .sidebar .nav-link:hover {
+                    background-color: #495057;
+                }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <header class="bg-light p-3 border-bottom">
+        <div class="container">
+            <!-- Logo -->
+            <div class="col-xl-3 col-lg-2">
+                <div class="header__logo">
+                    <a asp-controller="home" asp-action="index">
+                        <i class="fas fa-coffee"></i>
+                        The Space Coffee
+                    </a>
+                </div>
+            </div>
+            <h1>@viewTitle</h1>
+        </div>
+    </header>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- SIDEBAR: menu điều hướng sử dụng AJAX -->
+            <aside class="col-md-2 sidebar">
+                <nav>
+                    <ul class="nav flex-column" id="menuSidebar">
+                        @if (role == "Admin")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" data-function="create">Thêm Tin Tức</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" data-function="edit">Sửa Tin Tức</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" data-function="delete">Xóa Tin Tức</a>
+                            </li>
+                        }
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-function="list">Danh Sách Tin Tức</a>
+                        </li>
+                    </ul>
+                </nav>
+            </aside>
+            <!-- MAIN CONTAINER: chứa các view được load qua AJAX -->
+            <main class="col-md-10 p-3" id="mainContainer">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-light p-3 border-top text-center">
+        <div class="container">
+            <p>&copy; 2025 Nhóm BTL - G35</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Sau khi DOM sẵn sàng, gắn sự kiện cho các link trong Sidebar
+        document.addEventListener("DOMContentLoaded", function () {
+            const menuLinks = document.querySelectorAll("#menuSidebar a.nav-link");
+            menuLinks.forEach(link => {
+                link.addEventListener("click", function (e) {
+                    e.preventDefault();
+                    const func = this.getAttribute("data-function");
+                    console.log("Menu link clicked: " + func);
+                    loadContent(func);
+                });
+            });
+        });
+
+        // Hàm load nội dung (partial view) vào main container, dựa theo chức năng được chọn
+        async function loadContent(func) {
+            let url = "";
+            switch (func) {
+                case "create":
+                    url = "/TinTuc/PartialCreate";
+                    break;
+                case "edit":
+                    url = "/TinTuc/PartialEdit"; // Bạn có thể cần truyền id nếu sửa một bản ghi cụ thể.
+                    break;
+                case "delete":
+                    url = "/TinTuc/PartialDelete";
+                    break;
+                case "list":
+                default:
+                    url = "/TinTuc/PartialList";
+                    break;
+            }
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(response.statusText);
+                const html = await response.text();
+                document.getElementById("mainContainer").innerHTML = html;
+                // Nếu vừa load form "create", gán lại sự kiện cho form.
+                if (func === "create") {
+                    attachCreateFormHandler();
+                }
+            } catch (error) {
+                console.error("Lỗi load nội dung:", error);
+                document.getElementById("mainContainer").innerHTML = `<p class="text-danger">Không tải được nội dung!</p>`;
+            }
+        }
+
+        // Hàm gán sự kiện submit cho form thêm mới
+        function attachCreateFormHandler() {
+            const createForm = document.getElementById("createForm");
+            if (createForm) {
+                createForm.addEventListener("submit", async function (e) {
+                    e.preventDefault(); // Ngăn hành động submit mặc định (reload trang)
+                    console.log("Submit event triggered!");
+                    // Lấy dữ liệu từ form
+                    const formData = new FormData(createForm);
+                    let data = {};
+                    formData.forEach((value, key) => { data[key] = value });
+                    // Lấy token AntiForgery
+                    const tokenElem = document.querySelector('input[name="__RequestVerificationToken"]');
+                    const token = tokenElem ? tokenElem.value : "";
+                    try {
+                        const response = await fetch("/TinTuc/Create", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "RequestVerificationToken": token
+                            },
+                            body: JSON.stringify(data)
+                        });
+                        const result = await response.json();
+                        alert(result.message);
+                        if (result.success) {
+                            // Sau khi thêm thành công, load lại danh sách mà không reload trang.
+                            loadContent("list");
+                        }
+                    } catch (error) {
+                        console.error("Lỗi thêm:", error);
+                        alert("Có lỗi khi thêm tin tức!");
+                    }
+                });
+            } else {
+                console.error("Không tìm thấy form createForm.");
+            }
+        }
+    </script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

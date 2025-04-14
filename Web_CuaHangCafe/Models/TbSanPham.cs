@@ -24,6 +24,10 @@ public partial class TbSanPham
     public string? HinhAnh { get; set; }
 
     public string? GhiChu { get; set; }
+    [StringLength(10, MinimumLength = 10, ErrorMessage = "VerifyKey phải có đúng 10 ký tự")]
+    [RegularExpression(@"^\d.*$", ErrorMessage = "VerifyKey phải bắt đầu bằng chữ số")]
+    public string? VerifyKey { get; set; }
+
 
     [Column("MaNhomSP")]
     public int MaNhomSp { get; set; }
